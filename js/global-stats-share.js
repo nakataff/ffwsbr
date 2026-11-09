@@ -58,7 +58,7 @@ const METRIC_GROUPS={
 };
 const SLOT_LABELS=Object.fromEntries([...METRIC_GROUPS.team,...METRIC_GROUPS.player]);
 const state={kind:'summary',format:'feed',theme:'dark',accent:'blue',showSubtitle:true,showFilters:true,showImage:true,
- title:'',team:'',player:'',teamB:'',topEntity:'team',metric:'points',record:'teamDay|points',single:'points',
+ title:'',team:'',player:'',teamB:'',playerA:'',playerB:'',topEntity:'team',metric:'points',record:'teamDay|points',single:'points',
  showMainRank:true,showFactRanks:false,slotMetrics:PLAYER_SLOTS.slice()};
 function dataRows(entity){
  if(!context)return [];
@@ -80,6 +80,10 @@ function optionsFor(select,rows,getValue,getLabel,selected){
  if(selected!==undefined)select.value=String(selected);
  if(!select.value&&select.options.length)select.selectedIndex=0;
  return select.value;
+}
+const playerRef=row=>row.name+'|'+row.team;
+function findComparePlayer(ref){
+ return (context?.players||[]).find(row=>playerRef(row)===ref)||null;
 }
 function selectedRecord(){
  const [scope,metric]=state.record.split('|');
@@ -187,7 +191,7 @@ function fromContext(){
  const kind=choice.kind||state.kind;
  const payload={kind,eyebrow:'FFWS GLOBAL FINALS 2026',title:'ESTATÍSTICAS DO MUNDIAL',subtitle:contextLabel(),
   badge:'CENTRAL FREE FIRE · DADOS OFICIAIS',main:'',mainLabel:'',entity:'',team:'',logo:'',
-  photo:'',facts:[],rows:[],two:null,context:contextLabel()};
+  photo:'',facts:[],rows:[],two:null,twoPlayers:null,context:contextLabel()};
  if(kind==='summary'){
   payload.title='RESUMO DO MUNDIAL';
   payload.main=fmt(totals.kills,'kills');payload.mainLabel='ABATES REGISTRADOS';
@@ -244,6 +248,17 @@ function fromContext(){
    ...(row.damage!==undefined?[stat('DANO',row.damage,'damage')]:[]),
    ...(row.assists!==undefined?[stat('ASSIST.',row.assists,'assists')]:[]),
    ...(row.matches!==undefined?[stat('QUEDAS',row.matches,'matches')]:[])];
+ }else if(kind==='comparePlayer'){
+  const first=findComparePlayer(state.playerA),second=findComparePlayer(state.playerB);
+  if(!first||!second||playerRef(first)===playerRef(second))return null;
+  payload.title='COMPARATIVO DE JOGADORES';
+  payload.entity=first.name+' × '+second.name;
+  payload.twoPlayers=[first,second];
+  payload.subtitle=contextLabel();
+  payload.main=fmt(first.kills,'kills')+' × '+fmt(second.kills,'kills');
+  payload.mainLabel='ABATES';
+  payload.facts=[{label:first.name,value:fmt(first.damage,'damage')+' DANO'},
+   {label:second.name,value:fmt(second.damage,'damage')+' DANO'}];
  }else if(kind==='compare'){
   const first=findRow(state.team,'team'),second=findRow(state.teamB,'team');
   if(!first||!second||first.team===second.team)return null;
@@ -264,6 +279,8 @@ function settingsUI(){
  $('.cff-share-entity-team').hidden=kind!=='team'&&kind!=='compare';
  $('.cff-share-team-b').hidden=kind!=='compare';
  $('.cff-share-entity-player').hidden=kind!=='player';
+ $('.cff-share-compare-player-a').hidden=kind!=='comparePlayer';
+ $('.cff-share-compare-player-b').hidden=kind!=='comparePlayer';
  $('.cff-share-top-settings').hidden=kind!=='top';
  $('.cff-share-record-setting').hidden=kind!=='record';
  $('.cff-share-single-setting').hidden=kind!=='single';
@@ -380,7 +397,7 @@ async function draw(payload){
  const [brand,emblem,photo,rowImages,compareImages]=await Promise.all([
   image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
   payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([]),
-  (story||feed)&&payload.two&&state.showImage?Promise.all(payload.two.map(row=>image(logoSrc(row.team)))):Promise.resolve([])
+  (payload.two||payload.twoPlayers)&&state.showImage?Promise.all((payload.twoPlayers||payload.two).map(row=>image(payload.twoPlayers?playerSrc(row.name,row.team):logoSrc(row.team)))):Promise.resolve([])
  ]);
  if(generation!==renderSeq)return;
  const dark=state.theme==='dark',accent=ACCENTS[state.accent]||ACCENTS.blue;
@@ -494,8 +511,8 @@ async function draw(payload){
    if(story&&row.team&&row.team!==row.name)textLine(ctx,row.team,nameX,y+rowH/2+29,nameWidth,22,muted,'750');
    textLine(ctx,row.score,w-pad-17,y+rowH/2+10,w*.2,story?39:compact?23:31,accent,'950','right');
   });
- }else if(payload.two){
-  const rows=payload.two;
+ }else if(payload.two||payload.twoPlayers){
+  const isPlayer=Boolean(payload.twoPlayers),rows=payload.twoPlayers||payload.two;
   if(story){
    // Full-width panels stack the teams vertically for a native 9:16 comparison.
    const gap=25,fit=storyFit(rows.length,490,gap),boxH=fit.height;
@@ -503,12 +520,14 @@ async function draw(payload){
     const x=pad,y=fit.top+i*(boxH+gap),boxW=w-2*pad,logo=compareImages[i];
     rounded(ctx,x,y,boxW,boxH,16,surface,dark?'#263e57':'#c6d6e4');
     ctx.fillStyle=accent;ctx.fillRect(x+18,y+22,5,Math.max(24,boxH-44));
-    textLine(ctx,'EQUIPE '+(i+1),x+40,y+48,boxW-80,19,muted,'850');
-    textLine(ctx,row.team,x+40,y+104,boxW-(logo?240:80),38,ink,'900');
+    textLine(ctx,(isPlayer?'JOGADOR ':'EQUIPE ')+(i+1),x+40,y+48,boxW-80,19,muted,'850');
+    textLine(ctx,isPlayer?row.name:row.team,x+40,y+104,boxW-(logo?240:80),38,ink,'900');
+    if(isPlayer)textLine(ctx,row.team,x+40,y+139,boxW-(logo?240:80),22,muted,'750');
     if(logo)contain(ctx,logo,x+boxW-195,y+40,145,145);
-    textLine(ctx,fmt(row.points,'points'),x+40,y+225,boxW*.66,93,accent,'950');
-    textLine(ctx,'PONTOS',x+40,y+257,boxW*.55,20,muted,'850');
-    const fields=[['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
+    textLine(ctx,fmt(isPlayer?row.kills:row.points,isPlayer?'kills':'points'),x+40,y+225,boxW*.66,93,accent,'950');
+    textLine(ctx,isPlayer?'ABATES':'PONTOS',x+40,y+257,boxW*.55,20,muted,'850');
+    const fields=isPlayer?[['DANO',fmt(row.damage,'damage')],['ASSIST.',fmt(row.assists,'assists')],['QUEDAS',fmt(row.matches,'matches')]]:
+     [['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
     const cellW=(boxW-80)/3;
     fields.forEach(([label,value],j)=>{
      const xCell=x+40+cellW*j;
@@ -526,22 +545,25 @@ async function draw(payload){
     if(feed){
      const logo=compareImages[i];
      if(logo)contain(ctx,logo,x+colW-115,y+65,86,86);
-     textLine(ctx,'EQUIPE '+(i+1),x+22,y+35,colW-44,16,muted,'850');
-     textLine(ctx,row.team,x+22,y+80,logo?colW-150:colW-44,26,ink,'900');
-     textLine(ctx,fmt(row.points,'points'),x+22,y+205,colW-44,69,accent,'950');
-     textLine(ctx,'PONTOS',x+22,y+232,colW-44,18,muted,'850');
-     const details=[['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
-     const detailsY=y+boxH-204;
+     textLine(ctx,(isPlayer?'JOGADOR ':'EQUIPE ')+(i+1),x+22,y+35,colW-44,16,muted,'850');
+     textLine(ctx,isPlayer?row.name:row.team,x+22,y+80,logo?colW-150:colW-44,26,ink,'900');
+     if(isPlayer)textLine(ctx,row.team,x+22,y+106,logo?colW-150:colW-44,18,muted,'750');
+     textLine(ctx,fmt(isPlayer?row.kills:row.points,isPlayer?'kills':'points'),x+22,y+205,colW-44,69,accent,'950');
+     textLine(ctx,isPlayer?'ABATES':'PONTOS',x+22,y+232,colW-44,18,muted,'850');
+     const details=isPlayer?[['DANO',fmt(row.damage,'damage')],['ASSISTÊNCIAS',fmt(row.assists,'assists')],['K / QUEDA',fmt(row.avgKills,'avgKills')],['QUEDAS',fmt(row.matches,'matches')]]:
+      [['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
+     const detailsY=y+boxH-(isPlayer?264:204);
      details.forEach(([title,value],j)=>{
-      const lineY=detailsY+j*63;
+      const lineY=detailsY+j*(isPlayer?59:63);
       ctx.fillStyle=dark?'#29445e':'#c8d8e6';ctx.fillRect(x+22,lineY,colW-44,2);
       textLine(ctx,title,x+24,lineY+34,colW*.46,19,muted,'850');
       textLine(ctx,value,x+colW-23,lineY+35,colW*.44,30,ink,'900','right');
      });
     }else{
-     textLine(ctx,row.team,x+18,y+(small?28:42),colW-36,small?20:27,ink);
-     textLine(ctx,fmt(row.points,'points')+' PTS',x+18,y+(small?68:110),colW-36,small?34:46,accent);
-     textLine(ctx,fmt(row.kills,'kills')+' ABATES',x+18,y+boxH-17,colW-36,small?14:22,muted);
+     textLine(ctx,isPlayer?row.name:row.team,x+18,y+(small?28:42),colW-36,small?20:27,ink);
+     if(isPlayer&&!small)textLine(ctx,row.team,x+18,y+66,colW-36,14,muted,'750');
+     textLine(ctx,fmt(isPlayer?row.kills:row.points,isPlayer?'kills':'points')+(isPlayer?' K':' PTS'),x+18,y+(small?68:110),colW-36,small?34:46,accent);
+     textLine(ctx,fmt(isPlayer?row.damage:row.kills,isPlayer?'damage':'kills')+(isPlayer?' DANO':' ABATES'),x+18,y+boxH-17,colW-36,small?14:22,muted);
     }
    });
   }
@@ -698,11 +720,13 @@ function prepareModal(){
  '<div class="cff-stats-share-shell">',
   '<header class="cff-stats-share-header"><div><span>GERADOR DE CARDS</span><h2 id="cff-share-modal-title">Compartilhar estatísticas</h2></div><button type="button" data-share-close aria-label="Fechar">×</button></header>',
   '<div class="cff-stats-share-body"><section class="cff-stats-share-controls">',
-   '<label>Tipo de card<select data-share-field="kind"><option value="summary">Resumo do recorte</option><option value="single">Estatística única</option><option value="team">Equipe</option><option value="player">Jogador</option><option value="top">Top 5 / ranking</option><option value="record">Recorde</option><option value="compare">Comparar equipes</option></select></label>',
+   '<label>Tipo de card<select data-share-field="kind"><option value="summary">Resumo do recorte</option><option value="single">Estatística única</option><option value="team">Equipe</option><option value="player">Jogador</option><option value="top">Top 5 / ranking</option><option value="record">Recorde</option><option value="compare">Comparar equipes</option><option value="comparePlayer">Comparar jogadores</option></select></label>',
    '<label class="cff-share-single-setting">Estatística<select data-share-field="single"><option value="points">Pontos</option><option value="kills">Abates</option><option value="booyahs">Booyahs</option><option value="drops">Quedas</option><option value="avgPoints">Média de pontos</option><option value="avgPosition">Colocação média</option></select></label>',
    '<label class="cff-share-entity-team">Equipe A<select data-share-field="team"></select></label>',
    '<label class="cff-share-team-b">Equipe B<select data-share-field="teamB"></select></label>',
    '<label class="cff-share-entity-player">Jogador<select data-share-field="player"></select></label>',
+   '<label class="cff-share-compare-player-a">Jogador A<select data-share-field="playerA"></select></label>',
+   '<label class="cff-share-compare-player-b">Jogador B<select data-share-field="playerB"></select></label>',
    '<div class="cff-share-top-settings"><label>Ranking<select data-share-field="topEntity"><option value="team">Equipes</option><option value="player">Jogadores</option><option value="contribution">Participação individual</option></select></label><label>Indicador<select data-share-field="metric"></select></label></div>',
    '<label class="cff-share-record-setting">Recorde<select data-share-field="record"></select></label>',
    '<fieldset class="cff-share-stat-settings" hidden><legend>Conteúdos do card · <span class="cff-share-stat-kind">jogador</span></legend>',
@@ -729,7 +753,7 @@ function prepareModal(){
   const prop=control.dataset.shareField;
   control.addEventListener(control.tagName==='INPUT'&&control.type==='text'?'input':'change',()=>{
    state[prop]=control.type==='checkbox'?control.checked:control.value;
-   if(prop==='kind'||prop==='topEntity'||prop==='metric'||prop==='record'||prop==='single'||prop==='team'||prop==='player'||prop==='teamB')currentSource=null;
+   if(prop==='kind'||prop==='topEntity'||prop==='metric'||prop==='record'||prop==='single'||prop==='team'||prop==='player'||prop==='teamB'||prop==='playerA'||prop==='playerB')currentSource=null;
    if(prop==='kind')resetSlots(state.kind);
    if(prop==='topEntity')syncMetricOptions();
    refresh();
@@ -761,7 +785,10 @@ function open(source){
  if(source?.kind)state.kind=source.kind;
  if(source?.kind==='single'&&source.metric)state.single=source.metric;
  if(source?.team)state.team=source.team;
+ if(source?.teamB)state.teamB=source.teamB;
  if(source?.player)state.player=source.player;
+ if(source?.playerA)state.playerA=source.playerA;
+ if(source?.playerB)state.playerB=source.playerB;
  if(source?.metric)state.metric=source.metric;
  if(source?.entity)state.topEntity=source.entity;
  if(source?.record)state.record=source.record[0]+'|'+source.record[1];
@@ -771,6 +798,9 @@ function open(source){
  state.team=optionsFor(dlg.querySelector('[data-share-field="team"]'),teams,r=>r.team,r=>r.team,state.team);
  state.teamB=optionsFor(dlg.querySelector('[data-share-field="teamB"]'),teams,r=>r.team,r=>r.team,state.teamB&&state.teamB!==state.team?state.teamB:teams.find(x=>x.team!==state.team)?.team);
  state.player=optionsFor(dlg.querySelector('[data-share-field="player"]'),sorted(context.players,'kills'),r=>r.name,r=>r.name+' · '+r.team,state.player);
+ const availablePlayers=sorted(context.players,'kills');
+ state.playerA=optionsFor(dlg.querySelector('[data-share-field="playerA"]'),availablePlayers,playerRef,r=>r.name+' · '+r.team,state.playerA);
+ state.playerB=optionsFor(dlg.querySelector('[data-share-field="playerB"]'),availablePlayers,playerRef,r=>r.name+' · '+r.team,state.playerB&&state.playerB!==state.playerA?state.playerB:availablePlayers.find(r=>playerRef(r)!==state.playerA)?playerRef(availablePlayers.find(r=>playerRef(r)!==state.playerA)):'');
  optionsFor(dlg.querySelector('[data-share-field="record"]'),RECORDS,r=>r[0]+'|'+r[1],r=>r[2],state.record);
  syncMetricOptions();
  dlg.querySelectorAll('[data-share-field]').forEach(el=>{
@@ -799,20 +829,75 @@ function buildOpenSource(group,entry,title,row){
  if(row)return group==='team'?{kind:'team',row,team:row.team,metric}:{kind:'player',row,player:row.name,metric};
  return {kind:'top',entity:group==='contribution'?'contribution':group,metric,title};
 }
+function mountShareGallery(root){
+ const shell=root.querySelector('.ffws-global-shell');
+ if(!shell||shell.querySelector('.cff-share-gallery'))return;
+ const gallery=document.createElement('section');
+ gallery.className='ffws-global-panel cff-share-gallery';
+ gallery.id='anchor-s2-compartilhar-cards';
+ gallery.setAttribute('aria-labelledby','cff-share-gallery-title');
+ const cards=[
+  {id:'team',title:'Equipe',caption:'Números de uma equipe',images:['/home-assets/teams/global/loud.webp'],names:'LOUD',className:'team'},
+  {id:'player',title:'Jogador',caption:'Desempenho individual',images:['/ffws-global-2026/photos/480/fx-butzin.webp'],names:'BuTziN · Fluxo W7M',className:'player'},
+  {id:'top',title:'Top 5 / Ranking',caption:'Os líderes do recorte',images:['/ffws-global-2026/photos/480/bru-joena.webp'],names:'JOENA · Exemplo',className:'player'},
+  {id:'record',title:'Recorde',caption:'Os melhores resultados',images:['/ffws-global-2026/photos/480/los-rigby.webp'],names:'RIGBY · Exemplo',className:'player'},
+  {id:'compare',title:'Comparar equipes',caption:'Duas equipes lado a lado',images:['/home-assets/teams/global/bru.webp','/home-assets/teams/global/los.webp'],names:'BURIRAM × LOS',className:'compare'},
+  {id:'comparePlayer',title:'Comparar jogadores',caption:'Dois atletas frente a frente',images:['/ffws-global-2026/photos/480/loud-trap.webp','/ffws-global-2026/photos/480/lyon-gamezking.webp'],names:'TRAP × GAMEZKING',className:'compare'}
+ ];
+ gallery.innerHTML='<div class="ffws-global-panel-inner">'+
+  '<div class="cff-share-gallery-header"><div><span class="cff-share-gallery-kicker">GERADOR DE CARDS</span><h2 id="cff-share-gallery-title">Compartilhe as estatísticas</h2><p>Escolha um modelo, personalize e gere sua imagem com os dados do recorte.</p></div>'+
+   '<div class="cff-share-gallery-nav"><button type="button" data-gallery-prev aria-label="Modelo anterior" disabled>‹</button><span data-gallery-count>1 / 6</span><button type="button" data-gallery-next aria-label="Próximo modelo">›</button></div></div>'+
+  '<div class="cff-share-gallery-track" role="group" aria-label="Modelos de cards">'+cards.map(card=>
+   '<button type="button" class="cff-share-gallery-item cff-share-gallery-'+card.className+'" data-share-preset="'+card.id+'" aria-label="Criar card: '+card.title+'">'+
+   '<span class="cff-share-gallery-art">'+card.images.map(path=>'<img loading="lazy" decoding="async" alt="" src="'+path+'">').join('')+'</span>'+
+   '<span class="cff-share-gallery-title">'+card.title+'</span><span class="cff-share-gallery-caption">'+card.caption+'</span>'+
+   '<span class="cff-share-gallery-name">'+card.names+'</span><span class="cff-share-gallery-go" aria-hidden="true">↗</span></button>'
+  ).join('')+'</div>'+
+  '<p class="cff-share-gallery-note">As imagens acima são exemplos. Os cards gerados usam os resultados reais do filtro selecionado.</p>'+
+  '</div>';
+ const back=shell.querySelector('.cff-stats-back-top');
+ if(back)back.before(gallery);else shell.append(gallery);
+ const track=gallery.querySelector('.cff-share-gallery-track'),prev=gallery.querySelector('[data-gallery-prev]'),
+  next=gallery.querySelector('[data-gallery-next]'),counter=gallery.querySelector('[data-gallery-count]');
+ function update(){
+  const max=cards.length-1,step=track.clientWidth||1;
+  const index=Math.max(0,Math.min(max,Math.round(track.scrollLeft/step)));
+  counter.textContent=(index+1)+' / '+cards.length;
+  prev.disabled=index===0;next.disabled=index===max;
+ }
+ prev.addEventListener('click',()=>track.scrollBy({left:-track.clientWidth,behavior:'smooth'}));
+ next.addEventListener('click',()=>track.scrollBy({left:track.clientWidth,behavior:'smooth'}));
+ track.addEventListener('scroll',update,{passive:true});
+ gallery.addEventListener('click',event=>{
+  const button=event.target.closest('[data-share-preset]');
+  if(!button)return;
+  const id=button.dataset.sharePreset;
+  const presets={
+   team:{kind:'team',team:'LOUD'},
+   player:{kind:'player',player:'BuTziN'},
+   top:{kind:'top',entity:'player',metric:'kills'},
+   record:{kind:'record',record:['playerDay','kills','Mais abates individuais em um dia']},
+   compare:{kind:'compare',team:'Buriram United Esports',teamB:'LOS'},
+   comparePlayer:{kind:'comparePlayer',playerA:'Trap|LOUD',playerB:'Gamezking|LYON'}
+  };
+  if(presets[id])open(presets[id]);
+ });
+ update();
+}
 function decorate(){
  if(!modelRoot||!context)return;
  const root=modelRoot;
  const filterHead=root.querySelector('#anchor-s2-filtros .ffws-global-panel-head');
  if(filterHead){
-  const action=shareButton('o recorte da página',()=>open({kind:'summary'}));
+  const action=shareButton('o recorte da página',()=>open({kind:'summary'}),true);
   action.classList.add('cff-stats-share-main');filterHead.append(action);
  }
- root.querySelectorAll('#anchor-s2-resumo .ffws-global-stat-card').forEach((card,index)=>{
-  const metric=['drops','points','kills','booyahs','avgPoints','avgPosition'][index];
-  const title=card.querySelector('small')?.textContent||'Estatística';
-  const btn=shareButton(title,()=>open(metric?{kind:'single',metric}:{kind:'summary'}),true);
-  card.classList.add('cff-stats-share-card');card.append(btn);
- });
+ const summaryHead=root.querySelector('#anchor-s2-resumo .ffws-global-panel-head');
+ if(summaryHead){
+  const action=shareButton('o resumo do recorte',()=>open({kind:'summary'}),true);
+  action.classList.add('cff-stats-share-summary-trigger');
+  summaryHead.append(action);
+ }
  GROUPS.forEach(([section,group,descs])=>{
   const heading=root.querySelector('#'+section);
   const list=heading?.nextElementSibling;
@@ -855,6 +940,7 @@ function mount(root,model){
  // renderStats may finish before the lazy script load: avoid duplicate buttons.
  if(root.querySelector('.cff-stats-share-main'))return;
  decorate();
+ mountShareGallery(root);
 }
 window.CFFGlobalStatsShare={mount,open};
 })();
