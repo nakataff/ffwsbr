@@ -299,3 +299,51 @@
 .cff-dock-dialog .cff-dock-chat-switch[aria-checked="true"]>span{background:#fff;transform:translateX(20px)}
 .cff-dock-dialog .cff-dock-chat-switch:focus-visible{outline:2px solid #00c8ff;outline-offset:3px}
 @media(max-width:768px){.cff-dock-chat-setting{margin:0 14px 16px}}
+
+/* Aba grande e segura para recolher a navegação no celular, sem tocar no gesto do sistema. */
+.cff-bottom-navigation-toggle{display:none}
+@media(max-width:768px){
+  body .cff-bottom-navigation{
+    z-index:2000!important;
+    transition:transform .2s ease-out;
+    will-change:transform;
+  }
+  body .cff-bottom-navigation.is-collapsed{
+    transform:translateY(calc(100% + 2px))!important;
+    pointer-events:none!important;
+  }
+  body button.cff-bottom-navigation-toggle{
+    position:fixed!important;top:auto!important;left:50%!important;right:auto!important;
+    bottom:calc(70px + env(safe-area-inset-bottom,0px) - 1px)!important;
+    transform:translateX(-50%)!important;z-index:2001!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+    width:128px!important;min-width:128px!important;height:46px!important;min-height:46px!important;
+    padding:0 12px!important;margin:0!important;box-sizing:border-box!important;
+    border:1px solid #34566d!important;border-bottom-color:#1a4055!important;
+    border-radius:13px 13px 0 0!important;
+    background:rgba(6,22,37,.97)!important;color:#b9e8fa!important;
+    font:800 12px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif!important;
+    text-transform:none!important;letter-spacing:0!important;
+    box-shadow:0 -5px 18px #0007!important;
+    cursor:pointer!important;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  }
+  body button.cff-bottom-navigation-toggle svg{
+    width:20px!important;height:20px!important;min-width:20px!important;flex:none;
+    transition:transform .2s ease-out;
+  }
+  body button.cff-bottom-navigation-toggle.is-collapsed{
+    bottom:calc(18px + env(safe-area-inset-bottom,0px))!important;
+    border-radius:13px!important;border-bottom-color:#34566d!important;
+    box-shadow:0 5px 20px #000a!important;
+  }
+  body button.cff-bottom-navigation-toggle.is-collapsed svg{transform:rotate(180deg)}
+  body button.cff-bottom-navigation-toggle:focus-visible{
+    outline:3px solid #00c8ff!important;outline-offset:3px!important;
+  }
+  body:has(.cff-bottom-navigation.is-collapsed){padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))!important}
+  body.tier-constructor-page button.cff-bottom-navigation-toggle{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body .cff-bottom-navigation,body button.cff-bottom-navigation-toggle svg{transition:none!important}
+}
