@@ -1844,13 +1844,13 @@
       if (!document.querySelector('link[data-cff-stats-share-css]')) {
         const link=document.createElement('link');
         link.rel='stylesheet';
-        link.href='/css/global-stats-share.css?v=20261108-six-metrics-ranks-v9';
+        link.href='/css/global-stats-share.css?v=20261108-share-gallery-v11';
         link.dataset.cffStatsShareCss='1';
         document.head.append(link);
       }
       globalStatsShareLoader=new Promise((resolve,reject)=>{
         const script=document.createElement('script');
-        script.src='/js/global-stats-share.js?v=20261108-stats-share-metric-routing-v10';
+        script.src='/js/global-stats-share.js?v=20261108-share-gallery-v11';
         script.async=true;
         script.onload=()=>resolve();
         script.onerror=()=>reject(Error('Não foi possível carregar o editor de cards'));
