@@ -214,7 +214,7 @@ function fromContext(){
   payload.mainRankLabel=LABELS[leading]||SLOT_LABELS[leading]||'PONTOS';
   payload.subtitle=row.team+' · '+contextLabel();
  }else if(kind==='player'){
-  const row=choice.row||findRow(state.player,'player');
+  const row=choice.row||findComparePlayer(state.player)||findRow(state.player,'player');
   if(!row)return null;
   payload.title='DESEMPENHO INDIVIDUAL';payload.entity=row.name;payload.team=row.team;
   payload.photo=playerSrc(row.name,row.team);payload.logo=logoSrc(row.team);
@@ -715,6 +715,110 @@ async function action(which){
  }catch(e){if(e.name!=='AbortError')message(e.message||'Não foi possível completar a ação.')}
  finally{if(btn)btn.disabled=false}
 }
+
+function searchSharePlayers(query,excluded='',limit=8){
+ const q=key(query);
+ return sorted(context?.players||[],'kills')
+  .filter(row=>playerRef(row)!==excluded && (!q||key(row.name).includes(q)||key(row.team).includes(q)||key(row.name+' '+row.team).includes(q)))
+  .slice(0,limit);
+}
+function playerSearchSelectedValue(value,rows){
+ const exact=rows.find(row=>playerRef(row)===value);
+ if(exact)return playerRef(exact);
+ const named=rows.find(row=>key(row.name)===key(value));
+ return named?playerRef(named):value;
+}
+function syncPlayerSearchDisplay(dlg){
+ dlg.querySelectorAll('[data-share-player-search]').forEach(input=>{
+  const field=input.dataset.sharePlayerSearch,select=dlg.querySelector('[data-share-field="'+field+'"]');
+  const option=select?.selectedOptions?.[0];
+  input.value=option?.textContent||'';
+  input.setAttribute('aria-expanded','false');
+  const list=dlg.querySelector('#cff-share-results-'+field);
+  if(list)list.hidden=true;
+ });
+}
+function setupPlayerSearch(dlg){
+ for(const input of dlg.querySelectorAll('[data-share-player-search]')){
+  const field=input.dataset.sharePlayerSearch;
+  const list=dlg.querySelector('#cff-share-results-'+field);
+  const select=dlg.querySelector('[data-share-field="'+field+'"]');
+  let matches=[],active=0;
+  function close(){
+   list.hidden=true;
+   input.setAttribute('aria-expanded','false');
+  }
+  function mark(index){
+   active=Math.max(0,Math.min(index,matches.length-1));
+   list.querySelectorAll('[data-share-player-choice]').forEach((button,i)=>{
+    const current=i===active;
+    button.classList.toggle('is-active',current);
+    button.setAttribute('aria-selected',String(current));
+    if(current)button.scrollIntoView?.({block:'nearest'});
+   });
+  }
+  function show(query){
+   const excluded=field==='playerA'?state.playerB:field==='playerB'?state.playerA:'';
+   matches=searchSharePlayers(query,excluded);
+   list.replaceChildren();
+   if(!matches.length){
+    const empty=document.createElement('p');
+    empty.className='cff-share-player-empty';
+    empty.textContent='Nenhum jogador encontrado neste recorte.';
+    list.append(empty);
+   }
+   matches.forEach((row,i)=>{
+    const choice=document.createElement('button');
+    choice.type='button';
+    choice.dataset.sharePlayerChoice=playerRef(row);
+    choice.setAttribute('role','option');
+    const name=document.createElement('strong'),team=document.createElement('small');
+    name.textContent=row.name;team.textContent=row.team;
+    choice.append(name,team);list.append(choice);
+   });
+   list.hidden=false;
+   input.setAttribute('aria-expanded','true');
+   mark(0);
+  }
+  function choose(row){
+   if(!row)return;
+   const value=playerRef(row);
+   state[field]=value;
+   select.value=value;
+   currentSource=null;
+   close();
+   syncPlayerSearchDisplay(dlg);
+   refresh();
+  }
+  input.addEventListener('focus',()=>{
+   input.select();
+   show('');
+  });
+  input.addEventListener('input',()=>show(input.value));
+  input.addEventListener('keydown',event=>{
+   if(event.key==='Escape'&& !list.hidden){event.preventDefault();close();}
+   else if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+    event.preventDefault();
+    if(list.hidden)show('');
+    else mark(active+(event.key==='ArrowDown'?1:-1));
+   }else if(event.key==='Enter'&&!list.hidden&&matches.length){
+    event.preventDefault();
+    choose(matches[active]);
+   }
+  });
+  list.addEventListener('pointerdown',event=>{
+   if(event.target.closest('[data-share-player-choice]'))event.preventDefault();
+  });
+  list.addEventListener('click',event=>{
+   const choice=event.target.closest('[data-share-player-choice]');
+   if(choice)choose(matches.find(row=>playerRef(row)===choice.dataset.sharePlayerChoice));
+  });
+  dlg.addEventListener('pointerdown',event=>{
+   if(!input.closest('.cff-share-player-combobox').contains(event.target))close();
+  });
+ }
+}
+
 function prepareModal(){
  if(modal)return modal;
  modal=document.createElement('dialog');
@@ -728,9 +832,9 @@ function prepareModal(){
    '<label class="cff-share-single-setting">Estatística<select data-share-field="single"><option value="points">Pontos</option><option value="kills">Abates</option><option value="booyahs">Booyahs</option><option value="drops">Quedas</option><option value="avgPoints">Média de pontos</option><option value="avgPosition">Colocação média</option></select></label>',
    '<label class="cff-share-entity-team">Equipe A<select data-share-field="team"></select></label>',
    '<label class="cff-share-team-b">Equipe B<select data-share-field="teamB"></select></label>',
-   '<label class="cff-share-entity-player">Jogador<select data-share-field="player"></select></label>',
-   '<label class="cff-share-compare-player-a">Jogador A<select data-share-field="playerA"></select></label>',
-   '<label class="cff-share-compare-player-b">Jogador B<select data-share-field="playerB"></select></label>',
+   '<div class="cff-share-player-field cff-share-entity-player"><label for="cff-share-search-player">Jogador</label><div class="cff-share-player-combobox"><input type="search" id="cff-share-search-player" data-share-player-search="player" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cff-share-results-player" placeholder="Buscar jogador ou equipe..." maxlength="75" autocomplete="off"><div class="cff-share-player-results" id="cff-share-results-player" data-share-player-results role="listbox" hidden></div></div><select data-share-field="player" class="cff-share-player-native" hidden tabindex="-1" aria-hidden="true"></select></div>',
+   '<div class="cff-share-player-field cff-share-compare-player-a"><label for="cff-share-search-playerA">Jogador A</label><div class="cff-share-player-combobox"><input type="search" id="cff-share-search-playerA" data-share-player-search="playerA" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cff-share-results-playerA" placeholder="Buscar jogador ou equipe..." maxlength="75" autocomplete="off"><div class="cff-share-player-results" id="cff-share-results-playerA" data-share-player-results role="listbox" hidden></div></div><select data-share-field="playerA" class="cff-share-player-native" hidden tabindex="-1" aria-hidden="true"></select></div>',
+   '<div class="cff-share-player-field cff-share-compare-player-b"><label for="cff-share-search-playerB">Jogador B</label><div class="cff-share-player-combobox"><input type="search" id="cff-share-search-playerB" data-share-player-search="playerB" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cff-share-results-playerB" placeholder="Buscar jogador ou equipe..." maxlength="75" autocomplete="off"><div class="cff-share-player-results" id="cff-share-results-playerB" data-share-player-results role="listbox" hidden></div></div><select data-share-field="playerB" class="cff-share-player-native" hidden tabindex="-1" aria-hidden="true"></select></div>',
    '<div class="cff-share-top-settings"><label>Ranking<select data-share-field="topEntity"><option value="team">Equipes</option><option value="player">Jogadores</option><option value="contribution">Participação individual</option></select></label><label>Indicador<select data-share-field="metric"></select></label></div>',
    '<label class="cff-share-record-setting">Recorde<select data-share-field="record"></select></label>',
    '<fieldset class="cff-share-stat-settings" hidden><legend>Conteúdos do card · <span class="cff-share-stat-kind">jogador</span></legend>',
@@ -772,6 +876,7 @@ function prepareModal(){
   if(input.checked){state.format=input.value;refresh()}
  }));
  modal.querySelectorAll('[data-share-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.shareAction)));
+ setupPlayerSearch(modal);
  return modal;
 }
 function syncMetricOptions(){
@@ -801,8 +906,8 @@ function open(source){
  const teams=sorted(context.teams,'points');
  state.team=optionsFor(dlg.querySelector('[data-share-field="team"]'),teams,r=>r.team,r=>r.team,state.team);
  state.teamB=optionsFor(dlg.querySelector('[data-share-field="teamB"]'),teams,r=>r.team,r=>r.team,state.teamB&&state.teamB!==state.team?state.teamB:teams.find(x=>x.team!==state.team)?.team);
- state.player=optionsFor(dlg.querySelector('[data-share-field="player"]'),sorted(context.players,'kills'),r=>r.name,r=>r.name+' · '+r.team,state.player);
  const availablePlayers=sorted(context.players,'kills');
+ state.player=optionsFor(dlg.querySelector('[data-share-field="player"]'),availablePlayers,playerRef,r=>r.name+' · '+r.team,playerSearchSelectedValue(state.player,availablePlayers));
  state.playerA=optionsFor(dlg.querySelector('[data-share-field="playerA"]'),availablePlayers,playerRef,r=>r.name+' · '+r.team,state.playerA);
  state.playerB=optionsFor(dlg.querySelector('[data-share-field="playerB"]'),availablePlayers,playerRef,r=>r.name+' · '+r.team,state.playerB&&state.playerB!==state.playerA?state.playerB:availablePlayers.find(r=>playerRef(r)!==state.playerA)?playerRef(availablePlayers.find(r=>playerRef(r)!==state.playerA)):'');
  optionsFor(dlg.querySelector('[data-share-field="record"]'),RECORDS,r=>r[0]+'|'+r[1],r=>r[2],state.record);
@@ -811,6 +916,7 @@ function open(source){
   const prop=el.dataset.shareField;el.type==='checkbox'?el.checked=Boolean(state[prop]):el.value=String(state[prop]??'');
  });
  dlg.querySelector('[name="cff-share-format"][value="'+state.format+'"]').checked=true;
+ syncPlayerSearchDisplay(dlg);
  dlg.showModal();
  refresh();
 }
@@ -835,7 +941,14 @@ function buildOpenSource(group,entry,title,row){
 }
 function mountShareGallery(root){
  const shell=root.querySelector('.ffws-global-shell');
- if(!shell||shell.querySelector('.cff-share-gallery'))return;
+ if(!shell)return;
+ const slot=shell.querySelector('#cff-stats-share-gallery-slot');
+ const existing=shell.querySelector('.cff-share-gallery');
+ if(existing){
+  if(slot)slot.replaceWith(existing);
+  else shell.querySelector('[data-stats-sticky-nav="s2"]')?.after(existing);
+  return;
+ }
  const gallery=document.createElement('section');
  gallery.className='ffws-global-panel cff-share-gallery';
  gallery.id='anchor-s2-compartilhar-cards';
@@ -862,7 +975,8 @@ function mountShareGallery(root){
  // A galeria fica logo depois dos atalhos "Ir para", antes do resumo e dos filtros.
  const quickNav=shell.querySelector('[data-stats-sticky-nav="s2"]');
  const summary=shell.querySelector('#anchor-s2-resumo');
- if(quickNav)quickNav.after(gallery);
+ if(slot)slot.replaceWith(gallery);
+ else if(quickNav)quickNav.after(gallery);
  else if(summary)summary.before(gallery);
  else shell.prepend(gallery);
  const track=gallery.querySelector('.cff-share-gallery-track'),prev=gallery.querySelector('[data-gallery-prev]'),
@@ -945,9 +1059,8 @@ function decorate(){
 function mount(root,model){
  if(!root||!model)return;
  context=model;modelRoot=root;
- // renderStats may finish before the lazy script load: avoid duplicate buttons.
- if(root.querySelector('.cff-stats-share-main'))return;
- decorate();
+ // A vitrine também precisa montar quando o restante dos botões já existir.
+ if(!root.querySelector('.cff-stats-share-main'))decorate();
  mountShareGallery(root);
 }
 window.CFFGlobalStatsShare={mount,open};
