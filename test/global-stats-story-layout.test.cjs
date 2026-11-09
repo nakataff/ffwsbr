@@ -172,3 +172,21 @@ test('main ranking badge and optional rank of each of six stats draw correctly i
   assert(!plain.texts.some(x=>/^#[1-6]$/.test(x.value)),'disabled rank badges must disappear in '+format);
  }
 });
+
+
+test('ranking principal de equipe e jogador mantém a posição completa nos quatro formatos',async()=>{
+ const api=setup();
+ api.state.showMainRank=true;
+ for(const kind of ['player','team'])for(const format of Object.keys(formats)){
+  const {texts,canvas}=await render(api,format,kind,true,{
+   mainRank:1234,
+   mainRankLabel:'ABATES / QUEDA'
+  });
+  assert(texts.some(item=>item.value==='#1234'),format+' '+kind+' deve mostrar a posição completa');
+  assert(texts.some(item=>item.value==='ABATES / QUEDA'),format+' '+kind+' deve mostrar o nome completo da métrica');
+  assert(!texts.some(item=>item.value.startsWith('#')&&item.value.includes('…')),
+   format+' '+kind+' não pode mostrar uma posição truncada');
+  assert.equal(canvas.width,formats[format][0]);
+  assert.equal(canvas.height,formats[format][1]);
+ }
+});
