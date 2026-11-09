@@ -542,6 +542,10 @@ async function draw(payload){
    rows.forEach((row,i)=>{
     const x=pad+i*(colW+colGap),small=boxH<135,y=panelTop;
     rounded(ctx,x,y,colW,boxH,16,surface,dark?'#263e57':'#c6d6e4');
+    if(!feed&&state.showImage&&compareImages[i]){
+     const artSize=small?Math.min(boxH*.52,68):Math.min(boxH*.46,96);
+     contain(ctx,compareImages[i],x+colW-artSize-13,y+11,artSize,artSize);
+    }
     if(feed){
      const logo=compareImages[i];
      if(logo)contain(ctx,logo,x+colW-115,y+65,86,86);
