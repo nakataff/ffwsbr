@@ -748,13 +748,13 @@ function setupPlayerSearch(dlg){
    list.hidden=true;
    input.setAttribute('aria-expanded','false');
   }
-  function mark(index){
+  function mark(index,shouldScroll=false){
    active=Math.max(0,Math.min(index,matches.length-1));
    list.querySelectorAll('[data-share-player-choice]').forEach((button,i)=>{
     const current=i===active;
     button.classList.toggle('is-active',current);
     button.setAttribute('aria-selected',String(current));
-    if(current)button.scrollIntoView?.({block:'nearest'});
+    if(current&&shouldScroll)button.scrollIntoView?.({block:'nearest'});
    });
   }
   function show(query){
@@ -800,14 +800,11 @@ function setupPlayerSearch(dlg){
    else if(event.key==='ArrowDown'||event.key==='ArrowUp'){
     event.preventDefault();
     if(list.hidden)show('');
-    else mark(active+(event.key==='ArrowDown'?1:-1));
+    else mark(active+(event.key==='ArrowDown'?1:-1),true);
    }else if(event.key==='Enter'&&!list.hidden&&matches.length){
     event.preventDefault();
     choose(matches[active]);
    }
-  });
-  list.addEventListener('pointerdown',event=>{
-   if(event.target.closest('[data-share-player-choice]'))event.preventDefault();
   });
   list.addEventListener('click',event=>{
    const choice=event.target.closest('[data-share-player-choice]');
