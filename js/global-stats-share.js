@@ -859,8 +859,12 @@ function mountShareGallery(root){
   ).join('')+'</div>'+
   '<p class="cff-share-gallery-note">As imagens acima são exemplos. Os cards gerados usam os resultados reais do filtro selecionado.</p>'+
   '</div>';
- const back=shell.querySelector('.cff-stats-back-top');
- if(back)back.before(gallery);else shell.append(gallery);
+ // A galeria fica logo depois dos atalhos "Ir para", antes do resumo e dos filtros.
+ const quickNav=shell.querySelector('[data-stats-sticky-nav="s2"]');
+ const summary=shell.querySelector('#anchor-s2-resumo');
+ if(quickNav)quickNav.after(gallery);
+ else if(summary)summary.before(gallery);
+ else shell.prepend(gallery);
  const track=gallery.querySelector('.cff-share-gallery-track'),prev=gallery.querySelector('[data-gallery-prev]'),
   next=gallery.querySelector('[data-gallery-next]'),counter=gallery.querySelector('[data-gallery-count]');
  function update(){
