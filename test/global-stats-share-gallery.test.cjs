@@ -11,7 +11,7 @@ function setup(){
  const window={};
  assert(share.includes(markupMarker));
  vm.runInNewContext(share.replace(markupMarker,
-  'window.__probe={fromContext,state,setContext:x=>context=x,setSource:x=>currentSource=x};'+markupMarker),
+  'window.__probe={fromContext,state,searchSharePlayers,playerSearchSelectedValue,setContext:x=>context=x,setSource:x=>currentSource=x};'+markupMarker),
   {window,location:{origin:'https://centralfreefire.com.br'},URL,Intl,console});
  return window.__probe;
 }
@@ -59,4 +59,42 @@ test('comparar jogadores usa atletas distintos, times e números do recorte',()=
  assert(card.main.includes('14')&&card.main.includes('17'));
  api.state.playerB='Trap|LOUD';
  assert.equal(api.fromContext(),null);
+});
+
+test('busca local encontra nome ou time sem diferenciar acentos e caixa',()=>{
+ const api=setup();
+ api.setContext({players:[
+  {name:'BuTziN',team:'FLUXO W7M',kills:20},
+  {name:'Trap',team:'LOUD',kills:18},
+  {name:'Gamezking',team:'LYON',kills:12},
+  {name:'RIGBY',team:'LOS',kills:10}
+ ]});
+ assert.equal(api.searchSharePlayers('fluxo')[0].name,'BuTziN');
+ assert.equal(api.searchSharePlayers('louD')[0].name,'Trap');
+ assert.equal(api.searchSharePlayers('GÀMEZ')[0].name,'Gamezking');
+ assert.equal(api.searchSharePlayers('los')[0].name,'RIGBY');
+ assert.equal(api.searchSharePlayers('não existe').length,0);
+ assert.equal(api.searchSharePlayers('LYON','Gamezking|LYON').length,0);
+ assert.equal(api.playerSearchSelectedValue('Trap',api.searchSharePlayers('')),'Trap|LOUD');
+});
+test('campo de jogador e os dois campos da comparação têm pesquisa, sem seletor longo visível',()=>{
+ for(const field of ['player','playerA','playerB']){
+  assert(share.includes('data-share-player-search="'+field+'"'),field);
+  assert(share.includes('data-share-field="'+field+'" class="cff-share-player-native" hidden'),field);
+ }
+ assert(share.includes('setupPlayerSearch(modal)'));
+ assert(css.includes('input[type=search]'));
+ assert(css.includes('max-height:268px'));
+});
+test('vitrine ocupa o espaço logo abaixo de Ir para, mesmo com reinserção dinâmica',()=>{
+ const global=fs.readFileSync('ffws-global-2026/global.js','utf8');
+ const nav='$'+'{s2StatsStickyNavHtml(events.length, playerEntries.length)}';
+ const slot='id="cff-stats-share-gallery-slot"';
+ const summary='$'+'{summaryBlock}';
+ const index=global.indexOf(nav);
+ assert(index>=0);
+ assert(global.indexOf(slot,index)>index);
+ assert(global.indexOf(slot,index)<global.indexOf(summary,index));
+ assert(share.includes('if(slot)slot.replaceWith(gallery)'));
+ assert(css.includes('.ffws-global-shell>.cff-share-gallery{order:-10}'));
 });
