@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Penalidades do ranking | Central Free Fire</title>
+<link rel="icon" href="central free fire.webp">
+<link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
+<link rel="stylesheet" href="css/admin-ranking-penalties.css?v=20261110-penalties-v1">
+<script src="js/config.min.js?v=20261020-chat-layout-v1"></script>
+<script type="module" src="js/admin-ranking-penalties.js?v=20261110-penalties-v1"></script>
+</head>
+<body>
+<section id="rp-auth" class="rp-auth"><div class="admin-login-card"><h1>Validando sessão</h1><p>Entre com a conta administrativa para gerenciar penalidades.</p><a class="admin-btn" href="admin.html">Abrir painel</a></div></section>
+<main id="rp-app" class="admin-shell rp-shell" hidden>
+<header class="admin-header">
+ <a class="admin-brand" href="admin.html">CENTRAL FREE FIRE</a>
+ <nav class="admin-header-actions" aria-label="Outras ferramentas">
+  <a class="admin-btn admin-btn-ghost" href="admin.html">← Painel</a>
+  <a class="admin-btn admin-btn-ghost" href="admin-stories.html">Revisar Stories</a>
+  <a class="admin-btn admin-btn-ghost" href="admin-recompensas.html">Bônus e missões</a>
+  <a class="admin-btn admin-btn-ghost" href="interacoes.html">Ver ranking</a>
+ </nav>
+</header>
+<section class="admin-welcome">
+ <div><p class="admin-eyebrow">RANKING DA COMUNIDADE · ADMIN</p><h1>Penalidades de pontos</h1>
+ <p class="admin-muted">Desconte pontos de um participante com justificativa e possibilidade de reversão. O desconto afeta a semana, o mês e o total geral. <strong>Não altera CFF Coins, recompensas já resgatadas ou contagens de interações.</strong></p></div>
+</section>
+<section class="rp-grid">
+ <section class="admin-panel rp-panel" aria-labelledby="rp-lookup-title">
+  <div class="admin-panel-head"><div><p class="admin-eyebrow">Localizar participante</p><h2 id="rp-lookup-title">Aplicar penalidade</h2></div></div>
+  <form id="rp-search-form" class="rp-search-form">
+   <label for="rp-username">Instagram do participante</label>
+   <div class="rp-search-line"><input id="rp-username" name="username" type="search" autocomplete="off" maxlength="31" placeholder="@usuario" required>
+   <button id="rp-search-button" class="admin-btn admin-btn-primary" type="submit">Buscar</button></div>
+   <p class="rp-muted">Informe o @ exato do ranking para evitar descontar da pessoa errada.</p>
+  </form>
+  <div id="rp-person" class="rp-person" hidden>
+   <div class="rp-person-head"><div><span>Participante encontrado</span><strong id="rp-found-username"></strong></div><button class="admin-btn admin-btn-ghost" type="button" id="rp-clear">Limpar</button></div>
+   <div class="rp-stats"><div><small>Semana</small><strong id="rp-week">—</strong></div><div><small>Mês</small><strong id="rp-month">—</strong></div><div><small>Geral</small><strong id="rp-total">—</strong></div></div>
+   <form id="rp-apply-form" class="rp-apply-form">
+    <label for="rp-amount">Pontos a descontar <span id="rp-limit"></span></label>
+    <input id="rp-amount" name="points" type="number" min="1" max="500" step="1" inputmode="numeric" required>
+    <label for="rp-reason">Motivo da punição <span>(obrigatório)</span></label>
+    <textarea id="rp-reason" name="reason" rows="3" minlength="8" maxlength="300" placeholder="Descreva o motivo para consulta no histórico." required></textarea>
+    <p class="rp-muted">O sistema não permite retirar mais pontos do que a pessoa possui na semana, no mês ou no total.</p>
+    <button type="submit" id="rp-apply" class="admin-btn rp-danger" disabled>Aplicar desconto</button>
+   </form>
+  </div>
+  <p id="rp-form-message" class="rp-message" role="status" aria-live="polite"></p>
+ </section>
+ <section class="admin-panel rp-panel" aria-labelledby="rp-history-title">
+  <div class="admin-panel-head rp-history-head"><div><p class="admin-eyebrow">Registro administrativo</p><h2 id="rp-history-title">Histórico de penalidades</h2><p id="rp-history-caption" class="rp-muted">30 registros mais recentes</p></div>
+   <button type="button" id="rp-history-refresh" class="admin-btn">Atualizar</button></div>
+  <p id="rp-history-status" class="rp-message" role="status"></p>
+  <div id="rp-history" class="rp-history"><p class="rp-empty">Carregando histórico...</p></div>
+ </section>
+</section>
+</main>
+<dialog id="rp-confirm-dialog" class="rp-dialog" aria-labelledby="rp-confirm-title">
+ <form id="rp-confirm-form" method="dialog">
+  <h2 id="rp-confirm-title">Confirmar punição</h2>
+  <p id="rp-confirm-description"></p>
+  <p class="rp-muted">Essa alteração ficará registrada. Você poderá reverter depois, com justificativa.</p>
+  <div class="rp-dialog-actions"><button type="button" class="admin-btn" id="rp-confirm-cancel">Cancelar</button><button type="submit" class="admin-btn rp-danger" id="rp-confirm-submit">Confirmar desconto</button></div>
+ </form>
+</dialog>
+<dialog id="rp-reverse-dialog" class="rp-dialog" aria-labelledby="rp-reverse-title">
+ <form id="rp-reverse-form">
+  <h2 id="rp-reverse-title">Reverter punição</h2>
+  <p id="rp-reverse-description"></p>
+  <label for="rp-reverse-reason">Motivo da reversão</label>
+  <textarea id="rp-reverse-reason" rows="3" minlength="8" maxlength="300" required placeholder="Por que os pontos devem ser devolvidos?"></textarea>
+  <div class="rp-dialog-actions"><button type="button" class="admin-btn" id="rp-reverse-cancel">Cancelar</button><button type="submit" class="admin-btn admin-btn-primary" id="rp-reverse-submit">Devolver pontos</button></div>
+  <p id="rp-reverse-message" class="rp-message" role="status"></p>
+ </form>
+</dialog>
+</body>
+</html>
