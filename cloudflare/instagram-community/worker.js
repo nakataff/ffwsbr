@@ -1706,7 +1706,7 @@ async function retryAdminStoryPreviews(request,env){
    'SELECT mention_key,week_key,event_at,status,media_url FROM story_reviews WHERE mention_key=?1'
   ).bind(key).first();
   if(!row){out.push({key,saved:false,reason:'not_found'});continue;}
-  if(row.status!=='approved'){out.push({key,saved:false,reason:'not_approved'});continue;}
+  if(!['pending','approved'].includes(row.status)){out.push({key,saved:false,reason:'invalid_status'});continue;}
   const existing=await env.DB.prepare(
    'SELECT expires_at FROM story_thumbnails WHERE mention_key=?1 AND expires_at>?2'
   ).bind(key,now).first();
