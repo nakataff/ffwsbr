@@ -30,7 +30,7 @@ export function interactionAgePoints(kind,publishedAt,eventAt){
 // SQL triggers are the final atomic guard, including concurrent webhooks and story approvals.
 // Only comment/story base points count toward the 25-point daily interaction limit.
 export const INTERACTION_POLICY_SCHEMA=[
- "CREATE INDEX IF NOT EXISTS idx_awards_daily_interaction ON awards(user_key,day_key,type)",
+ // The existing idx_awards_user_day_type already covers this lookup.
  "DROP TRIGGER IF EXISTS cff_interaction_daily_cap_v1",
  "CREATE TRIGGER cff_interaction_daily_cap_v1 BEFORE INSERT ON awards WHEN NEW.type IN ('comment','story') AND NEW.points>0 AND (SELECT COALESCE(SUM(points),0) FROM awards WHERE user_key=NEW.user_key AND day_key=NEW.day_key AND type IN ('comment','story')) + NEW.points > 25 BEGIN SELECT RAISE(ABORT,'interaction_daily_limit'); END"
 ];
