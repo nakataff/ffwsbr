@@ -5,7 +5,7 @@ const config=window.CFF_CONFIG?.firebase;if(!config)throw new Error('Configuraç
 const auth=getAuth(getApps().length?getApp():initializeApp(config)),list=document.getElementById('sr-list');
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const rows=new Map(),selected=new Set(),attemptedPreviews=new Set();
-let status='approved',cursor='',generation=0,busy=false,saving=false,retryingPreviews=false,reviewKeys=[],decision='approve';
+let status='pending',cursor='',generation=0,busy=false,saving=false,retryingPreviews=false,reviewKeys=[],decision='approve';
 const time=v=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'}).format(new Date(v));
 const weekLabel=v=>String(v).split('-').reverse().join('/');
 const message=(text,ok=false)=>{$('#sr-message').textContent=text;$('#sr-message').className='admin-message sr-message '+(ok?'sr-success':'sr-error');};
