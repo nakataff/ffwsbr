@@ -1,4 +1,7 @@
-export const STORY_REVIEW_VERSION = '20261020-story-auto-v1';
+export const STORY_REVIEW_VERSION = '20261110-age-verified-v2';
+// Pontuação reduzida quando o post é anterior à data do Story (horário de Brasília).
+const dayPublished="date(NEW.published_at/1000,'unixepoch','-3 hours')";
+const scoreSql="CASE WHEN "+dayPublished+"=NEW.day_key THEN 5 WHEN "+dayPublished+"=date(NEW.day_key,'-1 day') THEN 2 ELSE 1 END";
 const monday = day => `date(${day}, '-' || ((CAST(strftime('%w',${day}) AS INTEGER)+6)%7) || ' days')`;
 export const STORY_REVIEW_SCHEMA = [
  `CREATE TABLE IF NOT EXISTS story_reviews (
@@ -14,9 +17,11 @@ export const STORY_REVIEW_SCHEMA = [
  'CREATE INDEX IF NOT EXISTS idx_story_reviews_user_week ON story_reviews(user_key,week_key,status)',
  "CREATE UNIQUE INDEX IF NOT EXISTS idx_story_review_post_once ON story_reviews(user_key,post_key) WHERE status='approved'",
  'DROP TRIGGER IF EXISTS cff_story_review_guard',
- `CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_auto_v1 BEFORE UPDATE ON story_reviews
+ 'DROP TRIGGER IF EXISTS cff_story_review_guard_auto_v1',
+ 'DROP TRIGGER IF EXISTS cff_story_review_credit',
+ `CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_verified_v2 BEFORE UPDATE ON story_reviews
  WHEN NEW.status='approved' AND OLD.status='pending' BEGIN
- SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual','auto') OR (NEW.verification<>'auto' AND NEW.post_url='') OR (NEW.verification='auto' AND (NEW.post_key<>'auto:'||NEW.story_id OR NEW.published_at<>NEW.event_at))
+ SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual') OR NEW.post_url=''
  THEN RAISE(ABORT,'story_missing_post') END;
  SELECT CASE WHEN ${monday("date(NEW.published_at/1000,'unixepoch','-3 hours')")}<>NEW.week_key OR NEW.published_at>NEW.event_at+300000
  THEN RAISE(ABORT,'story_wrong_week') END;
@@ -28,15 +33,15 @@ export const STORY_REVIEW_SCHEMA = [
  `CREATE TRIGGER IF NOT EXISTS cff_story_review_credit AFTER UPDATE ON story_reviews
  WHEN NEW.status='approved' AND OLD.status='pending' BEGIN
  INSERT INTO awards(award_key,user_key,username,type,source_id,points,day_key,month_key,created_at)
- VALUES(NEW.mention_key,NEW.user_key,NEW.username,'story',NEW.post_key,NEW.points,NEW.day_key,substr(NEW.day_key,1,7),NEW.event_at);
+ VALUES(NEW.mention_key,NEW.user_key,NEW.username,'story',NEW.post_key,${scoreSql},NEW.day_key,substr(NEW.day_key,1,7),NEW.event_at);
  INSERT INTO users(user_key,instagram_id,username,points_all,story_mentions_all,comments_all,active_days_all,last_interaction_at)
- VALUES(NEW.user_key,NEW.instagram_id,NEW.username,NEW.points,1,0,
+ VALUES(NEW.user_key,NEW.instagram_id,NEW.username,${scoreSql},1,0,
  CASE WHEN EXISTS(SELECT 1 FROM active_days WHERE user_key=NEW.user_key AND day_key=NEW.day_key) THEN 0 ELSE 1 END,NEW.event_at)
  ON CONFLICT(user_key) DO UPDATE SET instagram_id=excluded.instagram_id,username=excluded.username,
  points_all=users.points_all+excluded.points_all,story_mentions_all=users.story_mentions_all+1,
  active_days_all=users.active_days_all+excluded.active_days_all,last_interaction_at=MAX(users.last_interaction_at,excluded.last_interaction_at);
  INSERT INTO monthly_users(month_key,user_key,username,points,story_mentions,comments,active_days,last_interaction_at)
- VALUES(substr(NEW.day_key,1,7),NEW.user_key,NEW.username,NEW.points,1,0,
+ VALUES(substr(NEW.day_key,1,7),NEW.user_key,NEW.username,${scoreSql},1,0,
  CASE WHEN EXISTS(SELECT 1 FROM active_days WHERE user_key=NEW.user_key AND day_key=NEW.day_key) THEN 0 ELSE 1 END,NEW.event_at)
  ON CONFLICT(month_key,user_key) DO UPDATE SET username=excluded.username,points=monthly_users.points+excluded.points,
  story_mentions=monthly_users.story_mentions+1,active_days=monthly_users.active_days+excluded.active_days,
@@ -103,18 +108,14 @@ export async function reviewStory(db,key,decision,post,actor,note=''){
  const saved=await db.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();
  return saved.status===decision?{status:200,alreadyReviewed:!result.meta?.changes,changed:!!result.meta?.changes,reversed:!!result.meta?.changes&&row.status==='approved'&&decision==='rejected',row:saved}:{status:409,error:'Outra revisão já foi registrada.'};
  }catch(error){const text=String(error?.message||error);
- const messages=[['story_wrong_week','O post original precisa ser da mesma semana do story e publicado antes dele.'],['story_daily_limit','Esta pessoa já tem 3 stories pontuados nesse dia.'],['story_missing_post','Confirme a publicação original antes de aprovar.'],['story_already_awarded','Esse story já recebeu pontos.'],['story_reviews.user_key, story_reviews.post_key','Esta publicação já pontuou para essa pessoa.']];
+ const messages=[['story_wrong_week','A publicação original é de outra semana ou posterior ao Story: 0 pontos. Rejeite a menção sem conceder pontos.'],['story_daily_limit','Esta pessoa já tem 3 stories pontuados nesse dia.'],['interaction_daily_limit','Limite diário de 25 pontos em comentários e Stories atingido.'],['story_missing_post','Confirme a publicação original antes de aprovar.'],['story_already_awarded','Esse story já recebeu pontos.'],['story_reviews.user_key, story_reviews.post_key','Esta publicação já pontuou para essa pessoa.']];
  const found=messages.find(([code])=>text.includes(code));if(found)return {status:409,error:found[1]};throw error;
  }
 }
 
-// A signed mention proves receipt, not the original post visible inside the image.
-// Auto mode deduplicates the story ID and keeps the existing 3/day atomic cap.
+// A menção prova que o Story existiu, mas não qual post ele mostra.
+// Sem data do post verificada, manter pendente para não pagar 5 pontos por conteúdo antigo.
 export async function autoApproveStory(db,key){
  const row=await db.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();
- if(!row)return {status:200,alreadyReviewed:true,row:null};
- if(row.status!=='pending')return {status:200,alreadyReviewed:true,row};
- const result=await reviewStory(db,key,'approved',{key:'auto:'+row.story_id,url:'',publishedAt:row.event_at,verification:'auto'},'system:auto');
- if(result.error&&result.error.includes('3 stories'))return reviewStory(db,key,'rejected',null,'system:auto','Limite diário: esta pessoa já recebeu pontos por 3 stories neste dia.');
- return result;
+ return {status:200,alreadyReviewed:true,pending:row?.status==='pending',row:row||null};
 }
