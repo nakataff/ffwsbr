@@ -55,7 +55,7 @@ test('ambiguous network failures preserve the group for retry and ignore duplica
 });
 test('pagination appends without re-fetching; approved credit can be rejected and counts updated',async()=>{
  const f=await fixture({items:[item(1,{status:'approved',verification:'auto'})],more:[item(2,{status:'approved',verification:'auto'})]});try{
-  assert.match(f.calls[0].url,/status=approved/);assert(f.d.querySelector('#sr-approve-selected').hidden);assert.match(f.d.querySelector('.sr-status').textContent,/antes da nova regra/);
+  assert.match(f.calls[0].url,/status=pending/);assert(!f.d.querySelector('#sr-approve-selected').hidden);assert.match(f.d.querySelector('.sr-status').textContent,/antes da nova regra/);
   f.d.querySelector('#sr-more').click();await tick();assert.equal(f.listCalls,2);assert.equal(f.d.querySelectorAll('[data-key]').length,2);assert.match(f.calls.at(-1).url,/cursor=next-page/);
   await f.select(0,1);f.d.querySelector('#sr-reject-selected').click();f.confirm();await f.submit();assert.equal(f.calls.at(-1).body.decision,'reject');assert.equal(f.d.querySelector('#sr-count-approved').textContent,'0');assert.equal(f.d.querySelector('#sr-count-rejected').textContent,'2');assert.match(f.d.querySelector('#sr-message').textContent,/pontos de stories retirados/);assert.equal(f.listCalls,2);
  }finally{f.close();}
