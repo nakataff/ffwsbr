@@ -4,8 +4,8 @@ const API='https://cff-instagram-community.nakataffb4.workers.dev',ADMIN='admin@
 const config=window.CFF_CONFIG?.firebase;if(!config)throw new Error('Configuração indisponível');
 const auth=getAuth(getApps().length?getApp():initializeApp(config)),list=document.getElementById('sr-list');
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-const rows=new Map(),selected=new Set();
-let status='approved',cursor='',generation=0,busy=false,saving=false,reviewKeys=[],decision='approve';
+const rows=new Map(),selected=new Set(),attemptedPreviews=new Set();
+let status='approved',cursor='',generation=0,busy=false,saving=false,retryingPreviews=false,reviewKeys=[],decision='approve';
 const time=v=>new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'}).format(new Date(v));
 const weekLabel=v=>String(v).split('-').reverse().join('/');
 const message=(text,ok=false)=>{$('#sr-message').textContent=text;$('#sr-message').className='admin-message sr-message '+(ok?'sr-success':'sr-error');};
@@ -25,7 +25,8 @@ function updateControls(){
  $('#sr-loaded').textContent=visible.size+' de '+rows.size+' carregados';$('#sr-selected-count').textContent=selected.size?selected.size+' selecionado'+(selected.size>1?'s':''):'Nenhum selecionado';
  $('#sr-bulk').hidden=status==='rejected';$('#sr-approve-selected').hidden=status!=='pending';$('#sr-select-visible').disabled=busy||saving||!visible.size;$('#sr-clear-selection').disabled=busy||saving||!selected.size;
  for(const id of ['sr-approve-selected','sr-reject-selected'])$('#'+id).disabled=busy||saving||!selected.size;
- $('#sr-refresh').disabled=busy||saving;$('#sr-more').disabled=busy||saving;$('#sr-more').hidden=!cursor;
+ $('#sr-refresh').disabled=busy||saving||retryingPreviews;$('#sr-more').disabled=busy||saving||retryingPreviews;$('#sr-more').hidden=!cursor;
+ $('#sr-retry-previews').disabled=busy||saving||retryingPreviews||status!=='approved';
  document.querySelectorAll('[data-status]').forEach(button=>button.disabled=busy||saving);
  list.querySelectorAll('[data-review-story]').forEach(button=>button.disabled=busy||saving);
 }
@@ -39,6 +40,54 @@ function card(item){
  el.querySelectorAll('[data-review-story]').forEach(button=>button.addEventListener('click',()=>openReview(button.dataset.reviewStory,[item.key])));
  el.querySelector('[data-preview-story]').addEventListener('click',()=>{const box=$('#sr-preview-image');box.replaceChildren();$('#sr-preview-title').textContent='@'+item.username+' · '+time(item.eventAt);if(previewSrc){const image=document.createElement('img');image.src=previewSrc;image.alt='Story de @'+item.username;image.referrerPolicy='no-referrer';image.addEventListener('error',()=>{box.textContent='A prévia expirou. Confira a menção nas conversas do Instagram.';});box.append(image);}else box.textContent='Prévia indisponível. Confira nas conversas do Instagram.';$('#sr-preview-dialog').showModal();});
  return el;
+}
+// Only the admin can retry CDN media from the current 24-hour window.
+// No polling: each click handles at most eight loaded Stories, once per session.
+const previewFailureLabels={
+ missing_media_url:'sem URL da imagem',
+ expired:'prazo encerrado',
+ source_too_old:'mídia com mais de 24h',
+ unsupported_source:'o Instagram não retornou uma imagem',
+ source_too_large:'arquivo original grande demais',
+ source_redirect:'redirecionamento indisponível',
+ source_redirect_limit:'redirecionamentos excessivos',
+ unsafe_redirect:'origem não autorizada',
+ no_webp_conversion:'falha na compactação WebP',
+ invalid_webp:'arquivo inválido',
+ thumbnail_too_large:'miniatura ultrapassou 36 KB',
+ storage_or_conversion_failed:'falha ao processar ou salvar'
+};
+function previewErrorReason(code){
+ const status=String(code||'');
+ if(/^source_http_4/.test(status))return 'mídia indisponível no Instagram';
+ if(/^source_http_5/.test(status))return 'Instagram indisponível';
+ return previewFailureLabels[status]||'imagem indisponível';
+}
+async function retryRecentPreviews(){
+ if(busy||saving||retryingPreviews||status!=='approved')return;
+ const now=Date.now();
+ const candidates=[...rows.values()].filter(item=>item.status==='approved'&&!item.previewArchived
+  &&!attemptedPreviews.has(item.key)&&item.mediaUrl
+  &&now-Number(item.eventAt)>=0&&now-Number(item.eventAt)<24*3600000).slice(0,8);
+ if(!candidates.length){
+  message('Não há mais miniaturas elegíveis entre os Stories carregados. A recuperação só é possível enquanto a imagem ainda está disponível (até 24h).');return;
+ }
+ retryingPreviews=true;updateControls();
+ $('#sr-retry-previews').textContent='Recuperando...';
+ try{
+  const result=await request('/api/admin/story-previews/retry',{keys:candidates.map(item=>item.key)});
+  for(const row of result.results||[])attemptedPreviews.add(row.key);
+  const recovered=(result.results||[]).filter(row=>row.saved).length;
+  const failed=(result.results||[]).filter(row=>!row.saved);
+  const failures=[...new Set(failed.map(row=>previewErrorReason(row.reason)))].slice(0,3);
+  await load(false);
+  message(recovered+' miniatura(s) salva(s) de '+candidates.length+' tentativa(s).'+
+   (failures.length?' Outras não puderam ser recuperadas: '+failures.join('; ')+'.':'')+
+   ' A recuperação não altera os pontos.',recovered>0);
+ }catch(error){message(error.message||'Não foi possível recuperar as miniaturas.');}
+ finally{
+  retryingPreviews=false;$('#sr-retry-previews').textContent='Recuperar miniaturas recentes';updateControls();
+ }
 }
 async function load(append=false){
  if(saving||busy)return;const id=++generation,before=append?cursor:'';busy=true;updateControls();if(!append&&!rows.size)list.innerHTML='<p class="sr-empty">Carregando revisões...</p>';
@@ -91,5 +140,5 @@ $('#sr-select-visible').addEventListener('click',()=>{for(const item of visibleI
 $('#sr-clear-selection').addEventListener('click',()=>{selected.clear();updateControls();});
 $('#sr-approve-selected').addEventListener('click',()=>openReview('approve',[...selected]));$('#sr-reject-selected').addEventListener('click',()=>openReview('reject',[...selected]));
 document.querySelectorAll('[data-status]').forEach(button=>button.addEventListener('click',()=>{if(busy||saving)return;status=button.dataset.status;selected.clear();rows.clear();list.replaceChildren();cursor='';$('#sr-search').value='';$('#sr-week').value='';document.querySelectorAll('[data-status]').forEach(b=>{b.setAttribute('aria-pressed',String(b===button));b.classList.toggle('admin-btn-primary',b===button);});load(false);}));
-$('#sr-refresh').addEventListener('click',()=>load(false));$('#sr-more').addEventListener('click',()=>{if(!busy)load(true);});
-onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){generation++;rows.clear();selected.clear();busy=false;list.replaceChildren();review.close();form.reset();$('#sr-review-people').textContent='';$('#sr-preview-dialog').close();$('#sr-preview-image').replaceChildren();$('#story-app').hidden=true;$('#story-auth').hidden=false;location.replace('admin.html');return;}$('#story-auth').hidden=true;$('#story-app').hidden=false;load(false);});
+$('#sr-refresh').addEventListener('click',()=>load(false));$('#sr-retry-previews').addEventListener('click',retryRecentPreviews);$('#sr-more').addEventListener('click',()=>{if(!busy)load(true);});
+onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){generation++;rows.clear();selected.clear();attemptedPreviews.clear();retryingPreviews=false;busy=false;list.replaceChildren();review.close();form.reset();$('#sr-review-people').textContent='';$('#sr-preview-dialog').close();$('#sr-preview-image').replaceChildren();$('#story-app').hidden=true;$('#story-auth').hidden=false;location.replace('admin.html');return;}$('#story-auth').hidden=true;$('#story-app').hidden=false;load(false);});
