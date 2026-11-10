@@ -1,6 +1,7 @@
 import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutcomes,profileInsights,peerScores} from './profile-insights.js';
 import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, autoApproveStory, instagramPost } from './story-reviews.js';
 import {STORY_PREVIEW_SCHEMA,storeStoryPreview,purgeExpiredStoryPreviews,previewLink,getSignedStoryPreview} from './story-previews.js';
+import {RANKING_PENALTY_SCHEMA,findRankingPenaltyUser,listRankingPenalties,applyRankingPenalty,reverseRankingPenalty} from './ranking-penalties.js';
 import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, monthCoverage, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
 import {createPredictionIdentity} from './global-prediction-identity.js';
 import {createGlobalPredictionService} from './global-prediction-service.js';
@@ -80,6 +81,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
   ...STORY_REVIEW_SCHEMA,
   ...STORY_PREVIEW_SCHEMA,
   ...TIER_SHARE_SCHEMA,
+  ...RANKING_PENALTY_SCHEMA,
   'CREATE TABLE IF NOT EXISTS monthly_ranking_snapshots (month_key TEXT PRIMARY KEY, payload TEXT NOT NULL, created_at INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS idx_awards_created_at ON awards (created_at DESC)',
   'CREATE INDEX IF NOT EXISTS idx_awards_type_award_key ON awards (type, award_key)',
@@ -131,6 +133,8 @@ export default {
     if (url.pathname === '/api/prediction/vote' && request.method === 'POST') return votePrediction(request, env, ctx);
     if (url.pathname === '/api/prediction/ranking' && request.method === 'GET') return getPredictionRanking(request, env, url);
     if (url.pathname === '/api/prediction/profile' && request.method === 'GET') return getPredictionProfile(request, env, url);
+    if (url.pathname === '/api/admin/ranking-penalties' && request.method === 'GET') return getAdminRankingPenalties(request,env,url);
+    if (url.pathname === '/api/admin/ranking-penalties' && request.method === 'POST') return changeAdminRankingPenalty(request,env);
     if (url.pathname === '/api/admin/stories' && request.method === 'GET') return getAdminStories(request,env,url);
     if (url.pathname === '/api/admin/story-preview' && request.method === 'GET') return getSignedStoryPreview(request,env,url);
     if (url.pathname === '/api/admin/story-previews/retry' && request.method === 'POST') return retryAdminStoryPreviews(request,env);
@@ -172,7 +176,7 @@ async function ensurePerformanceIndexes(env) {
     performanceIndexesPromise = (async () => {
       // Cold instances only check one durable marker. Apply the additive schema
       // once per release, including its backfill, in a single atomic D1 batch.
-      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION + ':story-previews-v1:tier-shares:' + TIER_SHARE_VERSION;
+      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION + ':story-previews-v1:tier-shares:' + TIER_SHARE_VERSION + ':rank-penalties-v1';
       let applied;
       try {
         applied = await env.DB.prepare('SELECT version FROM community_period_versions WHERE period_key=?1')
@@ -1695,6 +1699,39 @@ async function retryAdminStoryPreviews(request,env){
   out.push({key,saved,reason:report.reason||'unknown'});
  }
  return json({ok:true,results:out,saved:out.filter(v=>v.saved).length,checked:out.length},200,request);
+}
+async function getAdminRankingPenalties(request,env,url){
+ const admin=await verifyAdminFirebaseToken(request,env);
+ if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ try{
+  const query=String(url.searchParams.get('username')||'').trim();
+  const account=query?await findRankingPenaltyUser(env.DB,query):null;
+  const history=await listRankingPenalties(env.DB,{userKey:account?.userKey||'',limit:30});
+  return json({ok:true,account,history},200,request,{'Cache-Control':'no-store'});
+ }catch(error){return json({ok:false,error:error.message||'Falha ao consultar punições.'},error.status||500,request);}
+}
+async function changeAdminRankingPenalty(request,env){
+ const admin=await verifyAdminFirebaseToken(request,env);
+ if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const size=Number(request.headers.get('content-length')||0);
+ if(size>4096)return json({ok:false,error:'Solicitação muito grande.'},413,request);
+ try{
+  const body=await readJson(request),action=String(body?.action||'');
+  let result;
+  if(action==='apply')result=await applyRankingPenalty(env.DB,{
+   userKey:body.userKey,points:body.points,reason:body.reason,nonce:body.nonce,adminUid:admin.uid
+  });
+  else if(action==='reverse')result=await reverseRankingPenalty(env.DB,{
+   id:body.id,reason:body.reason,adminUid:admin.uid
+  });
+  else return json({ok:false,error:'Ação inválida.'},400,request);
+  // A atualização do ranking deve ser imediata no banco/cache, não ficar cinco minutos defasada.
+  try{await invalidatePublicRankings(env.DB);}
+  catch(error){console.warn('[ranking-penalties] cache invalidation',String(error?.message||error).slice(0,150));}
+  return json({ok:true,result},200,request,{'Cache-Control':'no-store'});
+ }catch(error){
+  return json({ok:false,error:error?.status?error.message:'Não foi possível concluir a punição. Confira o histórico antes de repetir.'},error?.status||500,request);
+ }
 }
 async function getAdminStories(request,env,url){
  const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
