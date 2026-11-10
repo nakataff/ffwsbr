@@ -1,5 +1,6 @@
 import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutcomes,profileInsights,peerScores} from './profile-insights.js';
-import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, autoApproveStory, instagramPost } from './story-reviews.js';
+import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, instagramPost } from './story-reviews.js';
+import {AGE_POLICY_VERSION,INTERACTION_POLICY_SCHEMA,interactionAgePoints} from './interaction-age-policy.js';
 import {STORY_PREVIEW_SCHEMA,storeStoryPreview,purgeExpiredStoryPreviews,previewLink,getSignedStoryPreview} from './story-previews.js';
 import {RANKING_PENALTY_SCHEMA,findRankingPenaltyUser,listRankingPenalties,applyRankingPenalty,reverseRankingPenalty} from './ranking-penalties.js';
 import { OPTIMIZATION_VERSION, OPTIMIZATION_SCHEMA, cachedPublic, invalidatePublicRankings, monthCoverage, periodVersion, savePeriodSnapshot, settleOnce } from './optimizations.js';
@@ -9,8 +10,8 @@ import {TIER_SHARE_VERSION,TIER_SHARE_SCHEMA,createTierShare,getTierShare,purgeE
 const RULES = Object.freeze({
   storyMentionPoints: 5,
   storyApprovalRequired: false,
-  storyAutoApproval: true,
-  storyCurrentWeekOnly: false,
+  storyAutoApproval: false,
+  storyCurrentWeekOnly: true,
   storyLimitPerPost: null,
   storyLimitPerStory: 1,
   commentPoints: 2,
@@ -18,6 +19,10 @@ const RULES = Object.freeze({
   storyMentionDailyLimit: 3,
   commentLimitPerMedia: 1,
   commentMediaMaxAgeDays: 7,
+  dailyInteractionPointsLimit: 25,
+  storyPointsYesterday: 2,
+  storyPointsEarlierThisWeek: 1,
+  commentPointsOlderThisWeek: 1,
   ffwsPredictionParticipationPoints: 1,
   ffwsPredictionNearestPoints: 5,
   ffwsPredictionComboPoints: 3,
@@ -79,6 +84,7 @@ const PERFORMANCE_INDEXES = Object.freeze([
   ...OPTIMIZATION_SCHEMA,
   ...PROFILE_INSIGHTS_SCHEMA,
   ...STORY_REVIEW_SCHEMA,
+  ...INTERACTION_POLICY_SCHEMA,
   ...STORY_PREVIEW_SCHEMA,
   ...TIER_SHARE_SCHEMA,
   ...RANKING_PENALTY_SCHEMA,
@@ -176,7 +182,7 @@ async function ensurePerformanceIndexes(env) {
     performanceIndexesPromise = (async () => {
       // Cold instances only check one durable marker. Apply the additive schema
       // once per release, including its backfill, in a single atomic D1 batch.
-      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION + ':story-previews-v1:tier-shares:' + TIER_SHARE_VERSION + ':rank-penalties-v1';
+      const schemaKey = 'schema:' + OPTIMIZATION_VERSION + ':' + STORY_REVIEW_VERSION + ':story-previews-v1:tier-shares:' + TIER_SHARE_VERSION + ':rank-penalties-v1:' + AGE_POLICY_VERSION;
       let applied;
       try {
         applied = await env.DB.prepare('SELECT version FROM community_period_versions WHERE period_key=?1')
@@ -382,9 +388,10 @@ async function processComment(env, entry) {
   // Comentários em posts/Reels com mais de 7 dias não geram pontos.
   // Se não for possível confirmar a data da mídia, não pontua (fail closed)
   // para evitar que uma falha de consulta vire brecha de farm.
+  let publishedAt=0;
   if (mediaId) {
     const inlinePublishedAt = Date.parse(String(media.timestamp || media.created_time || ''));
-    const publishedAt = Number.isFinite(inlinePublishedAt)
+    publishedAt = Number.isFinite(inlinePublishedAt)
       ? inlinePublishedAt
       : await fetchMediaTimestamp(mediaId, env.INSTAGRAM_ACCESS_TOKEN);
     const maxAgeMs = RULES.commentMediaMaxAgeDays * 24 * 60 * 60 * 1000;
@@ -408,17 +415,23 @@ async function processComment(env, entry) {
     return;
   }
 
+  const points=interactionAgePoints('comment',publishedAt,timestamp);
+  if(points<=0)return;
   const key = await userKey(identity, username);
-  const awarded = await awardInteraction(env, {
+  let awarded=false;
+  try{awarded=await awardInteraction(env, {
     awardKey: `comment:${key}:${mediaId || commentId}`,
     userKey: key,
     identity,
     username: username || fallbackUsername(identity),
     type: 'comment',
     sourceId: mediaId || commentId,
-    points: RULES.commentPoints,
+    points,
     timestamp,
-  });
+  });}catch(error){
+    if(String(error?.message||error).includes('interaction_daily_limit'))return;
+    throw error;
+  }
 
   if (awarded && mediaId) await maybeAwardFastComment(env, {
     userKey: key,
@@ -457,14 +470,18 @@ async function processStoryMention(env, event, story, ctx) {
   const eventAt=normalizeTimestamp(timestamp);if(eventAt>Date.now()+300000)return;
   let username=cleanUsername(event?.sender?.username);
   const key=await userKey(identity,username),mentionKey=`story:${key}:${story.storyId}`;
-  const known=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(mentionKey).first();if(known){if(known.status==='pending'){const result=await autoApproveStory(env.DB,mentionKey);if(result.error)throw Error(result.error);await finishStoryReviews(env,[result]);if(result.row?.status==='approved'&&result.row.media_url)ctx?.waitUntil(storeStoryPreview(env,result.row));}return;}
+  const known=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(mentionKey).first();
+  if(known)return; // Reenvio da Meta: nunca duplicar pontos nem capturas.
   if(!username&&story.messageId)username=await fetchMessageUsername(story.messageId,env.INSTAGRAM_ACCESS_TOKEN);
   if(!username){const user=await env.DB.prepare('SELECT username FROM users WHERE user_key=?1').bind(key).first();username=cleanUsername(user?.username)}
   const {dayKey}=dateKeys(eventAt),{weekStartKey}=weekKeys(eventAt);
   await queueStory(env.DB,{key:mentionKey,userKey:key,identity,username:username||fallbackUsername(identity),accountId:story.accountId,
     storyId:story.storyId,messageId:story.messageId,mediaUrl:story.mediaUrl,timestamp:eventAt,dayKey,weekKey:weekStartKey});
-  const result=await autoApproveStory(env.DB,mentionKey);if(result.error)throw Error(result.error);await finishStoryReviews(env,[result]);
-  if(result.row?.status==='approved'&&result.row.media_url)ctx?.waitUntil(storeStoryPreview(env,result.row));
+  // O webhook comprova a menção, não a data da publicação original.
+  // Não conceder pontos automaticamente enquanto o post não for confirmado.
+  if(story.mediaUrl)ctx?.waitUntil(storeStoryPreview(env,{
+    mention_key:mentionKey,week_key:weekStartKey,event_at:eventAt,status:'pending',media_url:story.mediaUrl
+  }));
 }
 
 async function fetchInstagramGraphJson(objectId, fields, accessToken, signal) {
@@ -1672,7 +1689,7 @@ async function verifyAdminFirebaseToken(request,env) {
 }
 
 
-function publicStoryReview(row){return {key:row.mention_key,catalogKey:row.account_id+':'+row.week_key,username:row.username,storyId:row.story_id,messageId:row.message_id,mediaUrl:row.media_url,eventAt:row.event_at,weekStart:row.week_key,status:row.status,postUrl:row.post_url,publishedAt:row.published_at,verification:row.verification,note:row.note,reviewedAt:row.reviewed_at,reviewedBy:row.reviewed_by}}
+function publicStoryReview(row){return {key:row.mention_key,catalogKey:row.account_id+':'+row.week_key,username:row.username,storyId:row.story_id,messageId:row.message_id,mediaUrl:row.media_url,eventAt:row.event_at,weekStart:row.week_key,status:row.status,postUrl:row.post_url,publishedAt:row.published_at,verification:row.verification,points:row.status==='approved'?(row.verification==='auto'?5:interactionAgePoints('story',row.published_at,row.event_at)):0,note:row.note,reviewedAt:row.reviewed_at,reviewedBy:row.reviewed_by}}
 // Manual, tightly bounded rescue while the Meta story CDN URL may still work.
 // No background scan, no stale archives, no additional public reads.
 async function retryAdminStoryPreviews(request,env){
@@ -1768,7 +1785,7 @@ async function getAdminStoryPosts(request,env,url){
 async function decideAdminStory(env,row,decision,body,actor){
  let post=null;
  if(decision==='approved'&&row.status==='pending'){
-  if(body.auto===true){if(body.confirmSamePost!==true)return {status:400,error:'Confirme a conferência dos stories selecionados.'};return autoApproveStory(env.DB,row.mention_key);}
+  if(body.auto===true)return {status:400,error:'Selecione o post original: menções sem conteúdo verificado não pontuam.'};
   if(body.confirmSamePost!==true)return {status:400,error:'Confira se o story mostra a publicação escolhida antes de aprovar.'};
   const link=instagramPost(body.postUrl);if(!link)return {status:400,error:'Informe o link da publicação original no Instagram.'};
   const catalog=await ownStoryPosts(env,row),found=(catalog.allPosts||catalog.posts).find(p=>p.key===link.key);
@@ -1795,13 +1812,13 @@ async function reviewAdminStory(request,env){
  const result=await decideAdminStory(env,row,decision,body,String(admin.email||ADMIN_EMAIL));
  if(result.error)return json({ok:false,error:result.error},result.status,request);
  const refreshPending=await finishStoryReviews(env,[result]);
- return json({ok:true,alreadyReviewed:result.alreadyReviewed,points:result.row.status==='approved'?5:0,reversed:!!result.reversed,story:publicStoryReview(result.row),refreshPending},200,request);
+ return json({ok:true,alreadyReviewed:result.alreadyReviewed,points:publicStoryReview(result.row).points,reversed:!!result.reversed,story:publicStoryReview(result.row),refreshPending},200,request);
 }
 async function reviewAdminStoryBatch(request,env){
  const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const body=await readJson(request)||{},keys=body.keys,decision=body.decision==='approve'?'approved':body.decision==='reject'?'rejected':'';
  if(!decision||!Array.isArray(keys)||!keys.length||keys.length>20||keys.some(k=>typeof k!=='string'||!k||k.length>300)||new Set(keys).size!==keys.length)return json({ok:false,error:'Selecione de 1 a 20 stories diferentes e escolha aprovar ou rejeitar.'},400,request);
- if(decision==='approved'&&(body.confirmSamePost!==true||(body.auto!==true&&!instagramPost(body.postUrl))))return json({ok:false,error:'Escolha o post original e confirme a conferência dos stories selecionados.'},400,request);
+ if(decision==='approved'&&(body.confirmSamePost!==true||body.auto===true||!instagramPost(body.postUrl)))return json({ok:false,error:'Escolha o post original e confirme a conferência dos stories selecionados.'},400,request);
  const loaded=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key IN (SELECT value FROM json_each(?1))').bind(JSON.stringify(keys)).all(),rows=new Map((loaded.results||[]).map(row=>[row.mention_key,row])),results=[];
  for(const key of keys){
   const row=rows.get(key);if(!row){results.push({key,status:404,error:'Story não encontrado.'});continue;}
@@ -1809,7 +1826,7 @@ async function reviewAdminStoryBatch(request,env){
   catch(error){console.error('Story batch item failed',error?.message);results.push({key,status:503,error:'Não foi possível salvar este story. Tente novamente; ele não será pontuado duas vezes.'});}
  }
  const refreshPending=await finishStoryReviews(env,results);
- return json({ok:true,refreshPending,results:results.map(r=>({key:r.key,ok:!r.error,status:r.status,...(r.error?{error:r.error}:{alreadyReviewed:!!r.alreadyReviewed,points:r.row.status==='approved'?5:0,reversed:!!r.reversed,story:publicStoryReview(r.row)})}))},200,request);
+ return json({ok:true,refreshPending,results:results.map(r=>({key:r.key,ok:!r.error,status:r.status,...(r.error?{error:r.error}:{alreadyReviewed:!!r.alreadyReviewed,points:publicStoryReview(r.row).points,reversed:!!r.reversed,story:publicStoryReview(r.row)})}))},200,request);
 }
 
 function predictionIdFromSource(sourceId, knownIds = []) {
