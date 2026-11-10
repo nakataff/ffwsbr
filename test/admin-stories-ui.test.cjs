@@ -80,3 +80,30 @@ test('archived miniatures replace expired Instagram URLs without extra listing f
   assert.equal(f.calls.length,1);
  }finally{f.close();}
 });
+
+
+test('admin can retry recent thumbnails only on demand, in a bounded batch',async()=>{
+ const now=Date.now();
+ const recent=Array.from({length:12},(_,i)=>item(i+1,{
+  status:'approved',verification:'auto',eventAt:now-2*3600000,
+  weekStart:'2026-11-09',previewArchived:false
+ }));
+ const f=await fixture({items:recent,respond:body=>({
+  ok:true,saved:body.keys.length,checked:body.keys.length,
+  results:body.keys.map(key=>({key,saved:true,reason:'saved'}))
+ })});
+ try{
+  const retry=f.d.querySelector('#sr-retry-previews');
+  assert(retry);
+  assert.equal(f.calls.length,1,'opening the page never fetches or converts media');
+  retry.click();await tick();
+  const attempts=f.calls.filter(x=>x.url.includes('/api/admin/story-previews/retry'));
+  assert.equal(attempts.length,1);
+  assert.equal(attempts[0].body.keys.length,8,'never attempts more than eight at once');
+  assert.equal(new Set(attempts[0].body.keys).size,8);
+  assert.match(f.d.querySelector('#sr-message').textContent,/8 miniatura/);
+  assert.equal(retry.textContent,'Recuperar miniaturas recentes');
+  assert.equal(retry.disabled,false);
+  assert.equal(f.calls.filter(x=>x.url.includes('/api/admin/story-previews/retry')).length,1);
+ }finally{f.close();}
+});
