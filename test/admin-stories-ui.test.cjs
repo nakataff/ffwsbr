@@ -14,7 +14,7 @@ async function fixture({items=[item(1),item(2),item(3)],respond,more=[]}={}){
   return {ok:true,json:async()=>data};
  };
  w.eval(fs.readFileSync('js/admin-stories.js','utf8').replace(/^import .*\n/gm,''));await tick();
- return {w,auth,calls,get listCalls(){return listCalls;},get d(){return w.document;},async select(...indices){for(const i of indices)w.document.querySelectorAll('[data-select-story]')[i].click();await tick();},async approve(){w.document.querySelector('#sr-approve-selected').hidden=false;w.document.querySelector('#sr-approve-selected').click();await tick();},confirm(){const f=w.document.querySelector('#sr-review-form');f.elements.confirmSamePost.checked=true;},async submit(){w.document.querySelector('#sr-review-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();},logout(){auth.currentUser=null;onAuth(null);},close(){w.close();}};
+ return {w,auth,calls,get listCalls(){return listCalls;},get d(){return w.document;},async select(...indices){for(const i of indices)w.document.querySelectorAll('[data-select-story]')[i].click();await tick();},async approve(){w.document.querySelector('#sr-approve-selected').hidden=false;w.document.querySelector('#sr-approve-selected').click();await tick();},confirm(){const f=w.document.querySelector('#sr-review-form');f.elements.confirmSamePost.checked=true;f.elements.postUrl.value='https://www.instagram.com/p/verified123/';f.elements.publishedAt.value='2026-10-13T10:00';f.elements.confirmDate.checked=true;},async submit(){w.document.querySelector('#sr-review-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();},logout(){auth.currentUser=null;onAuth(null);},close(){w.close();}};
 }
 test('queue filters loaded stories locally, selects at most twenty across weeks, and zooms without extra API reads',async()=>{
  const f=await fixture({items:[...Array.from({length:25},(_,i)=>item(i)),item(30,{weekStart:'2026-10-05',catalogKey:'account:2026-10-05'})]});try{
@@ -28,7 +28,7 @@ test('one approval request reviews a group, requires visual confirmation and upd
  const f=await fixture();try{
   await f.select(0,1);await f.approve();assert(f.d.querySelector('#sr-review-dialog').open);assert.equal(f.calls.filter(c=>c.url.includes('/story-posts?')).length,0);
   await f.submit();assert.equal(f.calls.filter(c=>c.body).length,0);assert.match(f.d.querySelector('#sr-review-feedback').textContent,/confirmação/);
-  f.confirm();await f.submit();const sent=f.calls.find(c=>c.body).body;assert.deepEqual(sent.keys,[item(1).key,item(2).key]);assert.equal(sent.confirmSamePost,true);assert.equal(sent.auto,true);assert.equal(sent.postUrl,undefined);
+  f.confirm();await f.submit();const sent=f.calls.find(c=>c.body).body;assert.deepEqual(sent.keys,[item(1).key,item(2).key]);assert.equal(sent.confirmSamePost,true);assert.equal(sent.auto,false);assert.equal(sent.postUrl,'https://www.instagram.com/p/verified123/');assert.equal(sent.confirmDate,true);
   assert.equal(f.listCalls,1);assert.equal(f.d.querySelectorAll('[data-key]').length,1);assert.equal(f.d.querySelector('#sr-count-pending').textContent,'1');assert.equal(f.d.querySelector('#sr-count-approved').textContent,'2');assert.match(f.d.querySelector('#sr-message').textContent,/\+10 pontos/);assert(!f.d.querySelector('#sr-review-dialog').open);
  }finally{f.close();}
 });
@@ -36,7 +36,7 @@ test('partial failure leaves only failed stories selected and does not consult M
  let attempt=0;const f=await fixture({respond:body=>{attempt++;return{results:body.keys.map((key,i)=>attempt===1&&i===1?{key,ok:false,error:'Esta publicação já pontuou para essa pessoa.'}:{key,ok:true,points:5,story:{status:'approved'}})};}});try{
   await f.select(0,1);await f.approve();f.confirm();await f.submit();assert.equal(f.d.querySelectorAll('[data-select-story]:checked').length,1);assert.match(f.d.querySelector('.sr-card-message').textContent,/já pontuou/);
   await f.approve();assert.equal(f.calls.filter(c=>c.url.includes('/story-posts?')).length,0);const form=f.d.querySelector('#sr-review-form');assert.equal(form.elements.confirmSamePost.checked,false);
-  form.elements.confirmSamePost.checked=true;await f.submit();assert.deepEqual(f.calls.filter(c=>c.body).at(-1).body.keys,[item(2).key]);assert.equal(f.listCalls,1);
+  form.elements.confirmSamePost.checked=true;form.elements.postUrl.value='https://www.instagram.com/p/verified123/';form.elements.publishedAt.value='2026-10-13T10:00';form.elements.confirmDate.checked=true;await f.submit();assert.deepEqual(f.calls.filter(c=>c.body).at(-1).body.keys,[item(2).key]);assert.equal(f.listCalls,1);
  }finally{f.close();}
 });
 test('batch rejection has a shared reason, no post lookup and requires an explicit confirmation',async()=>{
@@ -55,7 +55,7 @@ test('ambiguous network failures preserve the group for retry and ignore duplica
 });
 test('pagination appends without re-fetching; approved credit can be rejected and counts updated',async()=>{
  const f=await fixture({items:[item(1,{status:'approved',verification:'auto'})],more:[item(2,{status:'approved',verification:'auto'})]});try{
-  assert.match(f.calls[0].url,/status=approved/);assert(f.d.querySelector('#sr-approve-selected').hidden);assert.match(f.d.querySelector('.sr-status').textContent,/automaticamente/);
+  assert.match(f.calls[0].url,/status=approved/);assert(f.d.querySelector('#sr-approve-selected').hidden);assert.match(f.d.querySelector('.sr-status').textContent,/antes da nova regra/);
   f.d.querySelector('#sr-more').click();await tick();assert.equal(f.listCalls,2);assert.equal(f.d.querySelectorAll('[data-key]').length,2);assert.match(f.calls.at(-1).url,/cursor=next-page/);
   await f.select(0,1);f.d.querySelector('#sr-reject-selected').click();f.confirm();await f.submit();assert.equal(f.calls.at(-1).body.decision,'reject');assert.equal(f.d.querySelector('#sr-count-approved').textContent,'0');assert.equal(f.d.querySelector('#sr-count-rejected').textContent,'2');assert.match(f.d.querySelector('#sr-message').textContent,/pontos de stories retirados/);assert.equal(f.listCalls,2);
  }finally{f.close();}
@@ -105,5 +105,27 @@ test('admin can retry recent thumbnails only on demand, in a bounded batch',asyn
   assert.equal(retry.textContent,'Recuperar miniaturas recentes');
   assert.equal(retry.disabled,false);
   assert.equal(f.calls.filter(x=>x.url.includes('/api/admin/story-previews/retry')).length,1);
+ }finally{f.close();}
+});
+
+
+test('aprovação exige link original, oferece data em Brasília e não usa auto',async()=>{
+ const f=await fixture();
+ try{
+  await f.select(0);await f.approve();const form=f.d.querySelector('#sr-review-form');
+  form.elements.confirmSamePost.checked=true;
+  await f.submit();
+  assert.equal(f.calls.filter(c=>c.body).length,0);
+  assert.match(f.d.querySelector('#sr-review-feedback').textContent,/link do post/);
+  form.elements.postUrl.value='https://www.instagram.com/reel/Original77/';
+  form.elements.publishedAt.value='2026-10-13T09:15';
+  await f.submit();assert.equal(f.calls.filter(c=>c.body).length,0);
+  assert.match(f.d.querySelector('#sr-review-feedback').textContent,/data e hora/);
+  form.elements.confirmDate.checked=true;await f.submit();
+  const sent=f.calls.filter(c=>c.body).at(-1).body;
+  assert.equal(sent.postUrl,'https://www.instagram.com/reel/Original77/');
+  assert.equal(sent.publishedAt,'2026-10-13T09:15:00-03:00');
+  assert.equal(sent.confirmDate,true);
+  assert.equal(sent.auto,false);
  }finally{f.close();}
 });
