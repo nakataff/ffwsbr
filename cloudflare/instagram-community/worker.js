@@ -9,7 +9,7 @@ import {createGlobalPredictionService} from './global-prediction-service.js';
 import {TIER_SHARE_VERSION,TIER_SHARE_SCHEMA,createTierShare,getTierShare,purgeExpiredTierShares} from './tier-shares.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
-  storyApprovalRequired: false,
+  storyApprovalRequired: true,
   storyAutoApproval: false,
   storyCurrentWeekOnly: true,
   storyLimitPerPost: null,
