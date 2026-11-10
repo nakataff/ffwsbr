@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {expiresForWeek,storeStoryPreview,purgeExpiredStoryPreviews,previewLink,getSignedStoryPreview,STORY_PREVIEW_SCHEMA} from '../story-previews.js';
 if(!globalThis.crypto)globalThis.crypto=webcrypto;
 const start=Date.parse('2026-10-25T16:00:00Z'),expiry=Date.parse('2026-10-27T03:00:00Z');
@@ -46,4 +47,66 @@ test('signed photo URLs cannot be forged, survive Instagram expiration, and are 
  u.searchParams.set('sig','f'.repeat(64));assert.equal((await getSignedStoryPreview(null,{DB:f.db,META_APP_SECRET:secret},u,{now:start+11000})).status,403);
  assert.equal(f.rows.size,1);await purgeExpiredStoryPreviews(f.db,expiry-1);assert.equal(f.rows.size,1);
  await purgeExpiredStoryPreviews(f.db,expiry);assert.equal(f.rows.size,0);
+});
+
+
+test('Images binding converts Instagram JPEG into a real small WebP without cf.image assumptions',async()=>{
+ const f=mock(),now=start;
+ const row={mention_key:key,week_key:'2026-10-19',event_at:now,status:'approved',media_url:original};
+ const source=Uint8Array.from([255,216,255,224,2,3,4,5,6,7,8,9]);
+ const options=[],transform=[];
+ const env={DB:f.db,IMAGES:{input(raw){
+  assert.deepEqual(new Uint8Array(raw),source);
+  return {transform(spec){
+   transform.push(spec);
+   return {async output(spec){
+    options.push(spec);
+    return {response(){return new Response(bytes,{headers:{'content-type':'image/webp'}})}};
+   }};
+  }};
+ }}};
+ const report={};
+ const saved=await storeStoryPreview(env,row,{now,report,fetchImage:async(url,init)=>{
+  assert.equal(url,original);
+  assert.equal(init.redirect,'manual');
+  assert.equal(init.cf,undefined,'raw bytes must not depend on URL Image Resizing');
+  return new Response(source,{headers:{'content-type':'image/jpeg'}});
+ }});
+ assert.equal(saved,true);assert.equal(report.reason,'saved');
+ assert.equal(f.rows.get(key).mime,'image/webp');
+ assert.equal(transform[0].width,240);
+ assert.equal(transform[0].height,427);
+ assert.equal(options[0].format,'image/webp');
+ assert.equal(options[0].quality,30);
+});
+test('retry diagnostics distinguish missing source, CDN failure, unsafe redirect and oversized results',async()=>{
+ const f=mock(),row={mention_key:key,week_key:'2026-10-19',event_at:start,status:'approved',media_url:original};
+ const report={};
+ const output=Uint8Array.from([...new TextEncoder().encode('RIFF'),20,0,0,0,...new TextEncoder().encode('WEBPVP8 '),...new Uint8Array(40000)]);
+ let conversions=0;
+ const env={DB:f.db,IMAGES:{input:()=>({transform:()=>({output:async()=>({response:()=>{
+  conversions++;
+  return new Response(output,{headers:{'content-type':'image/webp'}});
+ }})})})}};
+ assert.equal(await storeStoryPreview(env,row,{now:start,report,fetchImage:async()=>new Response(bytes,{headers:{'content-type':'image/jpeg'}})}),false);
+ assert.equal(report.reason,'thumbnail_too_large');assert.equal(conversions,2);
+ assert.equal(f.rows.size,0);
+ const noSource={};
+ assert.equal(await storeStoryPreview(env,{...row,media_url:''},{now:start,report:noSource}),false);
+ assert.equal(noSource.reason,'missing_media_url');
+ const untrusted={};
+ assert.equal(await storeStoryPreview(env,row,{now:start,report:untrusted,fetchImage:async()=>new Response(null,{status:302,headers:{location:'https://evil.example/secret'}})}),false);
+ assert.equal(untrusted.reason,'unsafe_redirect');
+ const notFound={};
+ assert.equal(await storeStoryPreview(env,row,{now:start,report:notFound,fetchImage:async()=>new Response(null,{status:403})}),false);
+ assert.equal(notFound.reason,'source_http_403');
+});
+test('admin retry endpoint is authenticated, accepts only eight approved story IDs and never scans D1',()=>{
+ const worker=readFileSync(new URL('../worker.js',import.meta.url),'utf8');
+ assert(worker.includes("'/api/admin/story-previews/retry'"));
+ const handler=worker.slice(worker.indexOf('async function retryAdminStoryPreviews('),worker.indexOf('async function getAdminStories('));
+ assert(handler.includes('verifyAdminFirebaseToken(request,env)'));
+ assert(handler.includes('keys.length>8'));
+ assert(handler.includes('storeStoryPreview(env,row,{now,report})'));
+ assert(!handler.includes('SELECT * FROM story_reviews'),'must fetch only selected ids');
 });
