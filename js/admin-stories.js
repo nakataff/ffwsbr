@@ -26,7 +26,7 @@ function updateControls(){
  $('#sr-bulk').hidden=status==='rejected';$('#sr-approve-selected').hidden=status!=='pending';$('#sr-select-visible').disabled=busy||saving||!visible.size;$('#sr-clear-selection').disabled=busy||saving||!selected.size;
  for(const id of ['sr-approve-selected','sr-reject-selected'])$('#'+id).disabled=busy||saving||!selected.size;
  $('#sr-refresh').disabled=busy||saving||retryingPreviews;$('#sr-more').disabled=busy||saving||retryingPreviews;$('#sr-more').hidden=!cursor;
- $('#sr-retry-previews').disabled=busy||saving||retryingPreviews||status!=='approved';
+ $('#sr-retry-previews').disabled=busy||saving||retryingPreviews||status==='rejected';
  document.querySelectorAll('[data-status]').forEach(button=>button.disabled=busy||saving);
  list.querySelectorAll('[data-review-story]').forEach(button=>button.disabled=busy||saving);
 }
@@ -34,7 +34,7 @@ function syncWeeks(){const value=$('#sr-week').value,weeks=[...new Set([...rows.
 function card(item){
  const previewSrc=item.previewUrl?API+item.previewUrl:item.mediaUrl;
  const el=document.createElement('article');el.className='sr-card';el.dataset.key=item.key;
- el.innerHTML=`<div class="sr-card-head">${item.status!=='rejected'?`<label class="sr-select"><input type="checkbox" data-select-story aria-label="Selecionar story de @${esc(item.username)}"><span>@${esc(item.username)}</span></label>`:`<h2>@${esc(item.username)}</h2>`}<span class="sr-date">${esc(time(item.eventAt))}</span></div><button type="button" class="sr-preview" data-preview-story aria-label="Ampliar story de @${esc(item.username)}">${previewSrc?`<img src="${esc(previewSrc)}" alt="Story de @${esc(item.username)}" loading="lazy" referrerpolicy="no-referrer">`:'<span>Prévia indisponível. Confira nas conversas do Instagram.</span>'}<span class="sr-preview-hint">Ampliar ↗</span></button><div class="sr-content"><p>Semana de ${esc(weekLabel(item.weekStart))}${item.previewArchived?'<span class="sr-saved-preview"> · Miniatura temporária salva</span>':item.status==='approved'?'<span class="sr-missing-preview"> · Sem miniatura salva</span>':''}</p><p><a href="https://www.instagram.com/${encodeURIComponent(item.username)}/" target="_blank" rel="noopener noreferrer">Perfil ↗</a> · <a href="https://www.instagram.com/direct/inbox/" target="_blank" rel="noopener noreferrer">Conversas ↗</a></p><span class="sr-status">${item.status==='approved'?(item.verification==='auto'?'Aprovado automaticamente · +5 pontos':'Aprovado · +5 pontos'):item.status==='rejected'?'Rejeitado · sem pontos':'Pendente · sem pontos'}</span>${item.status!=='rejected'?`<div class="sr-actions">${item.status==='pending'?'<button class="admin-btn admin-btn-primary" data-review-story="approve">Aprovar</button>':''}<button class="admin-btn admin-btn-danger" data-review-story="reject">Rejeitar</button></div>`:''}${item.postUrl?`<p><a href="${esc(item.postUrl)}" target="_blank" rel="noopener noreferrer">Publicação original ↗</a></p>`:''}${item.reviewedAt?`<p>Revisão: ${esc(time(item.reviewedAt))}</p>`:''}${item.note?`<p>${esc(item.note)}</p>`:''}<p class="sr-card-message" role="status"></p></div>`;
+ el.innerHTML=`<div class="sr-card-head">${item.status!=='rejected'?`<label class="sr-select"><input type="checkbox" data-select-story aria-label="Selecionar story de @${esc(item.username)}"><span>@${esc(item.username)}</span></label>`:`<h2>@${esc(item.username)}</h2>`}<span class="sr-date">${esc(time(item.eventAt))}</span></div><button type="button" class="sr-preview" data-preview-story aria-label="Ampliar story de @${esc(item.username)}">${previewSrc?`<img src="${esc(previewSrc)}" alt="Story de @${esc(item.username)}" loading="lazy" referrerpolicy="no-referrer">`:'<span>Prévia indisponível. Confira nas conversas do Instagram.</span>'}<span class="sr-preview-hint">Ampliar ↗</span></button><div class="sr-content"><p>Semana de ${esc(weekLabel(item.weekStart))}${item.previewArchived?'<span class="sr-saved-preview"> · Miniatura temporária salva</span>':item.status==='approved'?'<span class="sr-missing-preview"> · Sem miniatura salva</span>':''}</p><p><a href="https://www.instagram.com/${encodeURIComponent(item.username)}/" target="_blank" rel="noopener noreferrer">Perfil ↗</a> · <a href="https://www.instagram.com/direct/inbox/" target="_blank" rel="noopener noreferrer">Conversas ↗</a></p><span class="sr-status">${item.status==='approved'?(item.verification==='auto'?'Aprovado antes da nova regra · +5 pontos':'Aprovado · +'+Number(item.points||0)+' pontos'):item.status==='rejected'?'Rejeitado · sem pontos':'Pendente · aguarda verificação do post · sem pontos'}</span>${item.status!=='rejected'?`<div class="sr-actions">${item.status==='pending'?'<button class="admin-btn admin-btn-primary" data-review-story="approve">Aprovar</button>':''}<button class="admin-btn admin-btn-danger" data-review-story="reject">Rejeitar</button></div>`:''}${item.postUrl?`<p><a href="${esc(item.postUrl)}" target="_blank" rel="noopener noreferrer">Publicação original ↗</a></p>`:''}${item.reviewedAt?`<p>Revisão: ${esc(time(item.reviewedAt))}</p>`:''}${item.note?`<p>${esc(item.note)}</p>`:''}<p class="sr-card-message" role="status"></p></div>`;
  el.querySelector('img')?.addEventListener('error',e=>{e.target.replaceWith(Object.assign(document.createElement('span'),{textContent:item.previewArchived?'A miniatura salva não abriu. Atualize o painel.':'Imagem do Instagram indisponível. Tente recuperar a miniatura se o Story tiver menos de 24h.'}));});
  el.querySelector('[data-select-story]')?.addEventListener('change',e=>{if(e.target.checked){if(selected.size>=MAX_BATCH){e.target.checked=false;message('Revise até 20 stories por vez.');return;}selected.add(item.key);}else selected.delete(item.key);updateControls();});
  el.querySelectorAll('[data-review-story]').forEach(button=>button.addEventListener('click',()=>openReview(button.dataset.reviewStory,[item.key])));
@@ -64,13 +64,13 @@ function previewErrorReason(code){
  return previewFailureLabels[status]||'imagem indisponível';
 }
 async function retryRecentPreviews(){
- if(busy||saving||retryingPreviews||status!=='approved')return;
+ if(busy||saving||retryingPreviews||status==='rejected')return;
  const now=Date.now();
- const candidates=[...rows.values()].filter(item=>item.status==='approved'&&!item.previewArchived
+ const candidates=[...rows.values()].filter(item=>(item.status==='approved'||item.status==='pending')&&!item.previewArchived
   &&!attemptedPreviews.has(item.key)&&item.mediaUrl
   &&now-Number(item.eventAt)>=0&&now-Number(item.eventAt)<24*3600000).slice(0,8);
  if(!candidates.length){
-  message('Não há mais miniaturas elegíveis entre os Stories carregados. A recuperação só é possível enquanto a imagem ainda está disponível (até 24h).');return;
+  message('Não há miniaturas recentes elegíveis nos Stories carregados. A recuperação funciona somente nas primeiras 24 horas.');return;
  }
  retryingPreviews=true;updateControls();
  $('#sr-retry-previews').textContent='Recuperando...';
@@ -105,9 +105,9 @@ function openReview(next,keys){
  if(busy||saving||review.open)return;const items=keys.map(key=>rows.get(key)).filter(item=>item&&item.status!=='rejected'&&(next==='reject'||item.status==='pending'));if(!items.length)return;
  decision=next;reviewKeys=items.map(item=>item.key);const approving=next==='approve';
  form.reset();$('#sr-review-title').textContent=(approving?'Aprovar ':'Rejeitar ')+items.length+(items.length===1?' story':' stories');
- $('#sr-review-summary').textContent=approving?'Cada story aprovado vale 5 pontos, respeitando o limite de 3 por pessoa por dia.':'Os pontos dos stories já aprovados serão retirados. Os bônus que dependem deles também serão recalculados.';
- $('#sr-review-people').textContent=items.map(item=>'@'+item.username).join(' · ');$('#sr-reject-reason').hidden=approving;
- $('#sr-confirm-label').textContent=approving?'Conferi os stories selecionados e confirmo a aprovação.':'Confirmo a rejeição e a retirada dos pontos correspondentes.';
+ $('#sr-review-summary').textContent=approving?'Confirme a publicação original. Hoje: +5; ontem: +2; mais antiga nesta semana: +1. Na semana anterior: 0. Máximo de 3 Stories e 25 pontos de comentários/reposts por dia.':'Os pontos registrados nesses Stories serão retirados e os bônus dependentes recalculados.';
+ $('#sr-review-people').textContent=items.map(item=>'@'+item.username).join(' · ');$('#sr-reject-reason').hidden=approving;$('#sr-approve-source').hidden=!approving;
+ $('#sr-confirm-label').textContent=approving?'Conferi que todos os Stories selecionados mostram exatamente a publicação informada.':'Confirmo a rejeição e a retirada dos pontos correspondentes.';
  $('#sr-review-submit').textContent=(approving?'Aprovar ':'Rejeitar ')+items.length+(items.length===1?' story':' stories');$('#sr-review-submit').className='admin-btn '+(approving?'admin-btn-primary':'admin-btn-danger');$('#sr-review-feedback').textContent='';review.showModal();
 }
 function closeReview(){if(!saving)review.close();}
@@ -118,14 +118,26 @@ form.addEventListener('submit',async e=>{
  e.preventDefault();if(saving||!isAdmin())return;const approving=decision==='approve',feedback=$('#sr-review-feedback');
  if(!form.elements.confirmSamePost.checked){feedback.textContent=approving?'Confira as imagens e marque a confirmação do grupo.':'Marque a confirmação da rejeição.';return;}
  const keys=[...reviewKeys],seq=generation;if(!keys.length)return;
- const body={keys,decision,auto:approving,confirmSamePost:true,note:form.elements.note.value};
+ const body={keys,decision,auto:false,confirmSamePost:true,note:form.elements.note.value};
+ if(approving){
+  const postUrl=String(form.elements.postUrl.value||'').trim(),published=String(form.elements.publishedAt.value||'').trim();
+  if(!/^https:\/\/(?:www\.)?instagram\.com\/(?:p|reel|reels|tv)\/[A-Za-z0-9_-]+\/?(?:\?.*)?$/i.test(postUrl)){feedback.textContent='Informe o link do post ou Reel original no Instagram.';return;}
+  body.postUrl=postUrl;
+  if(published){
+   if(!/^20\d\d-\d\d-\d\dT\d\d:\d\d$/.test(published)||!form.elements.confirmDate.checked){
+    feedback.textContent='Confira a data e hora original em Brasília e marque a confirmação.';return;
+   }
+   body.publishedAt=published+':00-03:00';
+   body.confirmDate=true;
+  }
+ }
  saving=true;updateControls();for(const field of form.elements)field.disabled=true;feedback.textContent='Salvando '+keys.length+' revisão(ões)…';
  try{
   const data=await request('/api/admin/stories/review-batch',body);if(seq!==generation)return;
   const results=new Map((data.results||[]).map(result=>[result.key,result]));let done=0,awarded=0,reversed=0;
   for(const key of keys){const result=results.get(key),node=[...list.querySelectorAll('[data-key]')].find(el=>el.dataset.key===key);
    if(result?.ok&&result.story?.status!=='pending'){
-    done++;const previous=rows.get(key)?.status;if(!result.alreadyReviewed){awarded+=Number(result.points)||0;if(result.reversed)reversed+=5;}selected.delete(key);rows.delete(key);node?.remove();
+    done++;const previous=rows.get(key)?.status;if(!result.alreadyReviewed){awarded+=Number(result.points)||0;if(result.reversed)reversed+=Number(rows.get(key)?.points||5);}selected.delete(key);rows.delete(key);node?.remove();
     for(const [state,delta]of previous!==result.story.status?[[previous,-1],[result.story.status,1]]:[]){const count=$('#sr-count-'+state);if(count)count.textContent=Math.max(0,Number(count.textContent)+delta);}
    }else{selected.add(key);if(node){const warning=node.querySelector('.sr-card-message');warning.textContent=result?.error||'Resposta incompleta. Tente novamente; não haverá pontuação duplicada.';warning.className='sr-card-message sr-error';}}
   }
