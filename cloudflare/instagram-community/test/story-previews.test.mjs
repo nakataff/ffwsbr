@@ -18,7 +18,7 @@ test('weekly storage expires Tuesday midnight Brasilia, never Monday or earlier'
 test('only approved, recent and correctly resized WebP images can be stored',async()=>{
  const f=mock(),row={mention_key:key,week_key:'2026-10-19',event_at:start-5000,status:'approved',media_url:original};
  let resized=0;
- const load=async(url,options)=>{resized++;assert.equal(url,original);assert.equal(options.cf.image.width,288);assert.equal(options.cf.image.format,'webp');return new Response(bytes,{headers:{'content-type':'image/webp'}})};
+ const load=async(url,options)=>{resized++;assert.equal(url,original);assert.equal(options.cf.image.width,240);assert.equal(options.cf.image.format,'webp');return new Response(bytes,{headers:{'content-type':'image/webp'}})};
  assert.equal(await storeStoryPreview({DB:f.db},row,{fetchImage:load,now:start}),true);
  assert.equal(f.rows.get(key).expires_at,expiry);assert.equal(resized,1);
  assert.equal(await storeStoryPreview({DB:f.db},{...row,status:'rejected'},{fetchImage:load,now:start}),false);
