@@ -48,7 +48,7 @@ test('bulk approval keeps valid stories, reports duplicates and wrong weeks indi
  for(const row of [mention('s1'),mention('s2'),mention('s3','ig_bob'),{...mention('old','ig_charlie','2026-10-06'),weekKey:'2026-10-05'}])await queueStory(db,row);
  const keys=['story:ig_alice:s1','story:ig_alice:s2','story:ig_bob:s3','story:ig_charlie:old','missing'];
  const out=await (await w.reviewAdminStoryBatch(batchRequest(batchBody(keys)),{CFF_ADMIN_UID:'admin-test',DB:db})).json();
- assert.deepEqual(out.results.map(r=>r.ok),[true,false,true,false,false]);assert.match(out.results[1].error,/já pontuou/);assert.match(out.results[3].error,/mesma semana/);
+ assert.deepEqual(out.results.map(r=>r.ok),[true,false,true,false,false]);assert.match(out.results[1].error,/já pontuou/);assert.match(out.results[3].error,/outra semana/);
  assert.equal(count(db,'awards'),2);assert.equal(db.sqlite.prepare('SELECT SUM(points_all) AS total FROM users').get().total,10);
  assert.equal(db.queries.filter(sql=>sql.startsWith('DELETE FROM community_response_cache WHERE cache_key LIKE')).length,1);
  const retry=await (await w.reviewAdminStoryBatch(batchRequest(batchBody(keys)),{CFF_ADMIN_UID:'admin-test',DB:db})).json();
