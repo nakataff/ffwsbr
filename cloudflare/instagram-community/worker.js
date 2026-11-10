@@ -133,6 +133,7 @@ export default {
     if (url.pathname === '/api/prediction/profile' && request.method === 'GET') return getPredictionProfile(request, env, url);
     if (url.pathname === '/api/admin/stories' && request.method === 'GET') return getAdminStories(request,env,url);
     if (url.pathname === '/api/admin/story-preview' && request.method === 'GET') return getSignedStoryPreview(request,env,url);
+    if (url.pathname === '/api/admin/story-previews/retry' && request.method === 'POST') return retryAdminStoryPreviews(request,env);
     if (url.pathname === '/api/admin/story-posts' && request.method === 'GET') return getAdminStoryPosts(request,env,url);
     if (url.pathname === '/api/admin/stories/review-batch' && request.method === 'POST') return reviewAdminStoryBatch(request,env);
     if (url.pathname === '/api/admin/stories/review' && request.method === 'POST') return reviewAdminStory(request,env);
@@ -1668,6 +1669,33 @@ async function verifyAdminFirebaseToken(request,env) {
 
 
 function publicStoryReview(row){return {key:row.mention_key,catalogKey:row.account_id+':'+row.week_key,username:row.username,storyId:row.story_id,messageId:row.message_id,mediaUrl:row.media_url,eventAt:row.event_at,weekStart:row.week_key,status:row.status,postUrl:row.post_url,publishedAt:row.published_at,verification:row.verification,note:row.note,reviewedAt:row.reviewed_at,reviewedBy:row.reviewed_by}}
+// Manual, tightly bounded rescue while the Meta story CDN URL may still work.
+// No background scan, no stale archives, no additional public reads.
+async function retryAdminStoryPreviews(request,env){
+ const admin=await verifyAdminFirebaseToken(request,env);
+ if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
+ const data=await readJson(request),keys=data?.keys;
+ if(!Array.isArray(keys)||!keys.length||keys.length>8||new Set(keys).size!==keys.length
+  ||keys.some(key=>typeof key!=='string'||!/^story:[A-Za-z0-9:_-]{4,250}$/.test(key))){
+  return json({ok:false,error:'Selecione de 1 a 8 Stories válidos.'},400,request);
+ }
+ const now=Date.now(),out=[];
+ for(const key of keys){
+  const row=await env.DB.prepare(
+   'SELECT mention_key,week_key,event_at,status,media_url FROM story_reviews WHERE mention_key=?1'
+  ).bind(key).first();
+  if(!row){out.push({key,saved:false,reason:'not_found'});continue;}
+  if(row.status!=='approved'){out.push({key,saved:false,reason:'not_approved'});continue;}
+  const existing=await env.DB.prepare(
+   'SELECT expires_at FROM story_thumbnails WHERE mention_key=?1 AND expires_at>?2'
+  ).bind(key,now).first();
+  if(existing){out.push({key,saved:true,reason:'already_saved'});continue;}
+  const report={};
+  const saved=await storeStoryPreview(env,row,{now,report});
+  out.push({key,saved,reason:report.reason||'unknown'});
+ }
+ return json({ok:true,results:out,saved:out.filter(v=>v.saved).length,checked:out.length},200,request);
+}
 async function getAdminStories(request,env,url){
  const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const status=['pending','approved','rejected'].includes(url.searchParams.get('status'))?url.searchParams.get('status'):'approved';
