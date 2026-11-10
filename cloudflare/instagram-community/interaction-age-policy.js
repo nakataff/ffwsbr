@@ -4,7 +4,9 @@ export const INTERACTION_DAILY_CAP=25;
 export const AGE_POLICY_VERSION='20261110-post-age-v1';
 export function brDay(timestamp){
  if(!Number.isFinite(Number(timestamp))||Number(timestamp)<=0)return '';
- return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Number(timestamp)));
+ const fields=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(Number(timestamp)));
+ const part=type=>fields.find(x=>x.type===type)?.value||'';
+ return part('year')+'-'+part('month')+'-'+part('day');
 }
 export function brWeek(day){
  if(!/^\d{4}-\d\d-\d\d$/.test(day||''))return '';
