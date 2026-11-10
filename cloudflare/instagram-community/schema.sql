@@ -233,10 +233,12 @@ CREATE INDEX IF NOT EXISTS idx_story_reviews_user_week ON story_reviews(user_key
 CREATE UNIQUE INDEX IF NOT EXISTS idx_story_review_post_once ON story_reviews(user_key,post_key) WHERE status='approved';
 
 DROP TRIGGER IF EXISTS cff_story_review_guard;
+DROP TRIGGER IF EXISTS cff_story_review_guard_auto_v1;
+DROP TRIGGER IF EXISTS cff_story_review_credit;
 
-CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_auto_v1 BEFORE UPDATE ON story_reviews
+CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_verified_v2 BEFORE UPDATE ON story_reviews
  WHEN NEW.status='approved' AND OLD.status='pending' BEGIN
- SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual','auto') OR (NEW.verification<>'auto' AND NEW.post_url='') OR (NEW.verification='auto' AND (NEW.post_key<>'auto:'||NEW.story_id OR NEW.published_at<>NEW.event_at))
+ SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual') OR NEW.post_url=''
  THEN RAISE(ABORT,'story_missing_post') END;
  SELECT CASE WHEN date(date(NEW.published_at/1000,'unixepoch','-3 hours'), '-' || ((CAST(strftime('%w',date(NEW.published_at/1000,'unixepoch','-3 hours')) AS INTEGER)+6)%7) || ' days')<>NEW.week_key OR NEW.published_at>NEW.event_at+300000
  THEN RAISE(ABORT,'story_wrong_week') END;
@@ -249,15 +251,15 @@ CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_auto_v1 BEFORE UPDATE ON sto
 CREATE TRIGGER IF NOT EXISTS cff_story_review_credit AFTER UPDATE ON story_reviews
  WHEN NEW.status='approved' AND OLD.status='pending' BEGIN
  INSERT INTO awards(award_key,user_key,username,type,source_id,points,day_key,month_key,created_at)
- VALUES(NEW.mention_key,NEW.user_key,NEW.username,'story',NEW.post_key,NEW.points,NEW.day_key,substr(NEW.day_key,1,7),NEW.event_at);
+ VALUES(NEW.mention_key,NEW.user_key,NEW.username,'story',NEW.post_key,CASE WHEN date(NEW.published_at/1000,'unixepoch','-3 hours')=NEW.day_key THEN 5 WHEN date(NEW.published_at/1000,'unixepoch','-3 hours')=date(NEW.day_key,'-1 day') THEN 2 ELSE 1 END,NEW.day_key,substr(NEW.day_key,1,7),NEW.event_at);
  INSERT INTO users(user_key,instagram_id,username,points_all,story_mentions_all,comments_all,active_days_all,last_interaction_at)
- VALUES(NEW.user_key,NEW.instagram_id,NEW.username,NEW.points,1,0,
+ VALUES(NEW.user_key,NEW.instagram_id,NEW.username,CASE WHEN date(NEW.published_at/1000,'unixepoch','-3 hours')=NEW.day_key THEN 5 WHEN date(NEW.published_at/1000,'unixepoch','-3 hours')=date(NEW.day_key,'-1 day') THEN 2 ELSE 1 END,1,0,
  CASE WHEN EXISTS(SELECT 1 FROM active_days WHERE user_key=NEW.user_key AND day_key=NEW.day_key) THEN 0 ELSE 1 END,NEW.event_at)
  ON CONFLICT(user_key) DO UPDATE SET instagram_id=excluded.instagram_id,username=excluded.username,
  points_all=users.points_all+excluded.points_all,story_mentions_all=users.story_mentions_all+1,
  active_days_all=users.active_days_all+excluded.active_days_all,last_interaction_at=MAX(users.last_interaction_at,excluded.last_interaction_at);
  INSERT INTO monthly_users(month_key,user_key,username,points,story_mentions,comments,active_days,last_interaction_at)
- VALUES(substr(NEW.day_key,1,7),NEW.user_key,NEW.username,NEW.points,1,0,
+ VALUES(substr(NEW.day_key,1,7),NEW.user_key,NEW.username,CASE WHEN date(NEW.published_at/1000,'unixepoch','-3 hours')=NEW.day_key THEN 5 WHEN date(NEW.published_at/1000,'unixepoch','-3 hours')=date(NEW.day_key,'-1 day') THEN 2 ELSE 1 END,1,0,
  CASE WHEN EXISTS(SELECT 1 FROM active_days WHERE user_key=NEW.user_key AND day_key=NEW.day_key) THEN 0 ELSE 1 END,NEW.event_at)
  ON CONFLICT(month_key,user_key) DO UPDATE SET username=excluded.username,points=monthly_users.points+excluded.points,
  story_mentions=monthly_users.story_mentions+1,active_days=monthly_users.active_days+excluded.active_days,
@@ -340,3 +342,8 @@ INSERT INTO ranking_month_catalog(month_key,first_day,last_day)
     ON CONFLICT(month_key) DO UPDATE SET first_day=excluded.first_day,last_day=excluded.last_day;
 
 INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES('migration:month-catalog-v1',1);
+
+-- Limite de 25 pontos/dia em comentários e reposts novos; bônus não entram no teto.
+CREATE INDEX IF NOT EXISTS idx_awards_daily_interaction ON awards(user_key,day_key,type);
+DROP TRIGGER IF EXISTS cff_interaction_daily_cap_v1;
+CREATE TRIGGER cff_interaction_daily_cap_v1 BEFORE INSERT ON awards WHEN NEW.type IN ('comment','story') AND NEW.points>0 AND (SELECT COALESCE(SUM(points),0) FROM awards WHERE user_key=NEW.user_key AND day_key=NEW.day_key AND type IN ('comment','story')) + NEW.points > 25 BEGIN SELECT RAISE(ABORT,'interaction_daily_limit'); END;
