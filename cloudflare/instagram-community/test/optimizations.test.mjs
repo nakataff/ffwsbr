@@ -23,7 +23,7 @@ async function workerInternals(cacheBust='') {
   let source=readFileSync(new URL('../worker.js',import.meta.url),'utf8');
   source=source.replace("from './optimizations.js'",`from '${new URL('../optimizations.js',import.meta.url).href}'`);
   source=source.replace("from './global-prediction-identity.js'",`from '${new URL('../global-prediction-identity.js',import.meta.url).href}'`);source=source.replace("from './global-prediction-service.js'",`from '${new URL('../global-prediction-service.js',import.meta.url).href}'`);
-  source=source.replace("from './tier-shares.js'",`from '${new URL('../tier-shares.js',import.meta.url).href}'`);source=source.replace("from './ranking-penalties.js'",`from '${new URL('../ranking-penalties.js',import.meta.url).href}'`);
+  source=source.replace("from './tier-shares.js'",`from '${new URL('../tier-shares.js',import.meta.url).href}'`);source=source.replace("from './ranking-penalties.js'",`from '${new URL('../ranking-penalties.js',import.meta.url).href}'`);source=source.replace("from './interaction-age-policy.js'",`from '${new URL('../interaction-age-policy.js',import.meta.url).href}'`);
   source=source.replace("from './profile-insights.js'",`from '${new URL('../profile-insights.js',import.meta.url).href}'`).replace("from './story-reviews.js'",`from '${new URL('../story-reviews.js',import.meta.url).href}'`).replace("from './story-previews.js'",`from '${new URL('../story-previews.js',import.meta.url).href}'`);
   // Rewards configuration is external; ledger/settlement tests isolate its unrelated bonus rules.
   source=source.replace('async function evaluateWeeklyBonuses(env, base) {','async function evaluateWeeklyBonuses(env, base) { return;');
