@@ -243,13 +243,13 @@
     <aside class="ig-card">
       <div class="ig-card-head"><h2>Como pontua</h2></div>
       <div class="ig-rules">
-        <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Compartilhe um post da Central e marque a página. Cada story recebido pontua automaticamente, sujeito à revisão.</small></div><div class="ig-rule-points" id="ig-rule-story">+5 pts</div></div>
-        <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small id="ig-rule-comment-copy">Interagiu de forma natural em publicação ou Reel recente. Conta uma vez por conteúdo e apenas em posts publicados nos últimos 7 dias.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div><div class="ig-rule"><div class="ig-rule-icon">🔗</div><div><strong>Conta Google conectada</strong><small>Vincule sua conta Google a um Instagram confirmado. Bônus único por conta.</small></div><div class="ig-rule-points">+20 pts</div></div>
-        <div class="ig-note" id="ig-rule-note">Stories pontuam automaticamente: uma vez por story, até 3 por dia no horário de Brasília. Envios fora das regras podem ser rejeitados e perder os pontos.</div>
+        <div class="ig-rule"><div class="ig-rule-icon">📣</div><div><strong>Menção em Story</strong><small>Compartilhe um post da Central e marque a página. A menção fica pendente até confirmarmos qual publicação original foi compartilhada.</small></div><div class="ig-rule-points" id="ig-rule-story">+5 pts</div></div>
+        <div class="ig-rule"><div class="ig-rule-icon">💬</div><div><strong>Comentário</strong><small id="ig-rule-comment-copy">Interagiu de forma natural em publicação ou Reel recente. Conta uma vez por post da semana atual: +2 no dia da publicação, +1 em outro dia da semana.</small></div><div class="ig-rule-points" id="ig-rule-comment">+2 pts</div></div><div class="ig-rule"><div class="ig-rule-icon">🔗</div><div><strong>Conta Google conectada</strong><small>Vincule sua conta Google a um Instagram confirmado. Bônus único por conta.</small></div><div class="ig-rule-points">+20 pts</div></div>
+        <div class="ig-note" id="ig-rule-note">Stories precisam de confirmação do post original: +5 no mesmo dia, +2 de ontem, +1 mais antigo na mesma semana e 0 para semana anterior. Até 3 por dia.</div>
       </div>
       <div class="ig-integrity">
         <strong>⚠️ Integridade do ranking</strong>
-        Comentários só geram pontos em publicações e Reels publicados nos últimos 7 dias. Comentar em massa conteúdos antigos, fazer spam ou repetir ações com o objetivo de aumentar artificialmente a pontuação é considerado manipulação do ranking. Interações desse tipo podem ser desconsideradas, ter os pontos removidos e resultar em exclusão de premiações ou do ranking.
+        Comentários e Stories só pontuam publicações da semana atual (segunda a domingo, horário de Brasília). Comentar em massa conteúdos antigos, fazer spam ou repetir ações com o objetivo de aumentar artificialmente a pontuação é considerado manipulação do ranking. Interações desse tipo podem ser desconsideradas, ter os pontos removidos e resultar em exclusão de premiações ou do ranking.
         <a href="diretrizes-comunidade.html">Ver diretrizes completas →</a>
       </div>
     </aside>
@@ -293,8 +293,8 @@
   const RETRY_MS=60*1000;
   const requests=new Map(),memory=new Map(),lastAttempt=new Map();
   let revision=0,retryTimer;
-  const CACHE_PREFIX='cff-community-ranking-cache-v2:';
-  const DEFAULT_RULES={storyMentionPoints:5,commentPoints:2,storyMentionDailyLimit:3,commentLimitPerMedia:1,commentMediaMaxAgeDays:7};
+  const CACHE_PREFIX='cff-community-ranking-cache-v3:';
+  const DEFAULT_RULES={storyMentionPoints:5,storyPointsYesterday:2,storyPointsEarlierThisWeek:1,commentPoints:2,commentPointsOlderThisWeek:1,storyAutoApproval:false,storyMentionDailyLimit:3,commentLimitPerMedia:1,commentMediaMaxAgeDays:7,dailyInteractionPointsLimit:25};
   const state={period:'week',query:'',users:[],updatedAt:null,periodInfo:null,rules:{...DEFAULT_RULES},phase:'loading',usingCache:false,displayPeriod:null,displayKey:null};
 
   const els={
@@ -360,11 +360,10 @@
     els.stories.textContent=formatNumber(stories);
     els.comments.textContent=formatNumber(comments);
     els.actions.textContent=formatNumber(stories+comments);
-    els.ruleStory.textContent='+'+formatNumber(state.rules.storyMentionPoints)+' pts';
-    els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' pts';
-    const maxCommentAge=Math.max(1,num(state.rules.commentMediaMaxAgeDays)||7);
-    if(els.ruleCommentCopy)els.ruleCommentCopy.textContent=`Interagiu de forma natural em publicação ou Reel recente. Conta uma vez por conteúdo e apenas em posts publicados nos últimos ${formatNumber(maxCommentAge)} dias.`;
-    els.ruleNote.textContent=`Stories pontuam automaticamente: uma vez por story, até ${formatNumber(state.rules.storyMentionDailyLimit)} por dia no horário de Brasília. Envios fora das regras podem ser rejeitados e perder os pontos. Comentários em conteúdos com mais de ${formatNumber(maxCommentAge)} dias não geram pontos.`;
+    els.ruleStory.textContent='+'+formatNumber(state.rules.storyMentionPoints)+' / +'+formatNumber(state.rules.storyPointsYesterday||2)+' / +'+formatNumber(state.rules.storyPointsEarlierThisWeek||1);
+    els.ruleComment.textContent='+'+formatNumber(state.rules.commentPoints)+' / +'+formatNumber(state.rules.commentPointsOlderThisWeek||1);
+    if(els.ruleCommentCopy)els.ruleCommentCopy.textContent='Um comentário por publicação da semana atual: +2 no dia da postagem e +1 em outro dia da mesma semana. Posts anteriores à segunda-feira valem 0.';
+    els.ruleNote.textContent=`Stories: +5 para post de hoje, +2 de ontem, +1 mais antigo nesta semana e 0 para post da semana anterior. A menção fica pendente até conferirmos o post. Máximo de ${formatNumber(state.rules.storyMentionDailyLimit)} Stories e ${formatNumber(state.rules.dailyInteractionPointsLimit||25)} pontos por dia somando comentários e reposts.`;
     els.updated.textContent=timestampLabel(state.updatedAt);
     updatePeriodText();
     renderPodium(state.query?[]:all);
