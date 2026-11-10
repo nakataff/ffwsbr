@@ -1689,7 +1689,7 @@ async function verifyAdminFirebaseToken(request,env) {
 }
 
 
-function publicStoryReview(row){return {key:row.mention_key,catalogKey:row.account_id+':'+row.week_key,username:row.username,storyId:row.story_id,messageId:row.message_id,mediaUrl:row.media_url,eventAt:row.event_at,weekStart:row.week_key,status:row.status,postUrl:row.post_url,publishedAt:row.published_at,verification:row.verification,points:row.status==='approved'?(row.verification==='auto'?5:interactionAgePoints('story',row.published_at,row.event_at)):0,note:row.note,reviewedAt:row.reviewed_at,reviewedBy:row.reviewed_by}}
+function publicStoryReview(row){return {key:row.mention_key,catalogKey:row.account_id+':'+row.week_key,username:row.username,storyId:row.story_id,messageId:row.message_id,mediaUrl:row.media_url,eventAt:row.event_at,weekStart:row.week_key,status:row.status,postUrl:row.post_url,publishedAt:row.published_at,verification:row.verification,points:row.status==='approved'?(row.credited_points!=null?Number(row.credited_points):row.verification==='auto'?5:interactionAgePoints('story',row.published_at,row.event_at)):0,note:row.note,reviewedAt:row.reviewed_at,reviewedBy:row.reviewed_by}}
 // Manual, tightly bounded rescue while the Meta story CDN URL may still work.
 // No background scan, no stale archives, no additional public reads.
 async function retryAdminStoryPreviews(request,env){
@@ -1754,7 +1754,7 @@ async function getAdminStories(request,env,url){
  const admin=await verifyAdminFirebaseToken(request,env);if(!admin)return json({ok:false,error:'Acesso administrativo inválido.'},401,request);
  const status=['pending','approved','rejected'].includes(url.searchParams.get('status'))?url.searchParams.get('status'):'approved';
  const cursor=String(url.searchParams.get('cursor')||'');const before=Number(cursor.split('|')[0])||Number.MAX_SAFE_INTEGER,after=cursor.slice(cursor.indexOf('|')+1);
- const result=await env.DB.prepare(`SELECT r.*,t.expires_at AS preview_expires FROM story_reviews r LEFT JOIN story_thumbnails t ON t.mention_key=r.mention_key AND t.expires_at>?4 WHERE r.status=?1 AND (r.event_at<?2 OR (r.event_at=?2 AND r.mention_key>?3)) ORDER BY r.event_at DESC,r.mention_key ASC LIMIT 51`).bind(status,before,after,Date.now()).all();
+ const result=await env.DB.prepare(`SELECT r.*,t.expires_at AS preview_expires,a.points AS credited_points FROM story_reviews r LEFT JOIN story_thumbnails t ON t.mention_key=r.mention_key AND t.expires_at>?4 LEFT JOIN awards a ON a.award_key=r.mention_key AND a.type='story' WHERE r.status=?1 AND (r.event_at<?2 OR (r.event_at=?2 AND r.mention_key>?3)) ORDER BY r.event_at DESC,r.mention_key ASC LIMIT 51`).bind(status,before,after,Date.now()).all();
  const rows=(result.results||[]).slice(0,50),last=rows.at(-1),counts=await env.DB.prepare("SELECT status,COUNT(*) AS count FROM story_reviews GROUP BY status").all();
  const stories=await Promise.all(rows.map(async row=>({...publicStoryReview(row),previewUrl:row.preview_expires?await previewLink(row.mention_key,Number(row.preview_expires),env.META_APP_SECRET):'',previewArchived:!!row.preview_expires})));
  return json({ok:true,stories,counts:Object.fromEntries((counts.results||[]).map(r=>[r.status,Number(r.count)])),cursor:result.results?.length>50?`${last.event_at}|${last.mention_key}`:'',rules:{points:5,dailyLimit:3,approvalRequired:false,autoApproval:true,currentWeekOnly:false}},200,request);
