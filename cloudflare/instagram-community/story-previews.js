@@ -85,7 +85,7 @@ export async function storeStoryPreview(env,row,{fetchImage=fetch,now=Date.now()
  if(!Number.isFinite(Number(row.event_at))||now-row.event_at>24*3600000||row.event_at>now+300000){
   report.reason='source_too_old';return false;
  }
- if(row.status!=='approved'){report.reason='not_approved';return false;}
+ if(!['approved','pending'].includes(row.status)){report.reason='invalid_status';return false;}
  if(!/^story:/.test(row.mention_key||'')){report.reason='invalid_story';return false;}
  try{
   const bytes=await transformedPreview(env,url,fetchImage,report);
