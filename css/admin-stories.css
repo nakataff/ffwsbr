@@ -11,3 +11,12 @@
 }
 
 .sr-missing-preview{color:#d1ae78;font-size:.72rem;font-weight:750}
+
+/* Formulário de conferência do post que foi realmente repostado. */
+.sr-source-fields{display:grid;gap:12px;padding:12px;border:1px solid #315477;border-radius:12px;background:#102136}
+.sr-source-fields[hidden]{display:none!important}
+.sr-source-fields>label{display:grid;gap:6px;min-width:0;font-size:.79rem;color:#c5d9e8;font-weight:750}
+.sr-source-fields input[type=url],.sr-source-fields input[type=datetime-local]{width:100%;min-width:0;box-sizing:border-box;min-height:44px}
+.sr-source-fields>.sr-check{display:flex;align-items:flex-start;gap:9px;font-size:.78rem}
+.sr-source-fields .sr-help{margin:0;color:#a2c3da;font-size:.76rem;line-height:1.55}
+@media(max-width:650px){.sr-source-fields input[type=url],.sr-source-fields input[type=datetime-local]{font-size:16px}}
