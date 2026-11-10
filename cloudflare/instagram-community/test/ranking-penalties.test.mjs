@@ -110,4 +110,6 @@ test('endpoints estão restritos ao admin real e a lista não é pública',()=>{
   assert(worker.slice(p,end<0?undefined:end).includes('verifyAdminFirebaseToken(request,env)'));
  }
  assert(worker.includes('invalidatePublicRankings(env.DB)'));
+ assert.equal(worker.split("adminUid:String(env.CFF_ADMIN_UID||'')").length-1,2,'o admin verificado via RTDB também possui UID fixado');
+ assert(!worker.includes('adminUid:admin.uid'),'a validação RTDB retorna email, não uid');
 });
