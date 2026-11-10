@@ -1719,10 +1719,10 @@ async function changeAdminRankingPenalty(request,env){
   const body=await readJson(request),action=String(body?.action||'');
   let result;
   if(action==='apply')result=await applyRankingPenalty(env.DB,{
-   userKey:body.userKey,points:body.points,reason:body.reason,nonce:body.nonce,adminUid:admin.uid
+   userKey:body.userKey,points:body.points,reason:body.reason,nonce:body.nonce,adminUid:String(env.CFF_ADMIN_UID||'')
   });
   else if(action==='reverse')result=await reverseRankingPenalty(env.DB,{
-   id:body.id,reason:body.reason,adminUid:admin.uid
+   id:body.id,reason:body.reason,adminUid:String(env.CFF_ADMIN_UID||'')
   });
   else return json({ok:false,error:'Ação inválida.'},400,request);
   // A atualização do ranking deve ser imediata no banco/cache, não ficar cinco minutos defasada.
