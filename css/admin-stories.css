@@ -9,3 +9,5 @@
  .sr-toolbar-actions{width:100%;gap:8px}
  #sr-retry-previews{flex:1}
 }
+
+.sr-missing-preview{color:#d1ae78;font-size:.72rem;font-weight:750}
