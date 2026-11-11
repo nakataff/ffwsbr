@@ -157,6 +157,7 @@ on:
       - 'ffws-br-*/players.json'
       - 'ffws-br-*/player-meta.json'
       - 'functions/test/careers.test.cjs'
+      - 'functions/test/career-bulk-arrivals.test.cjs'
       - 'functions/test/career-staff-s2.test.cjs'
       - 'functions/career-staff-s2.json'
       - 'js/career-*.mjs'
@@ -167,6 +168,7 @@ on:
       - 'admin-carreiras.html'
       - 'carreira.html'
       - 'css/careers.css'
+      - 'css/career-bulk-arrivals.css'
       - 'test/career-interfaces.test.cjs'
       - 'test/historical-team-fixes.test.cjs'
       - 'functions/economy-game-orders.js'
@@ -222,7 +224,7 @@ jobs:
       - name: Test profile results and account invitation
         run: node --test test/daily-challenges-generator.test.cjs test/account-welcome.test.mjs test/camp-results-view.test.mjs test/economy-wheel.test.mjs test/admin-economy-form.test.mjs
       - name: Test automatic profile rewards
-        run: node --test functions/test/account-restrictions.test.cjs functions/test/economy-code-policy.test.cjs functions/test/season-pass.test.cjs functions/test/task-locator.test.cjs functions/test/user-inbox.test.cjs functions/test/admin-tasks-service.test.cjs functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/economy-shop-notices.test.cjs functions/test/profile-emblems.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-quiz.test.cjs functions/test/economy-admin-tools.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs functions/test/profile-checkin.test.cjs functions/test/career-competitions.test.cjs functions/test/careers.test.cjs functions/test/team-identity-history.test.cjs functions/test/tournament-assets.test.cjs functions/test/community-supporters.test.cjs functions/test/livepix-diagnostic.test.cjs functions/test/career-staff-s2.test.cjs functions/test/career-staff-history.test.cjs functions/test/career-joker-identity.test.cjs
+        run: node --test functions/test/account-restrictions.test.cjs functions/test/economy-code-policy.test.cjs functions/test/season-pass.test.cjs functions/test/task-locator.test.cjs functions/test/user-inbox.test.cjs functions/test/admin-tasks-service.test.cjs functions/test/profile-goals.test.cjs functions/test/profile-identity-sync.test.cjs functions/test/global-chat.test.cjs functions/test/economy-shop-notices.test.cjs functions/test/profile-emblems.test.cjs functions/test/code-gifts.test.cjs functions/test/economy.test.cjs functions/test/economy-quiz.test.cjs functions/test/economy-admin-tools.test.cjs functions/test/economy-interactions.test.cjs functions/test/economy-game-orders.test.cjs functions/test/profile-checkin.test.cjs functions/test/career-competitions.test.cjs functions/test/careers.test.cjs functions/test/career-bulk-arrivals.test.cjs functions/test/team-identity-history.test.cjs functions/test/tournament-assets.test.cjs functions/test/community-supporters.test.cjs functions/test/livepix-diagnostic.test.cjs functions/test/career-staff-s2.test.cjs functions/test/career-staff-history.test.cjs functions/test/career-joker-identity.test.cjs
       - name: Test profile checkin and monthly goal interfaces
         env:
           NODE_PATH: /tmp/cff-coins-test/node_modules
