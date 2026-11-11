@@ -166,10 +166,12 @@ repete a leitura. A interface distingue cadastro central do elenco de um torneio
 
 Na página admin-carreiras.html, os botões **Chegadas em massa** e **Saídas em massa** ficam no topo do painel.
 
-- **Chegadas:** escolha uma equipe já cadastrada, a data, pesquise por jogadores ou integrantes da comissão (até 30 por lote) e ajuste o cargo de cada pessoa. A prévia mostra a origem e o destino. Confirmar e registrar grava, em uma única transação, o encerramento de um vínculo anterior (quando existe apenas um), a nova passagem ativa, o estado atual do perfil e um card por contratado no Mercado da Bala. Se a opção de publicar for desmarcada, os cards ficam em rascunho; a carreira e a página da equipe ainda são atualizadas.
+- **Chegadas:** escolha uma equipe já cadastrada, a data, pesquise por jogadores ou integrantes da comissão (até 30 por lote) e ajuste o cargo de cada pessoa. A prévia mostra a origem e o destino. Confirmar e registrar grava, em uma única transação, o encerramento de um vínculo anterior (quando existe apenas um), a nova passagem ativa, o estado atual do perfil e **um único card coletivo** no Mercado da Bala, com os nomes e fotos dos selecionados. Se a opção de publicar for desmarcada, o card fica em rascunho; a carreira e a página da equipe ainda são atualizadas.
 - **Saídas:** a ferramenta existente lista o elenco e permite selecionar passagens para encerramento em conjunto (até 100 pessoas), com data, fonte e motivo. A publicação em um card agrupado do Mercado da Bala agora vem marcada por padrão. Os participantes ficam Sem equipe / F/A.
 - O servidor compara as revisões dos cadastros para evitar sobrescritas, barra vínculos múltiplos e duplicações, usa um nonce único para impedir aplicação repetida e aborta o lote inteiro em caso de erro.
 - O bloco **Jogadores e comissão** das páginas de times lê as carreiras no endpoint público /careers/team. O Mercado da Bala lê as publicações da mesma base.
 - As alterações ficam no histórico de carreiras, sem sobrescrever o elenco histórico dos torneios já encerrados.
 
 Testes: functions/test/career-bulk-arrivals.test.cjs e test/career-interfaces.test.cjs. Ambos são executados no workflow de deploy do Worker.
+
+Os lotes de chegadas cadastrados na versão anterior, que geravam um card por pessoa, são agrupados automaticamente por identificador da operação (nonce) na primeira leitura após a atualização do Worker. Os cards individuais anteriores ficam arquivados como excluídos do feed, mas preservados no histórico. Publicações editadas manualmente não são modificadas automaticamente.
