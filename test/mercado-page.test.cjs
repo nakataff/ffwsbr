@@ -74,3 +74,26 @@ test('a broken explicit Apex crest retries the local asset once, without remappi
   img.dispatchEvent(new u.w.Event('error'));assert(img.src.endsWith('/escudo.webp'));assert.equal(u.calls.filter(x=>x.includes('/careers/market')).length,1);
  }finally{u.close();}
 });
+
+
+test('chegadas em massa aparecem em um unico card com nomes e fotos empilhadas',async()=>{
+ const group=[{id:'career-bulk-arrival-test',jogador:'BRISA7, NEYAWP, NICE69, RZN7',
+  foto:'photos/brisa7.webp,photos/neyawp.webp,photos/nice69.webp,photos/rzn7.webp',
+  status:'fechado',careerManaged:true,timeOrigem:'Sem equipe / F/A',timeDestino:'VASCO ESPORTS',
+  role:'Jogador',atualizacao:'11/11/2026'}];
+ const u=await ui({feed:group});
+ try{
+  assert.equal(u.all('.mercado-card').length,1);
+  const card=u.$('.mercado-card');
+  const photos=u.all('.mercado-avatar-stack img');
+  assert.equal(photos.length,4);
+  assert.deepEqual(photos.map(x=>x.getAttribute('src')),[
+   'photos/brisa7.webp','photos/neyawp.webp','photos/nice69.webp','photos/rzn7.webp']);
+  assert.match(card.textContent,/BRISA7/);
+  assert.match(card.textContent,/NEYAWP/);
+  assert.match(card.textContent,/NICE69/);
+  assert.match(card.textContent,/RZN7/);
+  assert.match(card.textContent,/VASCO ESPORTS/);
+  assert.equal(u.calls.filter(x=>x.includes('/careers/market')).length,1);
+ }finally{u.close();}
+});
