@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <base href="/">
-<script src="/js/root-page-redirects.js?v=20261105-s1-page-v1"></script>
+<script src="/js/root-page-redirects.js?v=20261111-world-stats-v1"></script>
 <script defer src="/js/season-routes.js?v=20261026-world-players-v1"></script>
 <script>
 (function () {
@@ -35,22 +35,9 @@
   } catch (_) {}
 })();
 </script>
-<script>
-window.cffLoadChartJS=window.cffLoadChartJS||function(){
-    if(window.Chart)return Promise.resolve(window.Chart);
-    if(window.__cffChartPromise)return window.__cffChartPromise;
-    window.__cffChartPromise=new Promise(function(resolve,reject){
-        var script=document.createElement("script");
-        script.src="https://cdn.jsdelivr.net/npm/chart.js";
-        script.async=true;
-        script.onload=function(){resolve(window.Chart)};
-        script.onerror=function(){window.__cffChartPromise=null;reject(new Error("Falha ao carregar gráficos"))};
-        document.head.appendChild(script);
-    });
-    return window.__cffChartPromise;
-};
-</script>
+<script defer src="/js/chart-loader.js?v=20261111-v1"></script>
 <!-- ADSENSE: carregado após a home ficar interativa -->
+<script>window.__cffGlobalChatBoot = true;</script>
 <script defer src="js/config.min.js?v=20261020-chat-layout-v1"></script>
 <!-- Limpa service workers/caches antigos para evitar site travado no mobile -->
 <script defer src="js/service-worker-register.min.js?v=20261029-interaction-guide-v1"></script>
@@ -582,7 +569,7 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 #home .home-s2-world-confirmed img{object-fit:contain}
 @media(max-width:600px){#home .home-s2-champion-banner{grid-template-columns:64px minmax(0,1fr);gap:14px;padding:18px}#home .home-s2-champion-logo{width:64px;height:64px}#home .home-s2-champion-copy .home-s2-broadcast-kicker{font-size:.64rem;line-height:1.5}#home .home-s2-champion-copy h2{font-size:1.45rem}#home .home-s2-champion-copy p{font-size:.82rem}#home .home-s2-world-confirmed span{gap:5px;padding:7px 8px;font-size:.7rem}#home .home-s2-world-confirmed>div{gap:7px}}
 </style>
-<link rel="stylesheet" href="/css/shared-navigation.css?v=20261108-dock-collapse-v1"><link rel="stylesheet" href="css/home-global-finals.css?v=20261106-live-match-v1">
+<link rel="stylesheet" href="/css/shared-navigation.css?v=20261108-dock-collapse-v1"><link rel="stylesheet" href="css/home-global-finals.css?v=20261111-home-v1">
 <link rel="stylesheet" href="/css/quiz-invite.css?v=20261019-quiz-invite-v2"><script defer src="/js/quiz-invite.js?v=20261019-mixed-challenges-v1"></script><link rel="stylesheet" href="/css/home-live-tournaments.css?v=20261019-tournaments-v1">
 <link rel="stylesheet" href="css/interaction-guide.css?v=20261029-interaction-guide-v1">
 <script defer src="js/interaction-guide.js?v=20261101-code-policy-v1"></script>
@@ -670,6 +657,12 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <div class="container">
   
  <div id="home" class="page active">
+
+    <nav class="home-world-shortcuts" aria-label="Atalhos do Mundial">
+        <a href="#home-global-classified">Próxima rodada</a>
+        <a href="/ffws-global-2026/classificatoria">Classificação</a>
+        <a href="/ffws-global-2026/mvp/">MVP</a>
+    </nav>
 
     <div id="news-hero-container" style="margin-bottom: 25px;"></div>
 
@@ -1274,13 +1267,11 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 <div id="ffws-global-2026-segunda-fase" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-segunda-fase-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-last-chance" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-last-chance-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-final" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-final-content" data-team-date="2026-11-06"></div></div>
-<div id="ffws-global-2026-mvp" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-mvp-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-equipe" class="page"><div id="ffws-global-2026-equipe-content"></div></div>
 <div id="ffws-global-2026-equipes" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-equipes-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-formato" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-formato-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-datas" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-datas-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-selecoes" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-selecoes-content" data-team-date="2026-11-06"></div></div>
-<div id="ffws-global-2026-stats" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-stats-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-notas" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-notas-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-global-2026-comparar" class="page" data-team-date="2026-11-06"><div id="ffws-global-2026-comparar-content" data-team-date="2026-11-06"></div></div>
 <div id="ffws-br-s2-inicio" class="page" data-team-date="2026-08-01"><div id="ffws-br-s2-inicio-content" data-team-date="2026-08-01"></div></div>
@@ -1951,20 +1942,20 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 <script defer src="js/player-photo-resolver.min.js?v=20261029-laff-photos-v1"></script>
 <script defer src="/js/shared-navigation.js?v=20261108-dock-collapse-v1"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261111-grouped-arrivals-v1"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261111-market-group-photos-v2"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>
 <script defer src="/js/tournament-logos.js?v=20261021-tournament-assets-v1"></script><script defer src="js/home-news-lives.min.js?v=20261028-creator-v1"></script>
 <script defer src="js/home-live-widget.min.js?v=20261028-live-green-v1"></script>
-<script defer src="js/news-admin-provider.js?v=20260903-home-images-v36"></script>
+<script defer src="js/news-admin-provider.js?v=20261111-news-routes-v1"></script>
 <script defer src="js/global-team-logos.js?v=20261104-lyon-gold-v1"></script>
 <script defer src="js/year-ranking-logo-sheet.js?v=20261104-lyon-gold-v1"></script>
 <script type="module" src="js/firebase-votes.min.js?v=20260917-restore-mercado-v1"></script>
 <script defer src="js/site-analytics.js?v=20260806-admin-v1"></script>
 <script defer src="js/home-mobile-rankings.js?v=20261018-home-compact-groups-v1"></script>
 <script defer src="/js/home-share-cards.js?v=20261106-world-menu-card-v1"></script>
-<script defer src="/js/global-selection-lineups.js?v=20261108-mundial-dia3-v1"></script>
+<script defer src="/js/global-selection-lineups.js?v=20261111-world-sync-v1"></script>
 <script defer src="js/home-global-results.js?v=20261108-mundial-dia3-v1"></script>
 <script defer src="js/home-year-2026.min.js?v=20261012-global-local-logos-v7"></script>
 </main>
@@ -1972,12 +1963,13 @@ window.cffLoadChartJS=window.cffLoadChartJS||function(){
 
 <script defer data-cff-community-promos src="js/community-promos.js?v=20261013-home-without-predictions-v4"></script>
 
-<script type="module" src="/js/public-account.js?v=20261104-predictions-page-v1"></script>
+<script type="module" src="/js/public-account.js?v=20261111-account-on-demand-v1"></script>
 <script defer src="js/notas-cff-info.js?v=20261012-global-v1"></script>
-<script defer src="js/home-global-finals.js?v=20261106-live-match-v1"></script>
+<script defer src="js/home-global-finals.js?v=20261111-home-v1"></script>
 <script defer src="js/home-supporters.js?v=20261021-supporters-v1"></script>
 <script defer src="js/home-support.js?v=20261019-quiz-coordination-v1"></script>
-<script type="module" src="/js/global-chat.js?v=20261108-system-unified-v5"></script><script type="module" src="/js/career-public.js?v=20261021-tournament-assets-v1"></script>
+<button id="home-chat-launch" type="button" aria-label="Abrir chat global" hidden>Chat global</button>
+<script type="module" src="/js/home-chat-launch.mjs?v=20261111-home-v1"></script><script type="module" src="/js/career-public.js?v=20261021-tournament-assets-v1"></script>
 </body>
 </html>
 

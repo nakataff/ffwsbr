@@ -5,6 +5,11 @@
   const LOCAL_NEWS_URL = 'noticias-painel.json?v=20260806-admin-v2';
   const CACHE_KEY = 'cff_news_cache_admin_v1';
   const CACHE_MAX_AGE = 6 * 60 * 60 * 1000;
+  const STATIC_NEWS = new Set(["livre-no-mercado-segundo-insider-lyon-esta-free-agent","lobato-o-rei-da-classificatorai-que-nunca-jogou-um-mundial","insano-loud-tem-atuacao-historica-e-conquista-a-copa-gwl-mobile","grupos-do-ffws-global-finals-2026-sao-revelados"]);
+  function articleUrl(id) {
+    const encoded = encodeURIComponent(id);
+    return STATIC_NEWS.has(id) ? '/noticia/' + encoded + '/' : '/noticia.html?id=' + encoded;
+  }
   let localNewsPromise = null;
   let scheduledRefreshTimer = null;
 
@@ -156,7 +161,7 @@
       createdAt: Number(raw && raw.createdAt || 0),
       updatedAt: Number(raw && raw.updatedAt || 0),
       source: String(raw && raw.source || 'admin'),
-      urlInterna: '/noticia/' + encodeURIComponent(id)
+      urlInterna: articleUrl(id)
     };
   }
 
@@ -487,6 +492,7 @@
   }
 
   window.CFF_NEWS_PROVIDER = {
+    articleUrl: articleUrl,
     parseTSV: parseTSV,
     parseSheetNews: parseSheetNews,
     normalizeNews: normalizeNews,

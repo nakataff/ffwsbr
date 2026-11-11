@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const {JSDOM}=require('jsdom'),read=p=>fs.readFileSync(p,'utf8');
 const settle=async()=>{for(let i=0;i<6;i++)await new Promise(r=>setImmediate(r));};
 const rows=[{id:'m1',jogador:'MT7',status:'fechado',timeOrigem:'LOUD',timeDestino:'W7M',escudoOrigem:'',escudoDestino:'',foto:'silhueta.webp',careerManaged:true,atualizacao:'23/10/2026'}, {id:'m2',jogador:'Joker',personId:'coach-loud-joker',role:'Coach',status:'rumor',timeOrigem:'LOUD',timeDestino:'',careerManaged:true}];
-async function ui({cache,offline=false,pages=false,feed=rows}={}){
+async function ui({cache,offline=false,pages=false,feed=rows,photoMap={photos:{}}}={}){
  const dom=new JSDOM(read('mercado.html'),{url:'https://centralfreefire.com.br/mercado.html?time=btr&grupo=A',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,calls=[],votes=[];
  w.console.warn=()=>{};w.console.error=()=>{};w.CFF_CONFIG={sheets:{mercado:'https://example.invalid/old-sheet'}};w.fbLoadVotes=()=>{};w.fbVote=(...a)=>votes.push(a);
  w.requestAnimationFrame=fn=>{fn();return 1;};w.AbortController=AbortController;
@@ -11,12 +11,13 @@ async function ui({cache,offline=false,pages=false,feed=rows}={}){
  w.fetch=async url=>{url=String(url);calls.push(url);let data;
   if(url.includes('/careers/market')){if(offline)throw Error('Offline');data={ok:true,entries:pages&&url.includes('offset=')?[{...rows[0],id:'m3',jogador:'Yago'}]:feed,total:3,hasMore:pages&&!url.includes('offset=')};}
   else if(url.includes('logo-map.json')){data=JSON.parse(read('team-data/logo-map.json'));data.logos.LOUD='loud.webp';}
+  else if(url.includes('photo-map.json'))data=photoMap;
   else if(url.includes('routes.json'))data={routes:{mt7:'s:fluxo-w7m',yago:'s:los'}};
   else if(url.includes('market-fallback'))data={entries:rows};
   else throw Error('Unexpected request '+url);
   return {ok:true,json:async()=>structuredClone(data),text:async()=>JSON.stringify(data)};
  };
- for(const script of ['js/charts-market.min.js','js/mercado-status-performance-hotfix.min.js','js/team-logo-resolver.min.js','js/mercado-page.js'])vm.runInContext(read(script),dom.getInternalVMContext());
+ for(const script of ['js/player-photo-resolver.min.js','js/charts-market.min.js','js/mercado-status-performance-hotfix.min.js','js/team-logo-resolver.min.js','js/mercado-page.js'])vm.runInContext(read(script),dom.getInternalVMContext());
  await settle();return {w,dom,calls,votes,$:s=>w.document.querySelector(s),all:s=>[...w.document.querySelectorAll(s)],close:()=>w.close()};
 }
 test('Mercado is real standalone HTML and no longer a hidden page inside the index',()=>{
@@ -96,4 +97,19 @@ test('chegadas em massa aparecem em um unico card com nomes e fotos empilhadas',
   assert.match(card.textContent,/VASCO ESPORTS/);
   assert.equal(u.calls.filter(x=>x.includes('/careers/market')).length,1);
  }finally{u.close();}
+});
+
+test('o card do Vasco recupera fotos de perfil mesmo quando a API só entrega silhuetas', async () => {
+ const feed = [{id:'career-bulk-arrival-vasco', jogador:'RZN7, Nice69, NEYAWP, Brisa7',
+  foto:'silhueta.webp,silhueta.webp,silhueta.webp,silhueta.webp', status:'fechado',
+  careerManaged:true, timeDestino:'VASCO ESPORTS', role:'Jogador'}];
+ const u = await ui({feed, photoMap:JSON.parse(read('player-data/photo-map.json'))});
+ try {
+  assert.equal(u.all('.mercado-card').length, 1);
+  assert.deepEqual(u.all('.mercado-avatar-stack img').map(image => [image.alt,image.getAttribute('src')]), [
+   ['RZN7','silhueta.webp'], ['Nice69','silhueta.webp'],
+   ['NEYAWP','player-photos/s2/neyawp.webp'], ['Brisa7','player-photos/s2/brisa7.webp']
+  ]);
+  assert.equal(u.calls.filter(url => url.includes('photo-map.json')).length, 1);
+ } finally {u.close();}
 });

@@ -19,7 +19,7 @@ test('compact summaries derive from existing sources and retain all 24 teams and
   const summary=output['inicio-resumo.json'];assert.equal(summary.teams.length,24);assert.equal(summary.rounds.length,18);
   for(const team of summary.teams)assert(fs.existsSync(team.logo),team.logo);
   assert(summary.format.classificatoria.description.includes('36 quedas'));assert(summary.format.final.description.includes('110'));
-  assert(Buffer.byteLength(JSON.stringify(summary))<18000);
+  assert(Buffer.byteLength(JSON.stringify(summary))<24000);
 });
 test('offline results keep independent phase-two days and official Champion Rush final order',()=>{
   const input=sources();

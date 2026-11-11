@@ -74,14 +74,15 @@ test('Classificatória and Stats share published scores, preserve session filter
    // The same live drops must not replace or duplicate the official workbook,
    // and a newer live-only round still extends the static archive.
    api.state.stages=json('stages');
-   assert.equal(api.stageEvents('classificatoria').length,24);
+   const officialDrops=api.stageEvents('classificatoria').length;
+   assert.equal(officialDrops,api.state.stages.classificatoria.rounds.length);
    const archived=api.stageEvents('classificatoria')[0];
    assert.equal(archived.results.find(row=>row.team==='LOUD').points,22);
-   published={...published,'classificatoria-5':makeRound('classificatoria-5',7)};
+   published={...published,'classificatoria-7':makeRound('classificatoria-7',7)};
    await api.loadLiveResults(true);
    const merged=api.stageEvents('classificatoria');
-   assert.equal(merged.length,25);
-   assert.equal(merged.at(-1).round,5);
+   assert.equal(merged.length,officialDrops+1);
+   assert.equal(merged.at(-1).round,7);
    assert.equal(merged[0],archived);
   }
   fail=true;const count=api.stageEvents('classificatoria').length;

@@ -6,7 +6,7 @@ const wait=async fn=>{for(let i=0;i<100&&!fn();i++)await new Promise(r=>setTimeo
 const response=body=>new Response(JSON.stringify(body),{headers:{'Content-Type':'application/json'}});
 const code=path=>fs.readFileSync(path,'utf8');
 
-test('home waits for its route and uses a compact snapshot plus one Firebase summary',async()=>{
+test('home waits for its route and uses two static summaries without Firebase',async()=>{
  const w=new JSDOM('<div id="home" class="page"><div id="global-selection-home-widget"></div><div id="home-ranking-teams"><h3></h3></div><table><tbody id="home-tbody-teams"></tbody><tbody id="home-tbody-players"></tbody></table></div>',{pretendToBeVisual:true,runScripts:'outside-only',url:'https://centralfreefire.com.br/ffws-global-2026/mvp'}).window;
  const calls=[],d=w.document;
  w.CFF_CONFIG={firebase:{databaseURL:'https://fixture.invalid'}};
@@ -16,11 +16,11 @@ test('home waits for its route and uses a compact snapshot plus one Firebase sum
   await new Promise(r=>setTimeout(r,25));assert.deepEqual(calls,[]);
   d.getElementById('home').classList.add('active');
   await wait(()=>d.querySelector('#home-tbody-players tr a'));
-  assert.deepEqual(calls.sort(),['ffws-global-2026/selecoes-resumo.json','ffwsLive/global-2026/home.json']);
-  assert.match(d.getElementById('home-tbody-teams').querySelector('tr').textContent,/FLUXO W7M.*233/);
+  assert.deepEqual(calls.sort(),['ffws-global-2026/home-resumo.json','ffws-global-2026/selecoes-resumo.json']);
+  assert.match(d.getElementById('home-tbody-teams').querySelector('tr').textContent,/P Esports.*325/);
   assert.match(d.getElementById('home-tbody-players').textContent,/BuTziN/);
   assert.equal(d.querySelectorAll('.cff-gsel-home-row').length,5);
-  assert.match(d.getElementById('global-selection-home-widget').textContent,/COACH.*Adi/i);
+  assert.match(d.getElementById('global-selection-home-widget').textContent,/COACH.*Lipão/i);
   assert(d.querySelector('.cff-gsel-home-row img[src*="/160/"]'));
   w.cffHomeRenderFinalStats();w.cffHomeRenderFinalStats();assert.equal(calls.length,2);
  }finally{w.close();}

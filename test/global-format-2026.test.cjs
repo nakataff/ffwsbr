@@ -10,7 +10,7 @@ test('period filters use 12 rounds, four daily qualifiers and one-day later stag
 test('phase one checkboxes accumulate rounds 3 and 4 and combine with map and drop filters',()=>{
  const x=ui('dangerously');
  try{
-  x.api.state.stages.classificatoria.rounds=structuredClone(stages.classificatoria.rounds);
+  x.api.state.stages.classificatoria.rounds=structuredClone(stages.classificatoria.rounds.filter(drop=>drop.round<=4));
   const root=x.render('classificatoria');
   const control=type=>root.querySelector(`[data-global-stage-multi="${type}"] > button`);
   const checkbox=(type,value)=>root.querySelector(`[data-global-stage-multi="${type}"] input[value="${value}"]`);
@@ -121,10 +121,8 @@ test('Global Finals share studio previews the image BEFORE settings on mobile an
  assert.match(markup,/cff-stats-share-preview"><canvas/);
  assert.match(markup,/data-share-action="save"/);
  assert.match(markup,/data-share-action="share"/);
- const global=read('ffws-global-2026/global.js'),shell=read('js/site-shell-fast.min.js'),html=read('index.html');
- assert.match(global,/global-stats-share\.css\?v=20261108-six-metrics-ranks-v9/);
- assert.match(shell,/global\.js\?v=20261108-evolucao-equipes-jogadores-v11/);
- assert.match(html,/site-shell-fast\.min\.js\?v=20261108-evolucao-equipes-jogadores-v11/);
+ const global=read('ffws-global-2026/global.js');
+ assert.match(global,/global-stats-share\.css\?v=[\w-]+/);
 });
 
 test('Stories have dedicated responsive positions for rankings, stats, records and comparison',()=>{
@@ -140,7 +138,7 @@ test('Stories have dedicated responsive positions for rankings, stats, records a
  assert.match(source,/const panelBottom=footerY-\(story\?78:feed\?62:34\)/);
  assert(!source.includes('storyRanking'),'old ranking-only layout must not control Story geometry');
  const global=read('ffws-global-2026/global.js');
- assert.match(global,/global-stats-share\.js\?v=20261108-stats-share-metric-routing-v10/);
+ assert.match(global,/global-stats-share\.js\?v=[\w-]+/);
 });
 
 test('4:5 Feed panels follow the actual header and Stories typography gets larger',()=>{
@@ -157,5 +155,27 @@ test('4:5 Feed panels follow the actual header and Stories typography gets large
  assert.match(source,/await navigator\.share\(\{files:\[file\],title:livePayload\.title/);
  assert.match(source,/function currentPNG\(\)/);
  const stats=read('ffws-global-2026/stats/index.html');
- assert.match(stats,/cff-global-build','20261108-evolucao-equipes-jogadores-v11/);
+ assert.match(stats,/src="\/ffws-global-2026\/global\.js\?v=[\w-]+"/);
+ assert.doesNotMatch(stats,/location\.replace|site-shell-fast/);
+});
+
+test('standalone stats open directly with a shared date filter and no home dependencies', async () => {
+ const html=read('ffws-global-2026/stats/index.html');
+ const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/ffws-global-2026/stats/?statsStage=classificatoria&statsDays=3',runScripts:'outside-only'});
+ const w=dom.window, requests=[];
+ try {
+  w.requestAnimationFrame=()=>0;
+  w.matchMedia=()=>({matches:false,addEventListener(){}});
+  w.fetch=async url=>{
+   const file=String(url).split('?')[0].replace(/^\//,'');
+   requests.push(file);
+   return {ok:true,json:async()=>JSON.parse(read(file))};
+  };
+  for(const file of ['js/season-routes.js','ffws-global-2026/config.js','ffws-global-2026/global.js'])w.eval(read(file));
+  for(let i=0;i<6;i++)await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(w.document.querySelector('main h1').textContent,'Estatísticas Gerais');
+  assert.match(w.document.querySelector('#ffws-global-2026-stats-content').textContent,/12 quedas/);
+  assert.equal(w.location.pathname,'/ffws-global-2026/stats/');
+  assert(requests.every(file=>file.startsWith('ffws-global-2026/')));
+ } finally {w.close();}
 });

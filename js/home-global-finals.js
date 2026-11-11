@@ -8,7 +8,7 @@
     const target=mobile.matches?rail:center;
     const support=document.querySelector('#home .home-support');
     target.insertBefore(board,target.firstElementChild);
-    if(support)target.insertBefore(support,board);
+    if(support)board.after(support);
   }
   place();
   mobile.addEventListener('change',place);

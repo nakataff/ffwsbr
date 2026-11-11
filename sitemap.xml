@@ -1,12 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://centralfreefire.com.br/</loc><lastmod>2026-05-09T01:18:47.179714-03:00</lastmod><priority>1.0</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/garena-anuncia-data-de-retorno-da-laff/</loc><lastmod>2026-05-09T01:18:47.172742-03:00</lastmod><priority>0.9</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/team-solid-e-campea-da-liga-marinho/</loc><lastmod>2026-05-09T01:18:47.172725-03:00</lastmod><priority>0.9</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/yago-se-aproxima-dos-2000-abates-na-wb/</loc><lastmod>2026-05-09T01:18:47.172707-03:00</lastmod><priority>0.9</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/vitin9-e-novo-reforco-da-loops/</loc><lastmod>2026-05-09T01:18:47.172687-03:00</lastmod><priority>0.9</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/loud-e-virtus-pro-estao-zerados-de-top-12-no-split/</loc><lastmod>2026-05-09T01:18:47.172657-03:00</lastmod><priority>0.9</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/jackmvp7-surge-como-nova-promessa-do-cenario/</loc><lastmod>2026-05-08T12:00:00-03:00</lastmod><priority>0.9</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/exposed-mandela-e-denunciado-por-cheat/</loc><lastmod>2026-05-07T12:00:00-03:00</lastmod><priority>0.9</priority></url>
-<url><loc>https://centralfreefire.com.br/noticias/mt7-e-saifa-veja-a-comparacao-dos-mvp-do-brasil-e-sea/</loc><lastmod>2026-05-07T12:00:00-03:00</lastmod><priority>0.9</priority></url>
+  <url><loc>https://centralfreefire.com.br/</loc></url>
+  <url><loc>https://centralfreefire.com.br/mercado.html</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s1.html</loc></url>
+  <url><loc>https://centralfreefire.com.br/tier-constructor.html</loc></url>
+  <url><loc>https://centralfreefire.com.br/camp-ao-vivo.html</loc></url>
+  <url><loc>https://centralfreefire.com.br/equipes-historicas.html</loc></url>
+  <url><loc>https://centralfreefire.com.br/ranking-anual.html</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/inicio/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/formato/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/classificatoria/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/segunda-fase/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/last-chance/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/final/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/jogadores/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/mvp/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/equipes/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/datas/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/selecoes/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/stats/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/notas/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-global-2026/comparar/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/inicio/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/classificatoria/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/segunda-fase/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/final/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/mvp/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/equipes/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/datas/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/stats/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/selecoes/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/notas/</loc></url>
+  <url><loc>https://centralfreefire.com.br/ffws-br-s2/comparar/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/exposed-mandela-e-denunciado-por-cheat/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/garena-anuncia-data-de-retorno-da-laff/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/jackmvp7-surge-como-nova-promessa-do-cenario/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/loud-e-virtus-pro-estao-zerados-de-top-12-no-split/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/mt7-e-saifa-veja-a-comparacao-dos-mvp-do-brasil-e-sea/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/team-solid-e-campea-da-liga-marinho/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/vitin9-e-novo-reforco-da-loops/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticias/yago-se-aproxima-dos-2000-abates-na-wb/</loc></url>
+  <url><loc>https://centralfreefire.com.br/noticia/livre-no-mercado-segundo-insider-lyon-esta-free-agent/</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://centralfreefire.com.br/noticia/lobato-o-rei-da-classificatorai-que-nunca-jogou-um-mundial/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://centralfreefire.com.br/noticia/insano-loud-tem-atuacao-historica-e-conquista-a-copa-gwl-mobile/</loc><lastmod>2026-10-25</lastmod></url>
+  <url><loc>https://centralfreefire.com.br/noticia/grupos-do-ffws-global-finals-2026-sao-revelados/</loc><lastmod>2026-10-18</lastmod></url>
 </urlset>

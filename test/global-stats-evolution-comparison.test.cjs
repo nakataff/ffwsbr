@@ -62,7 +62,7 @@ test('team comparison offers all 24 official participants even when just five ha
  assert(actual.includes('Time 24')&&actual.includes('Time 20'));
  assert.deepEqual(Array.from(r.state.statsEvolution.teams),teams.slice(0,5).map(t=>t.name));
  assert.match(css,/full 24-team comparison/);
- assert.match(css,/flex-wrap:wrap;overflow-x:visible/);
+ assert.match(css,/flex-wrap:nowrap;[^}]*overflow-x:auto/);
 });
 test('search catalog covers all 120 players, matches nick and team, and limits visible suggestions',()=>{
  const r=makeRuntime(),entries=[
@@ -82,7 +82,7 @@ test('search catalog covers all 120 players, matches nick and team, and limits v
  assert.match(byTeam,/Jogador 024/);
  const general=r.fn.s2StatsEvolutionPlayerSearchHtml('jogador');
  assert.equal((general.match(/class="ffws-global-evolution-player-result/g)||[]).length,12);
- assert.match(r.fn.s2StatsEvolutionPlayerSearchHtml(''),/Digite o nome/);
+ assert.equal(r.fn.s2StatsEvolutionPlayerSearchHtml(''),'');
  assert(!r.fn.s2StatsEvolutionPlayerSearchHtml('').includes('Jogador 120'));
 });
 test('daily series honor stage/day recorte, zero values, no-data gaps, per-drop averages and contribution percentages',()=>{
@@ -122,7 +122,7 @@ test('daily series honor stage/day recorte, zero values, no-data gaps, per-drop 
 });
 test('player chart keeps filters, searches and 5-player limit without loading separate data',()=>{
  assert(source.includes('s2StatsEvolutionPlayerHtml()'));
- assert(source.includes('renderS2StatsEvolutionPlayerChart(); updateGlobalStatsBackTopVisibility();'));
+ assert.match(source,/renderS2StatsEvolutionPlayerChart\(\);[^{}]*updateGlobalStatsBackTopVisibility\(\);/);
  assert(source.includes('state.statsEvolutionPlayers.players=selected.includes(id)?selected.filter'));
  assert(source.includes(':selected.length<5?[...selected,id]:selected;'));
  assert(source.includes('window.searchFFWSGlobalStatsEvolutionPlayer = text =>'));

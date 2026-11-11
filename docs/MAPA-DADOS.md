@@ -177,6 +177,14 @@ Depois, regenere os perfis, o resumo das equipes e o modelo do Camp.
   e do Cloudflare devem ser medidas nos respectivos painéis. Não use tamanho
   do JSON nem quantidade de requests como estimativa de `rows_read`.
 
+### Páginas públicas do Mundial 2026
+
+Estatísticas Gerais e Ranking MVP têm HTML próprio em
+`ffws-global-2026/stats/index.html` e `ffws-global-2026/mvp/index.html`. A
+navegação usa os mesmos filtros e preserva os parâmetros dos links antigos
+de `index.html#ffws-global-2026-…`. Estatísticas carrega os dados detalhados
+e o gráfico conforme o uso. MVP continua limitado ao resumo da edição.
+
 ### Início do Mundial 2026
 
 Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu).

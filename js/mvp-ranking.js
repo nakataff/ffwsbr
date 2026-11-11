@@ -23,7 +23,7 @@
   function load(key,config){
     if(!cache.has(key)){
       const base='/'+config.path+'/mvp-resumo.json';
-      const version=key==='global'?'20261108-mvp-refresh-v3':'20261106-shared-mvp-v1';
+      const version=key==='global'?'20261111-world-sync-v1':'20261106-shared-mvp-v1';
       const parse=async(url,mode)=>{
         const response=await fetch(url,{cache:mode});
         if(!response.ok)throw Error('Ranking indisponível');
