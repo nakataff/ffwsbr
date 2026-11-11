@@ -4,6 +4,7 @@ import {mountCareerPersonCreate} from './career-person-create.mjs?v=20261017-peo
 import {mountCareerMarket} from './career-market-admin.mjs?v=20261017-people-v1';
 import {createCareerDirectory} from './career-directory-admin.mjs?v=20261021-team-eras-v1';
 import {initCareerDepartures} from './career-departures.js?v=20261017-people-v1';
+import {mountCareerBulkArrivals} from './career-bulk-arrivals.mjs?v=20261111-bulk-market-v1';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,setPersistence,browserLocalPersistence,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
 import {careerAdmin,ROLES,STATUSES,esc,tenureCards,personHref,periodLabel} from './career-client.mjs?v=20261018-career-chronology-v2';
@@ -91,6 +92,11 @@ directory=createCareerDirectory({call,valid,esc,roles:ROLES,statuses:STATUSES,pe
 const marketUI=mountCareerMarket({call,valid,createPeople:(context,done)=>quickCreate.open(context,done),canOpen:()=>!busy&&!editorSubmitting&&!directory?.saving(),onApplied:()=>{personSequence++;selected=null;summary();}});
 const tournamentAssetsUI=mountTournamentAssetsAdmin({call,valid,esc,canOpen:()=>!busy&&!editorSubmitting&&!directory?.saving()});
 $('#career-tournament-assets')?.addEventListener('click',()=>tournamentAssetsUI.open());
+const bulkArrivals=mountCareerBulkArrivals({
+ call,valid,canOpen:()=>!busy&&!editorSubmitting&&!directory?.saving()&&!quickCreate.busy(),
+ onApplied:async()=>{personSequence++;selected=null;$('#career-detail').innerHTML='<section class="admin-panel"><p class="career-hint">Chegadas registradas. Selecione uma pessoa ou equipe para conferir os vínculos.</p></section>';summary();}
+});
+$('#career-bulk-arrivals').addEventListener('click',()=>bulkArrivals.open());
 $('#career-bulk-departure').addEventListener('click',()=>departures.openTeam());
 $('#career-person-list').addEventListener('click',event=>{const b=event.target.closest('[data-career-person]');if(b)choose(b.dataset.careerPerson);});
 $('#career-new-person').addEventListener('click',()=>quickCreate.open({role:directory.section()==='staff'?'coach':'player'}));
