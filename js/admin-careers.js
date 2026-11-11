@@ -94,7 +94,7 @@ const tournamentAssetsUI=mountTournamentAssetsAdmin({call,valid,esc,canOpen:()=>
 $('#career-tournament-assets')?.addEventListener('click',()=>tournamentAssetsUI.open());
 const bulkArrivals=mountCareerBulkArrivals({
  call,valid,canOpen:()=>!busy&&!editorSubmitting&&!directory?.saving()&&!quickCreate.busy(),
- onApplied:async()=>{personSequence++;selected=null;$('#career-detail').innerHTML='<section class="admin-panel"><p class="career-hint">Chegadas registradas. Selecione uma pessoa ou equipe para conferir os vínculos.</p></section>';summary();}
+ onApplied:async()=>{personSequence++;selected=null;$('#career-detail').innerHTML='<section class="admin-panel"><p class="career-hint">Chegadas registradas. Selecione uma pessoa ou equipe para conferir os vínculos.</p></section>';await summary();}
 });
 $('#career-bulk-arrivals').addEventListener('click',()=>bulkArrivals.open());
 $('#career-bulk-departure').addEventListener('click',()=>departures.openTeam());
