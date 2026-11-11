@@ -13,8 +13,8 @@
     root.querySelectorAll('.mercado-card[data-market-index]').forEach(card=>{
       const row=mercadoData[Number(card.dataset.marketIndex)];if(!row)return;
       const names=getMercadoPlayers(row),staff=/coach|analista|manager|treinador|comiss/i.test(row.role||'');
-      card.querySelectorAll('.mercado-player-name-list>span:not(.mercado-name-sep)').forEach((node,index)=>{
-        const name=names[index];if(!name)return;
+      card.querySelectorAll('.mercado-player-name-list > :not(.mercado-name-sep)').forEach((node,index)=>{
+        const name=names[index];if(!name||node.tagName!=='SPAN')return;
         let url='';
         if(row.personId&&names.length===1&&staff)url='/carreira.html?id='+encodeURIComponent(row.personId);
         else if(Object.hasOwn(routes,slug(name)))url='/jogador.html?'+new URLSearchParams({id:slug(name),voltar:'mercado.html'});

@@ -23,7 +23,7 @@ function setup({hidden=false, blocked=false, local={}, session={}, unavailable=f
   run();
   return {w,dom,run,advance:ms=>now+=ms,show:()=>timer?.(),dialog:()=>w.document.getElementById('cff-support-dialog')};
 }
-test('support stays directly above the Mundial on desktop, mobile and resize',()=>{
+test('the Mundial stays above support on desktop, mobile and resize',()=>{
   const x=setup();
   try {
     let mobile=false,change;
@@ -33,7 +33,7 @@ test('support stays directly above the Mundial on desktop, mobile and resize',()
     const card=x.w.document.querySelector('.home-support'),board=x.w.document.querySelector('#home-global-classified');
     for (const value of [false,true,false]) {
       mobile=value;change();
-      assert.equal(card.nextElementSibling,board);
+      assert.equal(board.nextElementSibling,card);
       assert(card.parentElement.matches(mobile?'.home-left-rail':'.home-center-column'));
     }
   } finally {x.w.close();}
