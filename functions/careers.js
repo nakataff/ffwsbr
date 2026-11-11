@@ -111,7 +111,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
    sql.exec('INSERT INTO career_meta VALUES(?,?)',marker,'1');
   });
  }
- function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();syncFroisVirtusS1();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();syncFroisVirtusS1();ready=true;}
+ function ensure(){if(ready)return;init(sql);market.ensure();competitions.ensure();if(rows("SELECT value FROM career_meta WHERE id='seed'").length){syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();syncFroisVirtusS1();groupPreviouslySavedBulkArrivals();ready=true;return;}transaction(()=>{if(rows("SELECT value FROM career_meta WHERE id='seed'").length)return;for(const t of seed.teams){sql.exec('INSERT OR IGNORE INTO career_teams VALUES(?,?,?,?)',t.id,t.name,key(t.name),JSON.stringify(t));aliases(t.id,[t.id,t.name,...t.aliases||[]],'career_team_aliases','team');}for(const p of seed.people){const {tenures,...data}=p;sql.exec('INSERT OR IGNORE INTO career_people VALUES(?,?,?,?,?,?,?)',p.id,p.name,key(p.name),p.kind,JSON.stringify(data),1,now());aliases(p.id,[p.id,p.name,...p.aliases||[]]);for(const t of tenures)sql.exec('INSERT OR IGNORE INTO career_tenures VALUES(?,?,?,?,?)',t.id,p.id,t.teamId,t.order,JSON.stringify(t));}sql.exec("INSERT INTO career_meta VALUES('seed',1)");sql.exec("INSERT OR IGNORE INTO career_meta VALUES('version',1)");});syncRegistration();identityRepairs.ensure();syncStaffRoster();historicalStaff.ensure();syncLuuukingPortrait();syncFroisVirtusS1();groupPreviouslySavedBulkArrivals();ready=true;}
  const revision=()=>rows("SELECT value FROM career_meta WHERE id='version'")[0]?.value||1;
  const records=id=>rows('SELECT data FROM career_tenures WHERE person=? ORDER BY ord,id',id).map(r=>JSON.parse(r.data));
  const active=t=>!t.deleted&&['active','loan','substitute'].includes(t.status)&&(!bounds(t.start)||bounds(t.start)<=day(now()))&&(!bounds(t.end,true)||bounds(t.end,true)>=day(now()));
@@ -293,6 +293,68 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
   return {ok:true,exported,skipped,replaced,memberCount:prepared.length-skipped.length,team:{id:team.id,name:team.name}};
  }
 
+ // A mass arrival creates ONE Mercado card. The careers remain individual.
+ function saveBulkArrivalCard(identity,{nonce,target,arrivals,publication,date,source='',sourceUrl='',notes=''}){
+  if(!arrivals.length)throw fail(400,'Lote vazio.');
+  const first=arrivals[0],sameOrigin=arrivals.every(a=>a.fromId===first.fromId&&a.fromName===first.fromName),
+   sameRole=arrivals.every(a=>a.role===first.role),grouped=arrivals.length>1;
+  const entry={
+   id:grouped?'career-bulk-arrival-'+nonce:'career-'+first.tenureId,
+   personId:grouped?'':first.id,name:grouped?arrivals.map(a=>a.name).join(', '):first.name,
+   fromId:sameOrigin?first.fromId||'':'',fromName:sameOrigin?first.fromName||'Sem equipe / F/A':'Várias origens',
+   toId:target.id,toName:target.name,
+   role:sameRole?first.role:'other',roleLabel:sameRole?'':'Jogadores e comissão',
+   date,status:'fechado',publication,source,sourceUrl,notes,
+   groupType:grouped?'bulk-arrival':'',
+   careerTenureId:grouped?'':first.tenureId,careerExitTenureId:grouped?'':first.exitTenureId||'',
+   careerRevision:grouped?0:first.revision
+  };
+  if(grouped)entry.members=arrivals.map(a=>({
+   personId:a.id,arrivalTenureId:a.tenureId,name:a.name,photo:a.photo||'silhueta.webp',
+   role:a.role,fromId:a.fromId||'',fromName:a.fromName||'Sem equipe / F/A'
+  }));
+  return market.save(identity,{entry},{fromCareer:true}).entry;
+ }
+ // Older batches (including those already shown as separate cards) are rebuilt
+ // using their exact request nonce, NEVER just matching names/date/team.
+ function groupPreviouslySavedBulkArrivals(){
+  const marker='group-previous-bulk-arrivals-20261111-v1';
+  if(rows('SELECT value FROM career_meta WHERE id=?',marker).length)return;
+  transaction(()=>{
+   const batches=rows("SELECT nonce,actor,body,response FROM career_requests WHERE json_extract(body,'$.operation')='bulkArrivals'");
+   for(const batch of batches){
+    let body,response;
+    try{body=JSON.parse(batch.body);response=JSON.parse(batch.response);}catch{continue;}
+    const older=response?.market;
+    if(!Array.isArray(older)||older.length<2||!Array.isArray(response?.affected)||
+       older.length!==response.affected.length||!Array.isArray(body?.members)||
+       body.members.length!==older.length)continue;
+    const target=findTeam(body.teamId||body.teamName);
+    if(!target)continue;
+    const existing=older.map(v=>market.get(v.id));
+    if(existing.some((e,i)=>!e||e.revision!==1||e.publication==='deleted'||e.members?.length||
+      !e.careerAppliedAt||e.personId!==response.affected[i].id||
+      e.careerTenureId!==response.affected[i].tenureId||
+      e.toId!==target.id||e.date!==body.date||
+      e.publication!==response.publication))continue;
+    const arrivals=existing.map(e=>({
+     id:e.personId,name:e.name,photo:e.photo,role:e.role,
+     fromId:e.fromId,fromName:e.fromName,tenureId:e.careerTenureId,
+     exitTenureId:e.careerExitTenureId,revision:e.careerRevision
+    }));
+    const group=saveBulkArrivalCard({uid:batch.actor||'system:bulk-arrivals-migration'},{
+     nonce:batch.nonce,target,arrivals,publication:response.publication,date:body.date,
+     source:body.source||'',sourceUrl:body.sourceUrl||'',notes:body.notes||''
+    });
+    for(const e of existing)market.remove({uid:batch.actor||'system:bulk-arrivals-migration'},
+     {entryId:e.id,revision:e.revision});
+    const updated={...response,market:[{id:group.id,name:group.name,publication:group.publication}],
+     replaced:existing.map(e=>e.id)};
+    sql.exec('UPDATE career_requests SET response=? WHERE nonce=?',JSON.stringify(updated),batch.nonce);
+   }
+   sql.exec('INSERT OR IGNORE INTO career_meta VALUES(?,?)',marker,1);
+  });
+ }
  function createPeople(identity,b){
   if(!Array.isArray(b.people)||!b.people.length||b.people.length>20)throw fail(400,'Cadastre de 1 a 20 pessoas por vez.');
   const mode=b.mode||'none';if(!['none','active','ended'].includes(mode))throw fail(400,'Confira a situação da passagem.');
@@ -366,7 +428,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
       new Date(date+'T12:00:00Z').toISOString().slice(0,10)!==date||date>day(now()))
       throw fail(400,'Informe uma data de chegada válida até hoje.');
     const source=text(b.source,250),sourceUrl=text(b.sourceUrl,1500),notes=text(b.notes,1000);
-    const publication=b.publishMarket===false?'draft':'published',affected=[],published=[];
+    const publication=b.publishMarket===false?'draft':'published',affected=[],arrivals=[];
     for(const m of members){
      const id=text(m.personId,100),before=snapshot(id);
      if(!before)throw fail(404,'Pessoa não encontrada: '+id+'.');
@@ -381,14 +443,15 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
      const event={personId:id,name:before.person.name,fromId:origin?.id||'',fromName:origin?.name||'Sem equipe / F/A',
       toId:target.id,toName:target.name,role:m.role,date,status:'fechado',publication,source,sourceUrl,notes};
      const career=applyMarketCareer(event,{personRevision:m.revision,fromTenureId:open[0]?.id||''},identity);
-     const entry=market.save(identity,{entry:{...event,id:'career-'+career.tenureId,
-      careerTenureId:career.tenureId,careerExitTenureId:open[0]?.id||'',careerRevision:career.revision}},
-      {fromCareer:true}).entry;
      affected.push({id,name:before.person.name,role:m.role,from:origin?.name||'Sem equipe / F/A',to:target.name,
       revision:career.revision,tenureId:career.tenureId});
-     published.push({id:entry.id,name:entry.name,publication:entry.publication});
+     arrivals.push({id,name:before.person.name,photo:JSON.parse(before.person.data).photo||'silhueta.webp',
+      role:m.role,fromId:origin?.id||'',fromName:origin?.name||'Sem equipe / F/A',
+      tenureId:career.tenureId,exitTenureId:open[0]?.id||'',revision:career.revision});
     }
-    const result={ok:true,team:{id:target.id,name:target.name},affected,market:published,
+    const entry=saveBulkArrivalCard(identity,{nonce:b.nonce,target,arrivals,publication,date,source,sourceUrl,notes});
+    const result={ok:true,team:{id:target.id,name:target.name},affected,
+      market:[{id:entry.id,name:entry.name,publication:entry.publication}],
       publication,version:revision()};
     sql.exec('INSERT INTO career_requests VALUES(?,?,?,?)',b.nonce,identity.uid,body,JSON.stringify(result));
     return result;
