@@ -7,7 +7,7 @@ async function ui({cache,offline=false,pages=false,feed=rows}={}){
  const dom=new JSDOM(read('mercado.html'),{url:'https://centralfreefire.com.br/mercado.html?time=btr&grupo=A',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,calls=[],votes=[];
  w.console.warn=()=>{};w.console.error=()=>{};w.CFF_CONFIG={sheets:{mercado:'https://example.invalid/old-sheet'}};w.fbLoadVotes=()=>{};w.fbVote=(...a)=>votes.push(a);
  w.requestAnimationFrame=fn=>{fn();return 1;};w.AbortController=AbortController;
- if(cache)w.localStorage.setItem('cff_mercado_api_cache_v1',JSON.stringify(cache));
+ if(cache)w.localStorage.setItem('cff_mercado_api_cache_v2',JSON.stringify(cache));
  w.fetch=async url=>{url=String(url);calls.push(url);let data;
   if(url.includes('/careers/market')){if(offline)throw Error('Offline');data={ok:true,entries:pages&&url.includes('offset=')?[{...rows[0],id:'m3',jogador:'Yago'}]:feed,total:3,hasMore:pages&&!url.includes('offset=')};}
   else if(url.includes('logo-map.json')){data=JSON.parse(read('team-data/logo-map.json'));data.logos.LOUD='loud.webp';}
