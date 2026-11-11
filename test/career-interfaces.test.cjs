@@ -346,7 +346,9 @@ test('bulk arrivals can select several people and update team roster and public 
   assert.equal(request.body.publishMarket,true);
   assert.equal(f.core.publicRead('team',{name:'LOUD',scope:'current'}).total,2);
   const market=f.core.publicRead('market',{limit:50});
-  assert(market.entries.some(e=>e.jogador==='Jogador 00'&&e.timeDestino==='LOUD'));
-  assert(market.entries.some(e=>e.jogador==='Jogador 01'&&e.timeDestino==='LOUD'));
+  assert.equal(market.total,1,'o Mercado deve exibir somente um card coletivo');
+  assert.equal(market.entries[0].jogador,'Jogador 00, Jogador 01');
+  assert.equal(market.entries[0].timeDestino,'LOUD');
+  assert.equal(market.entries[0].foto,'silhueta.webp,silhueta.webp');
  }finally{f.close();}
 });
