@@ -20,7 +20,7 @@ function setup(){
  const sql={exec(query,...args){let result=[];for(const q of query.split(';').filter(Boolean)){const st=sqlite.prepare(q);result=st.columns().length?st.all(...args):(st.run(...args),[]);}return result;}};
  const transaction=callback=>{sqlite.exec('BEGIN');try{const result=callback();sqlite.exec('COMMIT');return result;}catch(error){sqlite.exec('ROLLBACK');throw error;}};
  const core=Careers.create({sql,transaction,seed,now:()=>Date.parse('2026-10-15T12:00:00Z')});
- core.ensure();return {core,sqlite};
+ core.ensure();return {core,sqlite,sql,transaction};
 }
 const person=(core,id)=>core.publicRead('person',{id}).person;
 const body=(core,people,overrides={})=>({
@@ -110,5 +110,66 @@ test('Mercado exibe foto atual do cadastro, não a blusa antiga salva no card',a
  const listed=core.publicRead('market',{limit:100}).entries.find(e=>e.personId==='p0');
  assert.equal(listed.personKind,'player');
  assert.equal(listed.foto,'player-photos/new-shirt.webp');
+ sqlite.close();
+});
+
+
+test('lotes antigos de chegadas separadas são reunidos pelo nonce real sem repetir a carreira',async()=>{
+ const {core,sqlite,sql,transaction}=setup(),input=body(core,[['p0','player'],['p1','analyst']]);
+ const created=await core.admin(identity,input);
+ assert.equal(created.market.length,1);
+ const grouped=JSON.parse(sqlite.prepare('SELECT data FROM career_market WHERE id=?').get(created.market[0].id).data);
+ assert.equal(grouped.members.length,2);
+ sqlite.prepare('DELETE FROM career_market WHERE id=?').run(grouped.id);
+ const oldCards=[];
+ for(const [i,member] of grouped.members.entries()){
+  const card={...grouped,id:'career-'+member.arrivalTenureId,personId:member.personId,
+   name:member.name,photo:member.photo,fromId:member.fromId,fromName:member.fromName,
+   role:member.role,roleLabel:'',groupType:'',members:[],careerTenureId:member.arrivalTenureId,
+   careerRevision:created.affected[i].revision};
+  sqlite.prepare('INSERT INTO career_market(id,person,publication,status,sort_at,data,revision) VALUES(?,?,?,?,?,?,?)')
+   .run(card.id,card.personId,card.publication,card.status,card.updatedAt,JSON.stringify(card),1);
+  oldCards.push({id:card.id,name:card.name,publication:card.publication});
+ }
+ sqlite.prepare('UPDATE career_requests SET response=? WHERE nonce=?')
+  .run(JSON.stringify({...created,market:oldCards}),input.nonce);
+ sqlite.prepare("DELETE FROM career_meta WHERE id='group-previous-bulk-arrivals-20261111-v1'").run();
+ const before=sqlite.prepare("SELECT COUNT(*) AS n FROM career_changes WHERE kind='marketTransfer'").get().n;
+ const fresh=Careers.create({sql,transaction,seed,now:()=>Date.parse('2026-10-15T12:00:00Z')});
+ const publicRows=fresh.publicRead('market',{limit:50});
+ assert.equal(publicRows.total,1,'old rows no longer appear separately');
+ assert.equal(publicRows.entries[0].jogador,'Alpha, Bravo');
+ assert.equal(publicRows.entries[0].timeOrigem,'Várias origens');
+ assert.equal(publicRows.entries[0].foto,'silhueta.webp,silhueta.webp');
+ assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM career_market WHERE publication='deleted'").get().n,2);
+ assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM career_changes WHERE kind='marketTransfer'").get().n,before);
+ const replay=await fresh.admin(identity,input);
+ assert.equal(replay.market.length,1);
+ assert.equal(replay.market[0].id,publicRows.entries[0].id);
+ assert.equal(fresh.publicRead('team',{name:'FLUXO W7M',scope:'current'}).total,2);
+ sqlite.close();
+});
+test('reagrupamento ignora com segurança card antigo que foi editado manualmente',async()=>{
+ const {core,sqlite,sql,transaction}=setup(),input=body(core,[['p0','player'],['p1','analyst']]);
+ const created=await core.admin(identity,input);
+ const group=JSON.parse(sqlite.prepare('SELECT data FROM career_market WHERE id=?').get(created.market[0].id).data);
+ sqlite.prepare('DELETE FROM career_market WHERE id=?').run(group.id);
+ const cards=[];
+ for(const [i,member] of group.members.entries()){
+  const card={...group,id:'career-'+member.arrivalTenureId,personId:member.personId,
+   name:member.name,photo:member.photo,fromId:member.fromId,fromName:member.fromName,
+   role:member.role,roleLabel:'',groupType:'',members:[],careerTenureId:member.arrivalTenureId};
+  const revision=i===0?2:1;
+  sqlite.prepare('INSERT INTO career_market VALUES(?,?,?,?,?,?,?)')
+   .run(card.id,card.personId,card.publication,card.status,card.updatedAt,JSON.stringify(card),revision);
+  cards.push({id:card.id});
+ }
+ sqlite.prepare('UPDATE career_requests SET response=? WHERE nonce=?')
+  .run(JSON.stringify({...created,market:cards}),input.nonce);
+ sqlite.prepare("DELETE FROM career_meta WHERE id='group-previous-bulk-arrivals-20261111-v1'").run();
+ const fresh=Careers.create({sql,transaction,seed,now:()=>Date.parse('2026-10-15T12:00:00Z')});
+ const feed=fresh.publicRead('market',{limit:50});
+ assert.equal(feed.total,2,'não alterar manualmente cards já editados');
+ assert(feed.entries.every(e=>!e.jogador.includes(', ')));
  sqlite.close();
 });
