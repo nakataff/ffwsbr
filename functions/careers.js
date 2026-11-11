@@ -294,7 +294,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
  }
 
  // A mass arrival creates ONE Mercado card. The careers remain individual.
- function saveBulkArrivalCard(identity,{nonce,target,arrivals,publication,date,source='',sourceUrl='',notes=''}){
+ function saveBulkArrivalCard(identity,{nonce,target,arrivals,publication,date,source='',sourceUrl='',notes='',sortAt=0}){
   if(!arrivals.length)throw fail(400,'Lote vazio.');
   const first=arrivals[0],sameOrigin=arrivals.every(a=>a.fromId===first.fromId&&a.fromName===first.fromName),
    sameRole=arrivals.every(a=>a.role===first.role),grouped=arrivals.length>1;
@@ -304,7 +304,7 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
    fromId:sameOrigin?first.fromId||'':'',fromName:sameOrigin?first.fromName||'Sem equipe / F/A':'Várias origens',
    toId:target.id,toName:target.name,
    role:sameRole?first.role:'other',roleLabel:sameRole?'':'Jogadores e comissão',
-   date,status:'fechado',publication,source,sourceUrl,notes,
+   date,status:'fechado',publication,source,sourceUrl,notes,sortAt,
    groupType:grouped?'bulk-arrival':'',
    careerTenureId:grouped?'':first.tenureId,careerExitTenureId:grouped?'':first.exitTenureId||'',
    careerRevision:grouped?0:first.revision
@@ -344,7 +344,8 @@ function create({sql,transaction,seed=DEFAULT_SEED,registration=seed===DEFAULT_S
     }));
     const group=saveBulkArrivalCard({uid:batch.actor||'system:bulk-arrivals-migration'},{
      nonce:batch.nonce,target,arrivals,publication:response.publication,date:body.date,
-     source:body.source||'',sourceUrl:body.sourceUrl||'',notes:body.notes||''
+     source:body.source||'',sourceUrl:body.sourceUrl||'',notes:body.notes||'',
+     sortAt:Math.max(...existing.map(e=>Number(e.updatedAt)||0))
     });
     for(const e of existing)market.remove({uid:batch.actor||'system:bulk-arrivals-migration'},
      {entryId:e.id,revision:e.revision});
