@@ -84,3 +84,22 @@ test('mesmo destino atual não duplica a passagem; fonte inválida também rever
  assert.equal(core.publicRead('team',{name:'fluxo',scope:'current'}).total,0);
  sqlite.close();
 });
+
+
+test('Mercado exibe foto atual do cadastro, não a blusa antiga salva no card',async()=>{
+ const {core,sqlite}=setup();
+ const before=person(core,'p0');
+ const update=await core.admin(identity,{operation:'savePerson',nonce:nonce(),personId:'p0',revision:before.revision,
+  name:before.name,kind:'player',availability:'active',photo:'player-photos/new-shirt.webp'});
+ assert.equal(update.person.photo,'player-photos/new-shirt.webp');
+ const publication=await core.admin(identity,{operation:'marketSave',nonce:nonce(),entry:{
+  personId:'p0',name:'Alpha',role:'player',photo:'player-photos/old-shirt.webp',
+  status:'fechado',publication:'published',date:'2026-10-13',
+  fromId:'loud',toId:'fluxo'
+ }});
+ assert.equal(publication.entry.photo,'player-photos/old-shirt.webp');
+ const listed=core.publicRead('market',{limit:100}).entries.find(e=>e.personId==='p0');
+ assert.equal(listed.personKind,'player');
+ assert.equal(listed.foto,'player-photos/new-shirt.webp');
+ sqlite.close();
+});
