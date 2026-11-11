@@ -1,0 +1,36 @@
+.career-bulk-arrivals{width:min(820px,calc(100vw - 28px));max-width:820px;max-height:calc(100dvh - 28px);padding:22px 24px;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;border:1px solid #284863;border-radius:18px;background:#0c1728;color:#eaf5ff;box-shadow:0 25px 95px #000b}
+.career-bulk-arrivals::backdrop{background:#010712dc;backdrop-filter:blur(4px)}
+.career-bulk-arrivals .career-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.career-bulk-arrivals .career-dialog-head button{flex:none;border:1px solid #2f536c;background:#12243a;color:#d8e9f6;border-radius:9px;width:36px;height:36px;font-size:24px;line-height:1}
+.career-bulk-arrivals .career-hint{color:#8da9bc;font-size:12px;line-height:1.55;margin:7px 0}
+.career-bulk-arrivals form{display:grid;gap:14px;margin-top:16px}
+.career-bulk-arrivals [data-arrival-edit]{display:grid;gap:14px}
+.career-bulk-arrivals .career-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.career-bulk-arrivals label{display:grid;gap:5px;min-width:0;color:#bbd1e1;font-size:12px;font-weight:700}
+.career-bulk-arrivals label.career-check{display:flex;flex-direction:row;align-items:flex-start;gap:9px}
+.career-bulk-arrivals input:not([type=checkbox]),.career-bulk-arrivals textarea,.career-bulk-arrivals select{box-sizing:border-box;max-width:100%;width:100%;min-height:40px;padding:10px 11px;border-radius:9px;border:1px solid #37536d;background:#101f32;color:#edf7ff;font:600 14px/1.35 system-ui}
+.career-bulk-arrivals input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:#05bdeb;flex:none}
+.career-bulk-arrivals input:focus-visible,.career-bulk-arrivals textarea:focus-visible,.career-bulk-arrivals button:focus-visible,.career-bulk-arrivals select:focus-visible{outline:2px solid #08c7ff;outline-offset:2px}
+.career-bulk-arrivals .career-arrival-results{border:1px solid #2d4964;border-radius:11px;background:#0b1829;padding:8px;min-height:45px;max-height:260px;overflow-y:auto;color:#91afc3;font-size:12px}
+.career-bulk-arrivals .career-arrival-search-person,.career-bulk-arrivals .career-arrival-person{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 8px;border-bottom:1px solid #263d53}
+.career-bulk-arrivals .career-arrival-search-person:last-child,.career-bulk-arrivals .career-arrival-person:last-child{border-bottom:0}
+.career-bulk-arrivals .career-arrival-search-person>div,.career-bulk-arrivals .career-arrival-person>div{min-width:0;flex:1}
+.career-bulk-arrivals strong,.career-bulk-arrivals small{display:block;overflow-wrap:anywhere}
+.career-bulk-arrivals small{font-size:11px;color:#8faec1;margin-top:4px}
+.career-bulk-arrivals button:disabled{opacity:.45;cursor:not-allowed}
+.career-bulk-arrivals .career-arrival-picked{border:1px solid #2d4964;border-radius:11px;background:#102036;padding:11px}
+.career-bulk-arrivals .career-arrival-picked-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+.career-bulk-arrivals .career-arrival-picked-title strong{color:#72d8f7;font-size:13px}
+.career-bulk-arrivals .career-arrival-person select{flex:0 1 160px;min-width:115px;width:160px}
+.career-bulk-arrivals .career-arrival-person button{flex:none}
+.career-bulk-arrivals [data-arrival-review]{display:grid;gap:10px}
+.career-bulk-arrivals [data-arrival-review][hidden]{display:none!important}
+.career-bulk-arrivals .career-arrival-preview{max-height:350px;overflow-y:auto;border:1px solid #34536b;background:#091827;border-radius:10px;padding:14px;font-size:13px;line-height:1.6}
+.career-bulk-arrivals .career-arrival-preview strong{color:#7de2fb}
+.career-bulk-arrivals .career-arrival-preview p{font-size:12px;color:#adc6d8}
+.career-bulk-arrivals .career-arrival-preview ul{margin:8px 0 0;padding-left:20px}
+.career-bulk-arrivals .career-arrival-feedback{margin:0;min-height:16px;color:#7de2bc;font-size:12px;overflow-wrap:anywhere}
+.career-bulk-arrivals .career-arrival-feedback.is-error{color:#ffb0ac}
+.career-bulk-arrivals .career-dialog-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding-top:10px;border-top:1px solid #28435a}
+.career-bulk-arrivals .career-dialog-actions button{min-height:42px;padding:9px 15px}
+@media(max-width:650px){.career-bulk-arrivals{padding:17px;max-height:calc(100dvh - 10px);width:calc(100vw - 12px);border-radius:13px}.career-bulk-arrivals .career-form-grid{grid-template-columns:1fr}.career-bulk-arrivals input:not([type=checkbox]),.career-bulk-arrivals textarea,.career-bulk-arrivals select{font-size:16px}.career-bulk-arrivals .career-arrival-person{flex-wrap:wrap}.career-bulk-arrivals .career-arrival-person select{flex:1;min-width:120px}.career-bulk-arrivals .career-arrival-person button{flex:1}.career-bulk-arrivals .career-dialog-actions button{flex:1;min-height:44px}}
