@@ -9,3 +9,25 @@ test('native market publications do not implicitly change career affiliations th
 test('the home shell loads market code once, after route selection, so legacy declarations cannot override the API',()=>{const html=fs.readFileSync('index.html','utf8'),shell=fs.readFileSync('js/site-shell-fast.min.js','utf8');assert(!/<script[^>]+src=[\"\'][^\"\']*charts-market/.test(html));assert(shell.includes("await seq(['charts','market'])"));assert(shell.includes('mercado-status-performance-hotfix.min.js?v=20261017-market-v1'));});
 
 test('central person portraits respect explicit silhouettes and photos instead of mapping Santos to a football club',()=>{const source=fs.readFileSync(require.resolve('../js/charts-market.min.js'),'utf8'),start=source.indexOf('function resolveMercadoPlayerPhotos('),end=source.indexOf('function renderMercadoAvatarStack(',start),vm=require('node:vm');let calls=0;const scope={getMercadoPlayers:e=>e.jogador.split(',').map(n=>n.trim()),resolveMercadoPlayerPhoto:()=>{calls++;return 'santos.webp';}};vm.createContext(scope);vm.runInContext(source.slice(start,end),scope);assert.equal(scope.resolveMercadoPlayerPhotos({jogador:'Santos',foto:'silhueta.webp',careerManaged:true})[0].photo,'silhueta.webp');assert.equal(calls,0);assert.equal(scope.resolveMercadoPlayerPhotos({jogador:'Santos',foto:'photos/santos-analista.webp',careerManaged:true})[0].photo,'photos/santos-analista.webp');const group=scope.resolveMercadoPlayerPhotos({jogador:'Santos, Outro',foto:'silhueta.webp,outro.webp',careerManaged:true});assert.equal(group[0].photo,'silhueta.webp');assert.equal(group[1].photo,'outro.webp');scope.resolveMercadoPlayerPhotos({jogador:'Legado'});assert.equal(calls,1);const map=JSON.parse(fs.readFileSync(require.resolve('../player-data/photo-map.json'),'utf8'));assert(!Object.hasOwn(map.photos,'santos'));assert(map.photos.mt7);});
+
+
+test('Mercado prioriza foto canonica de jogador atual mas preserva fotos de comissao e cards coletivos',()=>{
+ const source=fs.readFileSync(require.resolve('../js/charts-market.min.js'),'utf8');
+ const start=source.indexOf('function resolveMercadoPlayerPhotos('),end=source.indexOf('function renderMercadoAvatarStack(',start),vm=require('node:vm');
+ const calls=[],scope={
+  getMercadoPlayers:e=>e.jogador.split(',').map(n=>n.trim()),
+  resolveMercadoPlayerPhoto:(name,photo)=>{calls.push({name,photo});return name==='BuTziN'?'player-photos/s2/butzin.webp':photo||'silhueta.webp';}
+ };
+ vm.createContext(scope);vm.runInContext(source.slice(start,end),scope);
+ const player=scope.resolveMercadoPlayerPhotos({jogador:'BuTziN',foto:'player-photos/old-shirt.webp',personId:'butzin',personKind:'player',careerManaged:true,role:'Jogador'});
+ assert.equal(player[0].photo,'player-photos/s2/butzin.webp');
+ assert.equal(calls.length,1);
+ // Uma resposta antiga em cache ainda deve usar o resolvedor pelo cargo.
+ assert.equal(scope.resolveMercadoPlayerPhotos({jogador:'BuTziN',foto:'player-photos/old-shirt.webp',careerManaged:true,role:'Jogador'})[0].photo,'player-photos/s2/butzin.webp');
+ const staff=scope.resolveMercadoPlayerPhotos({jogador:'Frois',foto:'assets/coaches/frois.webp',careerManaged:true,personKind:'staff',role:'Coach'});
+ assert.equal(staff[0].photo,'assets/coaches/frois.webp');
+ const group=scope.resolveMercadoPlayerPhotos({jogador:'BuTziN, Rigby',foto:'old-butzin.webp,old-rigby.webp',careerManaged:true,personKind:'player',role:'Jogador'});
+ assert.equal(group[0].photo,'old-butzin.webp');
+ assert.equal(group[1].photo,'old-rigby.webp');
+ assert.equal(calls.length,2);
+});
