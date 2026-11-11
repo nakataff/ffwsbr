@@ -3,7 +3,7 @@ export function mountCareerBulkArrivals({call,valid,canOpen,onApplied=()=>{}}){
  const day=()=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric'}).formatToParts(new Date()),x=k=>p.find(z=>z.type===k).value;return x('year')+'-'+x('month')+'-'+x('day');};
  const dialog=document.createElement('dialog');dialog.className='career-editor career-bulk-arrivals';dialog.id='career-bulk-arrivals';
  dialog.setAttribute('aria-labelledby','career-arrivals-title');
- dialog.innerHTML='<div class="career-dialog-head"><div><p class="admin-eyebrow">Mercado da Bala · Carreiras</p><h2 id="career-arrivals-title">Chegadas em massa</h2><p class="career-hint">Selecione vários reforços. O sistema atualiza a carreira e o elenco público em uma única operação.</p></div><button type="button" data-arrival-close aria-label="Fechar">×</button></div>'+
+ dialog.innerHTML='<div class="career-dialog-head"><div><p class="admin-eyebrow">Mercado da Bala · Carreiras</p><h2 id="career-arrivals-title">Chegadas em massa</h2><p class="career-hint">Selecione vários reforços. O sistema atualiza a carreira e o elenco público em uma única operação, com um card coletivo no Mercado.</p></div><button type="button" data-arrival-close aria-label="Fechar">×</button></div>'+
  '<form id="career-arrivals-form"><div data-arrival-edit>'+
  '<div class="career-form-grid"><label>Equipe de destino<input name="team" required maxlength="100" autocomplete="off" list="career-arrival-teams" placeholder="Ex.: LOUD"><datalist id="career-arrival-teams"></datalist><small data-arrival-team-note>Use uma equipe já cadastrada.</small></label><label>Data da chegada<input type="date" name="date" required></label></div>'+
  '<label>Buscar jogadores ou comissão<input name="query" type="search" autocomplete="off" placeholder="Digite o nick ou nome para adicionar"><small>Pesquise e adicione os nomes. Até 30 pessoas por operação.</small></label>'+
@@ -12,7 +12,7 @@ export function mountCareerBulkArrivals({call,valid,canOpen,onApplied=()=>{}}){
  '<div class="career-form-grid"><label>Fonte (opcional)<input name="source" maxlength="250" placeholder="Anúncio oficial da equipe"></label><label>Link da fonte (opcional)<input name="sourceUrl" type="url" maxlength="1500" placeholder="https://..."></label></div>'+
  '<label>Observação (opcional)<textarea name="notes" rows="2" maxlength="1000"></textarea></label>'+
  '<label class="career-check"><input type="checkbox" name="publishMarket" checked>Publicar as chegadas no Mercado da Bala</label>'+
- '<p class="career-hint">A atualização do elenco é sempre feita. Sem publicar, os cards do Mercado ficam em rascunho.</p></div>'+
+ '<p class="career-hint">A atualização dos elencos é sempre feita. Sem publicar, o card coletivo do Mercado fica em rascunho.</p></div>'+
  '<section data-arrival-review hidden><h3>Conferir movimentações</h3><p class="career-hint">Todos os registros são salvos juntos. Qualquer conflito cancela a operação inteira.</p><div data-arrival-preview></div><label class="career-check"><input type="checkbox" name="confirm">Confirmei equipe, nomes, cargos e data.</label></section>'+
  '<p role="status" class="career-arrival-feedback" data-arrival-message></p><div class="career-dialog-actions"><button type="button" class="admin-btn admin-btn-ghost" data-arrival-back hidden>Voltar</button><button type="button" class="admin-btn admin-btn-ghost" data-arrival-cancel>Cancelar</button><button type="button" class="admin-btn admin-btn-primary" data-arrival-next>Revisar chegadas</button><button type="submit" class="admin-btn admin-btn-primary" data-arrival-submit hidden>Confirmar e registrar</button></div></form>';
  document.body.append(dialog);
@@ -82,7 +82,7 @@ export function mountCareerBulkArrivals({call,valid,canOpen,onApplied=()=>{}}){
    $('[data-arrival-next]').hidden=true;$('[data-arrival-back]').hidden=false;$('[data-arrival-submit]').hidden=false;
    const area=$('[data-arrival-preview]');area.replaceChildren();
    const title=document.createElement('strong');title.textContent=chosen.size+' chegada(s) · '+team.name+' · '+form.elements.date.value;
-   const detail=document.createElement('p');detail.textContent=form.elements.publishMarket.checked?'Publicar no Mercado: SIM':'Mercado: RASCUNHO';
+   const detail=document.createElement('p');detail.textContent=form.elements.publishMarket.checked?'Mercado da Bala: 1 card coletivo para todos os selecionados':'Mercado da Bala: 1 card coletivo em rascunho';
    const list=document.createElement('ul');for(const p of chosen.values()){const li=document.createElement('li');li.textContent=p.name+' ('+(ROLES[p.role]||p.role)+') · '+current(p)+' → '+team.name;list.append(li);}
    area.append(title,detail,list);
   }catch(e){message(e.message,true);}
