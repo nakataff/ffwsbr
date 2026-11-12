@@ -174,3 +174,21 @@ test('a codiguinho can be hidden from the shop and restored without deleting its
  assert.equal((await s.core.state(user)).shop.find(item=>item.title===title).quantity,1);
  assert.equal(s.sql.exec('SELECT code FROM eco_stock WHERE hash=?',row.hash)[0].code,code);
 });
+
+test('moving the final listed codiguinho returns its optional sanitized removal reason once',async()=>{
+ const s=setup(),title='Skin de teste';
+ await s.core.adminHandle(admin,{operation:'addStock',code:'REMOVECODE1',title,bucket:'shop'});
+ await s.core.adminHandle(admin,{operation:'addStock',code:'REMOVECODE2',title,bucket:'shop'});
+ const rows=s.sql.exec('SELECT hash FROM eco_stock WHERE title=? ORDER BY rowid',title);
+ const first=await s.core.adminHandle(admin,{operation:'moveStock',hash:rows[0].hash,bucket:'hidden',reason:'Unidade revisada'});
+ assert.equal(first.shopRemoval,undefined);
+ const last=await s.core.adminHandle(admin,{operation:'moveStock',hash:rows[1].hash,bucket:'hidden',reason:'  Retirada  temporária\npara revisão  '});
+ assert.deepEqual(last.shopRemoval,{title,reason:'Retirada temporária para revisão'});
+ const again=await s.core.adminHandle(admin,{operation:'moveStock',hash:rows[1].hash,bucket:'hidden',reason:'Motivo novo'});
+ assert.equal(again.shopRemoval,undefined);
+ assert.equal((await s.core.state(user)).codeStock.shop,0);
+ await s.core.adminHandle(admin,{operation:'moveStock',hash:rows[0].hash,bucket:'shop'});
+ const optional=await s.core.adminHandle(admin,{operation:'moveStock',hash:rows[0].hash,bucket:'hidden'});
+ assert.deepEqual(optional.shopRemoval,{title,reason:''});
+ await assert.rejects(s.core.adminHandle(admin,{operation:'moveStock',hash:rows[0].hash,bucket:'hidden',reason:'x'.repeat(141)}),{status:400});
+});
