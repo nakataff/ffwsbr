@@ -1,7 +1,7 @@
 'use strict';
 // Server-side, bounded event queue for community shop alerts. Public messages never contain private codes.
 const DAY=86400000;
-const DEFAULTS=Object.freeze({restock:false,last:true,expiring:true,promotion:true,soldout:false,free:false});
+const DEFAULTS=Object.freeze({restock:false,last:true,expiring:true,promotion:true,soldout:false,removed:false,free:false});
 const fail=(status,message)=>Object.assign(Error(message),{status});
 function init(sql){
  sql.exec(`CREATE TABLE IF NOT EXISTS eco_shop_notice_config(id TEXT PRIMARY KEY,data TEXT NOT NULL);
@@ -28,9 +28,15 @@ function create({sql,transaction,now=()=>Date.now()}){
   const id=crypto.randomUUID();
   sql.exec('INSERT INTO eco_shop_notice_queue(id,at,data,sent,attempts,retryAt) VALUES(?,?,?,0,0,?)',id,at,JSON.stringify({type,text:String(text).slice(0,460),...detail}),at);
  }
- function scan(){
+ function scan({removed=null}={}){
   return transaction(()=>{
    const config=settings(),current=stock(),prior=rows('SELECT * FROM eco_shop_notice_state'),map=new Map(prior.map(x=>[x.title,x]));
+   // A deliberate withdrawal is not a sold-out event.
+   const withdrawal=removed&&typeof removed.title==='string'&&!current.some(item=>item.title===removed.title)?removed:null;
+   if(withdrawal&&config.removed){
+    const reason=String(withdrawal.reason||'').slice(0,140);
+    push('removed','🚫 ITEM RETIRADO DA LOJA! '+withdrawal.title+' não está mais disponível para resgate.'+(reason?' Motivo: '+reason+'.':''),{title:withdrawal.title});
+   }
    for(const item of current){
     const previous=map.get(item.title),expirySent=previous?.expires===item.expires?previous.expirySent:0;
     if(previous){
@@ -47,7 +53,7 @@ function create({sql,transaction,now=()=>Date.now()}){
     map.delete(item.title);
    }
    for(const old of map.values()){
-    if(old.quantity>0&&config.soldout)push('soldout','📦 ESGOTOU! '+old.title+' acabou na lojinha. Fique de olho nas próximas reposições.',{title:old.title});
+    if(old.quantity>0&&old.title!==withdrawal?.title&&config.soldout)push('soldout','📦 ESGOTOU! '+old.title+' acabou na lojinha. Fique de olho nas próximas reposições.',{title:old.title});
     sql.exec('UPDATE eco_shop_notice_state SET quantity=0,expires=0,expirySent=0 WHERE title=?',old.title);
    }
    return {ok:true,queued:rows('SELECT COUNT(*) AS n FROM eco_shop_notice_queue WHERE sent=0')[0].n};
