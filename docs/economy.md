@@ -204,6 +204,7 @@ ledger, mesmo que o administrador altere o preço depois. Vales continuam custan
 
 No `admin-codiguinhos.html → Codiguinhos da loja` é possível:
 - Reservar vários códigos com caixas de seleção, busca, marcar visíveis e limpar seleção. O lote tem máximo de 20 por operação; cada código é validado individualmente pelo servidor e falhas ficam no relatório. As transações não divulgam códigos no chat.
+- Em **Disponibilidade na loja**, selecionar um código já reservado e escolher **Fora da loja (guardado no estoque)** para suspender sua venda sem apagar dados, entregas ou a reserva. Para reativar, escolher **Disponível na loja**. O servidor exclui o estoque suspenso das consultas e da reserva dos compradores, inclusive por vale.
 - Em **Preços e promoções**, configurar **preço normal por título** (1 a 100.000 CFF Coins), diferente dos 1.000 Coins de referência. A promoção continua opcional, inferior ao preço normal. `setCodePrice` e `setCodePromotion` exigem autenticação admin e o resgate usa os preços reais do banco, verificando `expectedPrice`.
 - Em **Avisos no Chat Global**, escolher de 1 a 8 títulos em estoque, visualizar a mensagem e publicar anúncio agrupado por botão (um anúncio manual a cada 2 minutos).
 - Configurar avisos automáticos: última unidade, validade em 24 horas, promoções, reposição e esgotamento. A opção de recompensas gratuitas fica preparada para quando houver um item gratuito elegível; os codiguinhos pagos exigem preço positivo.
