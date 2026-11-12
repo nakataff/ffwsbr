@@ -193,7 +193,7 @@ export class NotificationHub extends DurableObject {
     if(action==='economy'&&['quizAnswer','quizSkip'].includes(b.operation)&&result.complete){try{result.goalRewards=await this.claimGoals(user,true);}catch{result.goalRewardsPending=true;}}
     if((b.operation==='redeem'&&b.itemId==='code-default')||['returnCode','addStock','moveStock','updateStock','setCodePromotion','setCodePrice'].includes(b.operation)){
      // The payment/stock mutation has already succeeded; a chat outage must never reverse it.
-     try{this.shopNotices().scan();await this.flushShopNotices();await this.schedule();}
+     try{this.shopNotices().scan({removed:b.operation==='moveStock'?result.shopRemoval:null});await this.flushShopNotices();await this.schedule();}
      catch(error){console.warn('[ShopNotices]',error);}
     }
     return json(result);
