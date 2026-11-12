@@ -170,7 +170,7 @@ async function publishCodeNotice(db,publication){
 async function publishShopNotice(db,notice){
  if(!/^[a-f0-9-]{36}$/.test(notice?.id||'')||!Number.isSafeInteger(notice?.at)||!/^\d{13}$/.test(String(notice.at)))throw fail(400,'Aviso inválido.');
  const type=notice.data?.type,text=String(notice.data?.text||'');
- if(!['manual','restock','last','expiring','promotion','soldout','free'].includes(type)||!text.trim()||text.length>460)throw fail(400,'Conteúdo do aviso inválido.');
+ if(!['manual','restock','last','expiring','promotion','soldout','removed','free'].includes(type)||!text.trim()||text.length>460)throw fail(400,'Conteúdo do aviso inválido.');
  const id=notice.at+'-'+notice.id.replace(/-/g,'').slice(0,16);
  const entry={uid:'central-system',name:'Central Free Fire',avatarId:'default',roleId:'member',kind:'shop-notice',text,at:notice.at,username:'',badgeIds:[],nameColor:'#ffce7e'};
  const recent=await db.recentChat(),keys=[...new Set([...Object.keys(recent||{}),id])].sort(),changes={['globalChat/messages/'+id]:entry};
