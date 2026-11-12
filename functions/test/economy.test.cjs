@@ -155,3 +155,22 @@ test('normal price can differ by skin and is always checked by server on purchas
  const receipt=await s.core.handle(user,{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',nonce:crypto.randomUUID(),codeChoice:item.codeChoice,expectedPrice:640});
  assert.equal(receipt.ok,true);assert.equal((await s.core.state(user)).wallet.balance,360);
 });
+
+test('a codiguinho can be hidden from the shop and restored without deleting its reserved stock',async()=>{
+ const s=setup(),code='HIDDENCODE1234',title='Prêmio ocultável';
+ await s.core.adminHandle(admin,{operation:'addStock',code,title,bucket:'shop'});
+ const row=(await s.core.adminHandle(admin,{operation:'dashboard'})).stock.find(item=>item.title===title);
+ assert(row?.hash);
+ assert.equal((await s.core.state(user)).shop.find(item=>item.title===title).quantity,1);
+ await s.core.adminHandle(admin,{operation:'moveStock',hash:row.hash,bucket:'hidden'});
+ const hidden=await s.core.state(user);
+ assert.equal(hidden.codeStock.shop,0);
+ assert.equal(hidden.shop.some(item=>item.title===title),false);
+ assert.equal((await s.core.adminHandle(admin,{operation:'stockStatus',hashes:[row.hash]})).stock[0].bucket,'hidden');
+ await s.core.adminHandle(admin,{operation:'adjust',targetUid:user.uid,delta:1000,reason:'Teste estoque oculto',nonce:crypto.randomUUID()});
+ await assert.rejects(s.core.handle(user,{operation:'redeem',codePolicyVersion:'20261101-code-policy-v1',itemId:'code-default',codeChoice:{title,imageUrl:'/edition/gift.webp'},nonce:crypto.randomUUID()}),{status:409});
+ assert.equal((await s.core.state(user)).wallet.balance,1000);
+ await s.core.adminHandle(admin,{operation:'moveStock',hash:row.hash,bucket:'shop'});
+ assert.equal((await s.core.state(user)).shop.find(item=>item.title===title).quantity,1);
+ assert.equal(s.sql.exec('SELECT code FROM eco_stock WHERE hash=?',row.hash)[0].code,code);
+});
