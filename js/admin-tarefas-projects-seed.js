@@ -177,4 +177,36 @@ Agende sua visita ↓`)]),
     network('Facebook',[field('Apresentação','Estúdios para gravações, lives e eventos na Lapa, SP. Uma marca do grupo BMS.')])
   ]);
   window.CFF_TASKS_PROJECTS_SEED = {id:'bms-social-20261008',name:'Atualização das redes sociais',description:'Grupo BMS · Textos recebidos em 08/10/2026',companies};
+  window.CFF_TASKS_PROJECTS_DAILY_SEED = {
+    id:'nfa-legends-daily',
+    name:'NFA Legends · Checklist diário',
+    description:'Rotina de cada dia de transmissão · Antes, durante e pós NFA Legends',
+    daily:true,
+    companies:[
+      {id:'antes',name:'Antes da NFA Legends',networks:[
+        network('Preparação',[
+          field('Trocar o título da live na Kick','Atualizar o título da transmissão antes de entrar ao vivo.'),
+          field('Postar o AO VIVO às 18h40','Publicar o post de AO VIVO às 18h40.'),
+          field('Coletar vídeo de IA para o destaque da noite','Separar o vídeo de IA usado no destaque da noite.'),
+          field('Escolher trend de IA para os confrontos do dia seguinte','Definir a trend para os confrontos de amanhã.'),
+          field('Coletar fotos dos personagens para criação do vídeo','Separar as fotos necessárias para criar o vídeo.')
+        ])
+      ]},
+      {id:'durante',name:'Durante a NFA Legends',networks:[
+        network('Ao vivo',[
+          field('Fazer cobertura no X e Instagram','Cobrir os confrontos e os principais momentos nas duas redes.'),
+          field('Escolher trend de IA para os confrontos do dia seguinte','Preparar a trend dos confrontos de amanhã.'),
+          field('Coletar fotos dos personagens para o vídeo do destaque do dia','Reunir as fotos para a edição do vídeo do destaque.'),
+          field('Enviar periodicamente o link do MMR no chat da Kick','https://www.mmranking.com/'),
+          field('Editar e postar o avanço do chaveamento','Atualizar o chaveamento com os resultados e publicar.')
+        ])
+      ]},
+      {id:'pos',name:'Pós NFA Legends',networks:[
+        network('Encerramento',[
+          field('Postar o avanço da tabela','Publicar a tabela atualizada após os confrontos.'),
+          field('Agendar confrontos do dia seguinte para 12h','Somente quando o vídeo for recebido a tempo para o agendamento.')
+        ])
+      ]}
+    ]
+  };
 })();
