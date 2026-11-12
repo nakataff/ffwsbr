@@ -55,3 +55,36 @@ test('shop chat writer preserves stable IDs and cannot publish invalid client te
  assert.equal(Object.values(data).find(v=>v?.kind==='shop-notice').uid,'central-system');
  await assert.rejects(chat.publishShopNotice(db,{...notice,data:{type:'unknown',text:'unsafe'}}),{status:400});
 });
+
+test('the last prize removed from the shop sends a distinct notice with optional reason, without sold-out duplication',()=>{
+ const f=fixture();try{
+  const service=f.service();
+  f.sql.exec('INSERT INTO eco_stock VALUES(?,?,?,?,?,?,?)','a','PRIVATEAAA','Skin Dragão',0,'shop',null,'');
+  service.scan();service.saveConfig({removed:true,soldout:true});
+  f.sql.exec('UPDATE eco_stock SET bucket=? WHERE hash=?','hidden','a');
+  service.scan({removed:{title:'Skin Dragão',reason:'Revisão de disponibilidade'}});
+  service.scan();
+  const data=f.sql.exec('SELECT data FROM eco_shop_notice_queue').map(row=>JSON.parse(row.data));
+  assert.equal(data.length,1);
+  assert.equal(data[0].type,'removed');
+  assert.match(data[0].text,/Motivo: Revisão de disponibilidade/);
+  assert.doesNotMatch(data[0].text,/PRIVATEAAA/);
+  f.sql.exec('UPDATE eco_stock SET bucket=? WHERE hash=?','shop','a');service.scan();
+  f.sql.exec('UPDATE eco_stock SET bucket=? WHERE hash=?','hidden','a');service.scan({removed:{title:'Skin Dragão'}});
+  const after=f.sql.exec('SELECT data FROM eco_shop_notice_queue').map(row=>JSON.parse(row.data));
+  assert.equal(after.filter(x=>x.type==='removed').length,2);
+  assert.match(after.at(-1).text,/não está mais disponível/);
+  assert.doesNotMatch(after.at(-1).text,/Motivo:/);
+ }finally{f.close();}
+});
+test('removing only one of two copies does not incorrectly announce a full shop withdrawal',()=>{
+ const f=fixture();try{
+  f.sql.exec('INSERT INTO eco_stock VALUES(?,?,?,?,?,?,?)','a','PRIVATEAAA','Skin Dragão',0,'shop',null,'');
+  f.sql.exec('INSERT INTO eco_stock VALUES(?,?,?,?,?,?,?)','b','PRIVATEBBB','Skin Dragão',0,'shop',null,'');
+  const service=f.service();service.scan();service.saveConfig({removed:true});
+  f.sql.exec('UPDATE eco_stock SET bucket=? WHERE hash=?','hidden','a');
+  service.scan({removed:{title:'Skin Dragão',reason:'Teste'}});
+  const data=f.sql.exec('SELECT data FROM eco_shop_notice_queue').map(row=>JSON.parse(row.data));
+  assert.deepEqual(data.map(item=>item.type),['last']);
+ }finally{f.close()}
+});
