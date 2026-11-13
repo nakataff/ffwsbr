@@ -1,6 +1,8 @@
 (() => {
   'use strict';
   const keys = ['projects','projectCompanies','projectNetworks','projectFields'];
+  const NFA_DAILY_ID = 'nfa-legends-daily';
+  const nfaToday = () => window.CFF_TASKS_DAILY?.today() || new Date().toISOString().slice(0,10);
   const statuses = {todo:'A fazer',doing:'Em andamento',info:'Falta informação',approval:'Aguardando aprovação',done:'Concluído',rejected:'Recusado'};
   const escape = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const slug = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
@@ -14,7 +16,16 @@
       const ids=new Set();return rows.map(row=>{const id=str(row.id,150);if(!id||ids.has(id))throw Error('ID de projeto inválido');ids.add(id);return {id,...parse(row)};});
     };
     const dates = row => ({updatedAt:str(row.updatedAt||'',50),completedAt:str(row.completedAt||'',50)});
-    const projects=list('projects',r=>({name:str(r.name,160),description:str(r.description||'',1000),...dates(r)}));
+    const projects=list('projects',r=>{
+      const dailyDate=str(r.dailyDate||'',10);
+      if(dailyDate && !/^\\d{4}-\\d{2}-\\d{2}$/.test(dailyDate))throw Error('Data do checklist inválida');
+      const dailyHistory=(Array.isArray(r.dailyHistory)?r.dailyHistory:[]).slice(-60).map(row=>{
+        const date=str(row.date||'',10),completed=Number(row.completed),total=Number(row.total);
+        if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||!Number.isInteger(completed)||!Number.isInteger(total)||completed<0||total<0||completed>total)throw Error('Histórico do checklist inválido');
+        return {date,completed,total};
+      });
+      return {name:str(r.name,160),description:str(r.description||'',1000),dailyDate,dailyHistory,...dates(r)};
+    });
     const projectIds=new Set(projects.map(r=>r.id));
     const projectCompanies=list('projectCompanies',r=>({projectId:str(r.projectId,150),name:str(r.name,160),...dates(r)}));
     const companyIds=new Set(projectCompanies.map(r=>r.id));
@@ -26,14 +37,23 @@
   }
   function seed(state) {
     keys.forEach(k=>state[k]??=[]);
-    const source=window.CFF_TASKS_PROJECTS_SEED;
-    if(!source||state.projects.some(p=>p.id===source.id))return false;
-    const at=stamp();state.projects.push({id:source.id,name:source.name,description:source.description,updatedAt:at,completedAt:''});
-    for(const c of source.companies){const companyId=source.id+'-'+c.id;state.projectCompanies.push({id:companyId,projectId:source.id,name:c.name,updatedAt:at,completedAt:''});
-      for(const n of c.networks){const networkId=companyId+'-'+slug(n.name);state.projectNetworks.push({id:networkId,companyId,name:n.name,status:'todo',url:'',note:'',updatedAt:at,completedAt:''});
-        n.fields.forEach((f,i)=>state.projectFields.push({id:networkId+'-'+i,networkId,label:f.label,original:f.text,text:f.text,done:false,updatedAt:at,completedAt:''}));}
+    let created=false;
+    for(const source of [window.CFF_TASKS_PROJECTS_SEED,window.CFF_TASKS_PROJECTS_DAILY_SEED].filter(Boolean)){
+      if(state.projects.some(p=>p.id===source.id))continue;
+      const at=stamp();
+      state.projects.push({id:source.id,name:source.name,description:source.description,dailyDate:'',dailyHistory:[],updatedAt:at,completedAt:''});
+      for(const c of source.companies){
+        const companyId=source.id+'-'+c.id;
+        state.projectCompanies.push({id:companyId,projectId:source.id,name:c.name,updatedAt:at,completedAt:''});
+        for(const n of c.networks){
+          const networkId=companyId+'-'+slug(n.name);
+          state.projectNetworks.push({id:networkId,companyId,name:n.name,status:'todo',url:'',note:'',updatedAt:at,completedAt:''});
+          n.fields.forEach((f,i)=>state.projectFields.push({id:networkId+'-'+i,networkId,label:f.label,original:f.text,text:f.text,done:false,updatedAt:at,completedAt:''}));
+        }
+      }
+      created=true;
     }
-    return true;
+    return created;
   }
   function mount(api) {
     const root=document.getElementById('projects-view');if(!root)return;
@@ -41,6 +61,7 @@
     let projectId=api.getState().projects[0]?.id||'',companyId='',view='tasks',search='',status='',platform='',pending=false,timer=null;
     const expanded=new Set(),visitedCompanies=new Set();
     const state=()=>api.getState();
+    const isNfaDaily=()=>projectId===NFA_DAILY_ID;
     const fields=id=>state().projectFields.filter(f=>f.networkId===id);
     const networks=id=>state().projectNetworks.filter(n=>n.companyId===id);
     const companies=()=>state().projectCompanies.filter(c=>c.projectId===projectId);
@@ -77,6 +98,47 @@
       catch{const a=document.createElement('textarea');a.value=text;a.style.cssText='position:fixed;top:0;opacity:0';document.body.append(a);a.select();const ok=document.execCommand('copy');a.remove();api.toast(ok?'Texto copiado':'Não foi possível copiar. Selecione o texto.');}
     }
     function progress(ns){return `${ns.filter(n=>n.status==='done').length}/${ns.length}`;}
+    function nfaProject(){return state().projects.find(p=>p.id===NFA_DAILY_ID);}
+    function nfaFields(){
+      const ids=new Set(related().map(n=>n.id));
+      return state().projectFields.filter(f=>ids.has(f.networkId));
+    }
+    function startNfaDay(){
+      const p=nfaProject();if(!p)return;
+      const date=nfaToday();
+      if(p.dailyDate===date && !window.confirm('Reiniciar todas as 12 tarefas da NFA Legends de hoje?'))return;
+      const fs=nfaFields(),at=stamp();
+      if(p.dailyDate && p.dailyDate!==date){
+        p.dailyHistory=[...(p.dailyHistory||[]).filter(x=>x.date!==p.dailyDate),{
+          date:p.dailyDate,completed:fs.filter(f=>f.done).length,total:fs.length
+        }].slice(-60);
+      }
+      fs.forEach(f=>{f.done=false;f.completedAt='';f.updatedAt=at;});
+      related().forEach(n=>{n.status='todo';n.completedAt='';n.updatedAt=at;});
+      p.dailyDate=date;p.updatedAt=at;p.completedAt='';
+      persist(true,'Iniciar novo dia da NFA Legends');render();
+      api.toast('Checklist do dia iniciado');
+    }
+    function renderNfa(){
+      const p=nfaProject();if(!p)return;
+      const date=nfaToday();
+      if(!p.dailyDate){p.dailyDate=date;p.updatedAt=stamp();persist(true,'Iniciar checklist NFA Legends');}
+      const locked=p.dailyDate!==date,fs=nfaFields(),done=fs.filter(f=>f.done).length;
+      const displayDate=d=>d?d.split('-').reverse().join('/'):'—';
+      $('projects-summary').innerHTML=`<div><strong>${done}<span> / ${fs.length}</span></strong><small>tarefas concluídas</small></div><div><strong>${fs.length-done}</strong><small>tarefas pendentes</small></div><div><strong>${escape(displayDate(p.dailyDate))}</strong><small>dia do checklist</small></div><div class="project-total-progress"><span>${fs.length?Math.round(done/fs.length*100):0}% concluído</span><progress value="${done}" max="${fs.length||1}"></progress></div>`;
+      $('project-pending-summary').innerHTML=locked?`<div class="nfa-day-alert"><strong>Checklist de ${escape(displayDate(p.dailyDate))}</strong><span>Inicie o dia de hoje para limpar as marcações anteriores e continuar a rotina.</span><button type="button" class="primary" data-nfa-new-day>Iniciar dia ${escape(displayDate(date))}</button></div>`:'';
+      const cards=companies().map((c,index)=>{
+        const tasks=networks(c.id).flatMap(n=>fields(n.id));
+        const completed=tasks.filter(f=>f.done).length;
+        return `<section class="nfa-stage"><div class="nfa-stage-head"><span class="nfa-stage-number">0${index+1}</span><div><h3>${escape(c.name)}</h3><p>${completed} de ${tasks.length} concluídas</p></div><progress value="${completed}" max="${tasks.length||1}"></progress></div><div class="nfa-stage-tasks">${tasks.map(f=>{
+          const time=/18h40/i.test(f.label)?'18:40':/12h/i.test(f.label)?'12:00':'';
+          const link=/^https:\/\//i.test(f.text)?`<a href="${escape(f.text)}" target="_blank" rel="noopener noreferrer">${escape(f.text)}</a>`:escape(f.text);
+          return `<label class="nfa-check-item ${f.done?'is-done':''} ${locked?'is-locked':''}"><input type="checkbox" data-field-done="${escape(f.id)}" ${f.done?'checked':''} ${locked?'disabled':''}><span class="nfa-check-copy"><span class="nfa-task-title">${escape(f.label)} ${time?`<em class="nfa-time">${time}</em>`:''}</span>${f.text?`<span class="nfa-task-note">${link}</span>`:''}</span></label>`;
+        }).join('')}</div></section>`;
+      }).join('');
+      const recent=(p.dailyHistory||[]).slice(-7).reverse();
+      $('nfa-daily-board').innerHTML=`<div class="nfa-checklist-bar"><div><strong>Rotina do dia · ${escape(displayDate(p.dailyDate))}</strong><p>Marque as entregas conforme concluir. O progresso fica salvo no seu quadro.</p></div><button type="button" class="small-btn" data-nfa-new-day>${locked?'Iniciar hoje':'Reiniciar dia'}</button></div><div class="nfa-stage-grid">${cards}</div>${recent.length?`<details class="nfa-history"><summary>Histórico dos últimos dias</summary><div>${recent.map(row=>`<span>${escape(displayDate(row.date))} · ${row.completed}/${row.total} tarefas</span>`).join('')}</div></details>`:''}`;
+    }
     function renderSummary(){const ns=related(),done=ns.filter(n=>n.status==='done').length,ids=new Set(ns.map(n=>n.id)),fs=state().projectFields.filter(f=>ids.has(f.networkId));
       $('projects-summary').innerHTML=`<div><strong>${done}<span> / ${ns.length}</span></strong><small>redes concluídas</small></div><div><strong>${ns.filter(n=>n.status!=='done').length}</strong><small>redes pendentes</small></div><div><strong>${fs.filter(f=>f.done).length}<span> / ${fs.length}</span></strong><small>campos atualizados</small></div><div class="project-total-progress"><span>${ns.length?Math.round(done/ns.length*100):0}% concluído</span><progress value="${done}" max="${ns.length||1}"></progress></div>`;
       $('project-pending-summary').innerHTML=['todo','doing','info','approval','rejected'].map(s=>`<button type="button" class="project-pending-chip status-${s}" data-pending-status="${s}" aria-pressed="${status===s}">${statuses[s]} <strong>${ns.filter(n=>n.status===s).length}</strong></button>`).join('');
@@ -96,11 +158,16 @@
       $('project-company-content').innerHTML=`<div class="project-company-heading"><div><p class="project-eyebrow">EMPRESA</p><h2>${escape(c.name)}</h2><p>${progress(networks(c.id))} redes concluídas</p></div><div><button class="small-btn" data-copy-company="${escape(c.id)}">Copiar empresa</button><button class="small-btn" id="project-add-network">+ Rede</button></div></div>${ns.map(networkHtml).join('')||(networks(c.id).length?'<p class="hint">Nenhuma rede desta empresa corresponde aos filtros.</p>':'<p class="hint">Adicione uma rede social para começar.</p>')}`;
     }
     function renderLinkedTasks(c){const host=document.createElement('section');host.className='project-linked-tasks';const h=document.createElement('h3');h.textContent='Tarefas desta empresa';host.append(h);const tasks=api.linkedTasks?.(c.id)||[];for(const t of tasks){const b=document.createElement('button');b.type='button';b.className='small-btn';b.textContent=(t.status==='done'?'✓ ':'')+t.title+(t.date?' · '+t.date.split('-').reverse().join('/'):'');b.onclick=()=>api.openTask?.(t);host.append(b);}if(!tasks.length){const p=document.createElement('p');p.className='hint';p.textContent='Vincule as entregas desta empresa a uma tarefa.';host.append(p);}const b=document.createElement('button');b.type='button';b.className='small-btn';b.textContent='+ Nova tarefa';b.onclick=()=>api.newTask?.(c.projectId,c.id);host.append(b);$('project-company-content').querySelector('.project-company-heading').after(host);}
-    function render(){const y=window.scrollY,active=document.activeElement;const selector=active?.dataset.projectStatus?`[data-project-status="${CSS.escape(active.dataset.projectStatus)}"]`:active?.dataset.quickComplete?`[data-quick-complete="${CSS.escape(active.dataset.quickComplete)}"]`:active?.dataset.fieldDone?`[data-field-done="${CSS.escape(active.dataset.fieldDone)}"]`:null;renderSummary();renderNavigation();renderContent();const company=companies().find(c=>c.id===companyId);if(company)renderLinkedTasks(company);pending=false;if(selector)root.querySelector(selector)?.focus({preventScroll:true});window.scrollTo({top:y,left:window.scrollX,behavior:'instant'});}
+    function render(){if(isNfaDaily()){renderNfa();return;}const y=window.scrollY,active=document.activeElement;const selector=active?.dataset.projectStatus?`[data-project-status="${CSS.escape(active.dataset.projectStatus)}"]`:active?.dataset.quickComplete?`[data-quick-complete="${CSS.escape(active.dataset.quickComplete)}"]`:active?.dataset.fieldDone?`[data-field-done="${CSS.escape(active.dataset.fieldDone)}"]`:null;renderSummary();renderNavigation();renderContent();const company=companies().find(c=>c.id===companyId);if(company)renderLinkedTasks(company);pending=false;if(selector)root.querySelector(selector)?.focus({preventScroll:true});window.scrollTo({top:y,left:window.scrollX,behavior:'instant'});}
     function refresh(){if(!root.contains(document.activeElement)||!document.activeElement.matches('input,textarea'))render();else pending=true;}
     function pickProject(){const ps=state().projects;if(!ps.some(p=>p.id===projectId))projectId=ps[0]?.id||'';
       $('project-select').innerHTML=ps.map(p=>`<option value="${escape(p.id)}">${escape(p.name)}</option>`).join('');$('project-select').value=projectId;
       $('project-description').textContent=ps.find(p=>p.id===projectId)?.description||'';
+      const daily=isNfaDaily();
+      $('projects-heading').textContent=daily?'Rotina de transmissão':'Redes sociais, organizadas.';
+      $('projects-layout').hidden=daily;
+      $('project-filters').hidden=daily;
+      $('nfa-daily-board').hidden=!daily;
       const names=[...new Set(related().map(n=>n.name))].sort();$('project-platform-filter').innerHTML='<option value="">Todas as redes</option>'+names.map(n=>`<option>${escape(n)}</option>`).join('');if(!names.includes(platform))platform='';$('project-platform-filter').value=platform;
     }
     function switchView(next){if(!['tasks','projects','missions','locator'].includes(next))return;if(view==='locator'&&next!==view&&window.CFF_TASKS_LOCATOR_UI?.beforeLeave()===false)return;view=next;document.querySelectorAll('[data-workspace-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspaceView===view)));$('tasks-view').hidden=view!=='tasks';root.hidden=view!=='projects';const locator=$('locator-view');if(locator)locator.hidden=view!=='locator';window.CFF_TASKS_LOCATOR_UI?.setVisible(view==='locator');const missions=$('ffcp-missions-view');if(missions)missions.hidden=view!=='missions';$('new-card').hidden=view!=='tasks';$('manage-columns').hidden=view!=='tasks';document.getElementById('ffcp-side-shortcut')?.setAttribute('aria-pressed',String(view==='missions'));if(view==='projects'){pickProject();render();}if(view==='missions')window.CFF_TASKS_MISSIONS_UI?.render();}
@@ -121,6 +188,7 @@
     $('project-status-filter').addEventListener('change',e=>{status=e.target.value;render();});$('project-platform-filter').addEventListener('change',e=>{platform=e.target.value;render();});
     $('project-company-select').addEventListener('change',e=>{companyId=e.target.value;renderContent();renderNavigation();});
     root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+      if(b.dataset.nfaNewDay)startNfaDay();
       if(b.dataset.quickComplete)quickComplete(b.dataset.quickComplete);
       if(b.dataset.pendingStatus){status=status===b.dataset.pendingStatus?'':b.dataset.pendingStatus;$('project-status-filter').value=status;render();}
       if(b.dataset.company){companyId=b.dataset.company;render();}
