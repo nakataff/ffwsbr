@@ -29,3 +29,40 @@
 @media(max-width:1050px){.projects-layout{grid-template-columns:230px minmax(0,1fr);gap:16px}.project-fields{grid-template-columns:1fr}.projects-summary{grid-template-columns:repeat(3,1fr)}.projects-summary .project-total-progress{grid-column:1/-1;padding:12px 18px;flex-direction:row;align-items:center}.project-total-progress progress{flex:1}.project-total-progress span{white-space:nowrap}.project-filters{grid-template-columns:1fr 1fr}.project-filters input{grid-column:1/-1}}
 @media(max-width:720px){.workspace-tabs{width:100%;margin:18px 0}.workspace-tabs button{flex:1}.projects-head{display:block}.projects-head h2{font-size:24px}.project-picker{margin-top:16px}.project-picker select{max-width:none;flex:1;min-width:0}.projects-layout{grid-template-columns:1fr;gap:16px}.project-companies{position:static;max-height:none;padding:14px}#project-company-select{display:block}#project-company-list{display:none}.project-company-heading{align-items:flex-start;flex-wrap:wrap}.project-company-heading h2{font-size:22px}.project-company-heading>div:last-child{justify-content:flex-start}.projects-summary{gap:8px}.projects-summary>div{padding:13px 10px}.projects-summary strong{font-size:24px}.projects-summary small{font-size:11px}.project-network-header{padding:14px;flex-wrap:wrap;gap:12px}.project-network-toggle{flex-basis:100%}.project-status-wrap{width:100%}.project-status{max-width:none;width:100%}.project-network-body{padding:14px}.project-field{padding:12px}.project-network-tools{gap:12px}.project-network-tools .field{min-width:0;flex-basis:100%}.project-fields{gap:12px}.project-filters{gap:8px}.project-filters select{font-size:12px}.project-link-actions{width:100%}}
 @media(max-width:720px){.project-network-toggle{flex-basis:calc(100% - 48px)}.project-quick-complete{width:34px;height:34px}.project-action-bar{gap:8px}.project-action-bar .quiet{font-size:12px;padding:8px 10px}.project-pending-summary{gap:6px}.project-pending-chip{font-size:11px;padding:6px 8px}.project-report-options{grid-template-columns:1fr;gap:12px}#project-report-dialog{padding:18px}#project-report-dialog .dialog-actions{display:flex;flex-wrap:wrap}#project-report-dialog .dialog-actions button{flex:1;white-space:nowrap}}
+
+
+/* NFA Legends: rotina diária reutilizável na aba Projetos. */
+.nfa-checklist-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 18px;padding:16px 20px;border:1px solid var(--line);background:var(--panel);border-radius:14px}
+.nfa-checklist-bar strong{font-size:15px}
+.nfa-checklist-bar p{color:var(--muted);font-size:12px;margin:6px 0 0}
+.nfa-checklist-bar button{white-space:nowrap}
+.nfa-day-alert{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%;padding:16px;border:1px solid var(--amber);border-radius:12px;background:var(--amber-bg);margin-bottom:8px}
+.nfa-day-alert strong{font-size:14px}
+.nfa-day-alert span{color:var(--ink);font-size:12px;flex:1;min-width:200px}
+.nfa-day-alert button{margin-left:auto}
+.nfa-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.nfa-stage{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.nfa-stage:nth-child(3){grid-column:1/-1}
+.nfa-stage-head{display:flex;align-items:center;gap:12px;padding:18px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.nfa-stage-head>div{flex:1;min-width:0}
+.nfa-stage-head h3{font-size:16px;line-height:1.3;margin:0}
+.nfa-stage-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
+.nfa-stage-head progress{width:80px;flex:none}
+.nfa-stage-number{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;color:var(--accent);font-size:13px;font-weight:800;background:var(--card);flex:none}
+.nfa-stage-tasks{padding:6px 12px}
+.nfa-check-item{display:flex;align-items:flex-start;gap:12px;padding:13px 9px;border-bottom:1px solid var(--line);cursor:pointer}
+.nfa-check-item:last-child{border-bottom:0}
+.nfa-check-item>input{width:19px;height:19px;flex:none;margin:1px 0 0;accent-color:var(--green);cursor:pointer}
+.nfa-check-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+.nfa-task-title{font-size:13px;font-weight:650;line-height:1.45;color:var(--ink)}
+.nfa-task-note{font-size:12px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
+.nfa-task-note a{color:var(--accent)}
+.nfa-check-item.is-done .nfa-task-title{text-decoration:line-through;opacity:.55}
+.nfa-check-item.is-locked{opacity:.7;cursor:default}
+.nfa-check-item.is-locked>input{cursor:not-allowed}
+.nfa-time{display:inline-block;font-size:11px;font-weight:700;font-style:normal;color:var(--accent);padding:1px 7px;margin-left:5px;border-radius:6px;background:var(--soft)}
+.nfa-history{margin-top:18px;border:1px solid var(--line);background:var(--panel);padding:14px 18px;border-radius:12px}
+.nfa-history summary{cursor:pointer;font-size:13px;font-weight:700}
+.nfa-history>div{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.nfa-history>div span{border:1px solid var(--line);padding:7px 10px;border-radius:8px;font-size:12px;color:var(--muted)}
+@media(max-width:860px){.nfa-stage-grid{grid-template-columns:minmax(0,1fr)}.nfa-stage:nth-child(3){grid-column:auto}.nfa-stage-head progress{width:64px}.nfa-day-alert button{width:100%;margin:0}}
