@@ -44,7 +44,9 @@ async function giftStatus(db,identity,hashes){
    if(assigned?.uid==='economy-stock'&&assigned.returnedGiftId)return {hash,returned:true,giftId:assigned.returnedGiftId,sentAt:assigned.returnedAt,bucket:assigned.bucket};
    if(!assigned||!validUid(assigned.uid)||!/^codegift-[a-f0-9-]{36}$/.test(assigned.giftId||''))return null;
    const gift=await db.get('communityCodeGifts/'+assigned.uid+'/'+assigned.giftId);
-   return {hash,uid:assigned.uid,giftId:assigned.giftId,username:String(assigned.recipientUsername||''),name:String(assigned.recipientName||''),sentAt:Number(gift?.sentAt||assigned.sentAt||0),openedAt:Number(gift?.openedAt||0),pending:!gift};
+   const sender=String(gift?.senderUid||assigned.senderUid||'');
+   const origin=sender==='central-economy'?'economy':sender?'manual':'unknown';
+   return {hash,uid:assigned.uid,giftId:assigned.giftId,username:String(assigned.recipientUsername||''),name:String(assigned.recipientName||''),sentAt:Number(gift?.sentAt||assigned.sentAt||0),openedAt:Number(gift?.openedAt||0),pending:!gift,origin};
   }));
   gifts.push(...entries.filter(Boolean));
  }
