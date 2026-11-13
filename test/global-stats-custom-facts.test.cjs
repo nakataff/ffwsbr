@@ -169,3 +169,24 @@ test('published Mundial day 4 has four Buriram Booyahs and records aggregate eac
  assert.match(global,/booyahs: number\(result\.booyahs \?\? result\.booyah/);
  assert.match(global,/out\.booyahs \+= row\.booyahs/);
 });
+
+test('record builder aggregates live Buriram Booyahs before generating the card',()=>{
+ const source=fs.readFileSync('ffws-global-2026/global.js','utf8');
+ const start=source.indexOf('  function statsRecordRows(events, playerEntries) {');
+ const end=source.indexOf('  function s2DropReportCache()',start);
+ assert(start>=0&&end>start,'Record builder must exist');
+ const n=v=>Number(v)||0;
+ const normalize=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]/gi,'').toUpperCase();
+ const eventKey=e=>[e?._stage||'classificatoria',n(e?._day||e?.day||e?.round),n(e?.drop||e?.queda||e?.number)].join(':');
+ const build=new Function('number','normalize','s2DropReportEventKey','eventResults',source.slice(start,end)+'\\nreturn statsRecordRows;')(n,normalize,eventKey,e=>e.results||[]);
+ const stage=JSON.parse(fs.readFileSync('ffws-global-2026/stages.json','utf8'));
+ const individual=JSON.parse(fs.readFileSync('ffws-global-2026/players.json','utf8'));
+ const events=stage.classificatoria.rounds.filter(e=>e.day===4).map(e=>({...e,_stage:'classificatoria',_day:e.day}));
+ const entries=individual.entries.filter(e=>e.stage==='classificatoria'&&e.day===4);
+ const records=build(events,entries),row=records.teamDay.find(r=>r.team==='Buriram United Esports'&&r.day===4);
+ assert.deepEqual([row.points,row.kills,row.booyahs,row.damage,row.matches],[151,97,4,55649,6]);
+ const api=runtime();api.setContext({...fixture(),records,events});
+ api.setSource({kind:'record',record:['teamDay','points','Maior pontuação em um dia']});
+ const card=api.fromContext();
+ assert.deepEqual(Array.from(card.facts.map(r=>[r.label,r.value])),[['ABATES','97'],['BOOYAHS','4'],['DANO','55.649'],['QUEDAS','6']]);
+});
