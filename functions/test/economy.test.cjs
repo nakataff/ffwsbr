@@ -192,3 +192,27 @@ test('moving the final listed codiguinho returns its optional sanitized removal 
  assert.deepEqual(optional.shopRemoval,{title,reason:''});
  await assert.rejects(s.core.adminHandle(admin,{operation:'moveStock',hash:rows[0].hash,bucket:'hidden',reason:'x'.repeat(141)}),{status:400});
 });
+
+test('manually redeemed stock is excluded from the shop even after reactivation of other codes',async()=>{
+ const s=setup(),title='Roupa guardada';
+ for(const code of ['MANUALUSED111','MANUALGOOD222'])await s.core.adminHandle(admin,{operation:'addStock',code,title,bucket:'hidden'});
+ const entries=s.sql.exec('SELECT hash,code FROM eco_stock WHERE title=?',title);
+ const used=entries.find(x=>x.code==='MANUALUSED111'),good=entries.find(x=>x.code==='MANUALGOOD222');
+ const done=await s.core.adminHandle(admin,{operation:'markStockRedeemed',hashes:[used.hash],redeemed:true,announce:true});
+ assert.equal(done.updated,1);assert.equal(done.shopRemoval.title,title);
+ assert.equal((await s.core.adminHandle(admin,{operation:'stockStatus',hashes:[used.hash]})).stock[0].status,'redeemed');
+ await assert.rejects(s.core.adminHandle(admin,{operation:'moveStock',hash:used.hash,bucket:'shop'}),{status:409});
+ await assert.rejects(s.core.adminHandle(admin,{operation:'updateStock',hash:used.hash,title,imageUrl:'',expiresAt:0,bucket:'shop'}),{status:409});
+ await s.core.adminHandle(admin,{operation:'moveStock',hash:good.hash,bucket:'shop'});
+ const shop=(await s.core.state(user)).shop;
+ assert.equal(shop.find(x=>x.title===title).quantity,1);
+ const repeat=await s.core.adminHandle(admin,{operation:'markStockRedeemed',hashes:[used.hash],redeemed:true,announce:true});
+ assert.equal(repeat.updated,0);assert.equal(repeat.shopRemoval,undefined);
+ const restore=await s.core.adminHandle(admin,{operation:'markStockRedeemed',hashes:[used.hash],redeemed:false});
+ assert.equal(restore.updated,1);
+ const hidden=(await s.core.adminHandle(admin,{operation:'stockStatus',hashes:[used.hash]})).stock[0];
+ assert.equal(hidden.bucket,'hidden');
+ assert.equal((await s.core.state(user)).shop.find(x=>x.title===title).quantity,1);
+ await s.core.adminHandle(admin,{operation:'markStockRedeemed',hashes:[used.hash],redeemed:true,announce:false});
+ assert.equal((await s.core.state(user)).shop.find(x=>x.title===title).quantity,1);
+});
