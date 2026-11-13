@@ -265,8 +265,8 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
        const remaining=rows("SELECT COUNT(*) AS n FROM eco_stock WHERE title=? AND receipt IS NULL AND (expires=0 OR expires>?) AND bucket IN ('shop','both','roulette')",item.title,now())[0].n;
        if(!remaining)shopRemoval={title:item.title,reason:''};
       }
-     }else if(item.bucket==='redeemed'){
-      // Desfazer a marcação não republica o código. Somente uma nova ação explícita pode repô-lo.
+     }else if(item.bucket!=='hidden'){
+      // Mesmo em registros antigos que não sincronizaram, desmarcar nunca recoloca à venda.
       sql.exec("UPDATE eco_stock SET bucket='hidden' WHERE hash=? AND receipt IS NULL",hash);updated++;
      }
     }
