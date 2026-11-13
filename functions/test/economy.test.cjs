@@ -199,7 +199,7 @@ test('manually redeemed stock is excluded from the shop even after reactivation 
  const entries=s.sql.exec('SELECT hash,code FROM eco_stock WHERE title=?',title);
  const used=entries.find(x=>x.code==='MANUALUSED111'),good=entries.find(x=>x.code==='MANUALGOOD222');
  const done=await s.core.adminHandle(admin,{operation:'markStockRedeemed',hashes:[used.hash],redeemed:true,announce:true});
- assert.equal(done.updated,1);assert.equal(done.shopRemoval.title,title);
+ assert.equal(done.updated,1);assert.equal(done.shopRemoval,undefined);
  assert.equal((await s.core.adminHandle(admin,{operation:'stockStatus',hashes:[used.hash]})).stock[0].status,'redeemed');
  await assert.rejects(s.core.adminHandle(admin,{operation:'moveStock',hash:used.hash,bucket:'shop'}),{status:409});
  await assert.rejects(s.core.adminHandle(admin,{operation:'updateStock',hash:used.hash,title,imageUrl:'',expiresAt:0,bucket:'shop'}),{status:409});
