@@ -127,7 +127,7 @@ async function save(e,edit){
  try{
   for(let i=0;i<selected.length;i++){
    const row=selected[i],item=stock.get(row.code);
-   if(edit&&(row.redeemed||row.hasGift)){failed++;issues.push(row.title+': marcado como resgatado ou enviado; não pode voltar à loja');continue;}
+   if(edit&&bucket==='shop'&&(row.redeemed||row.hasGift||row.manualAssigned)){failed++;issues.push(row.title+': código com resgate ou destinatário registrado não pode voltar à loja');continue;}
    status('Reservando '+(i+1)+' de '+selected.length+'…');
    try{
     if(edit)await economyRequest(auth,'moveStock',{hash:item.hash,bucket,...(bucket==='hidden'?{reason}:{})},true);
@@ -137,7 +137,7 @@ async function save(e,edit){
      await economyRequest(auth,'addStock',{code:row.code,title:row.title,bucket,imageUrl,expiresAt:row.expires?Date.parse(row.expires+'T23:59:59-03:00'):0},true);
     }
     done++;selectedCodes.delete(row.code);
-    try{await source().reserved({code:row.code,bucket});}catch{issues.push(row.title+': sincronização local pendente');}
+    if(!edit||!(row.redeemed||row.hasGift||row.manualAssigned)){try{await source().reserved({code:row.code,bucket});}catch{issues.push(row.title+': sincronização local pendente');}}
    }catch(error){failed++;issues.push(row.title+': '+(error.message||'Falhou'));}
   }
  }finally{
