@@ -14,7 +14,7 @@ test('only the recipient can record opening; retries keep the first opening date
 test('a failed inventory write can be resumed after the code reservation',async()=>{const db=database(),transact=db.transact;let fail=true;db.transact=async(path,updater)=>{if(fail&&path.startsWith('communityCodeGifts/')){fail=false;throw Error('offline');}return transact(path,updater);};await assert.rejects(C.sendCodeGift(db,admin,raw,now));const recovered=await C.sendCodeGift(db,admin,{...raw,requestId:'22222222-2222-4222-8222-222222222222'},now+1000);assert.equal(recovered.giftId,'codegift-'+id);assert.equal(recovered.gift.sentAt,now);});
 test('admin status lookup recovers older gifts with the original delivery and opening dates without writing or returning codes',async()=>{
  const db=database(),sent=await C.sendCodeGift(db,admin,raw,now);await C.openCodeGift(db,{uid:'person'},sent.giftId,now+1234);const writes=db.writes,hash=Object.keys(db.data).find(k=>k.startsWith('communityCodeGiftAssignments/')).split('/')[1];
- const status=await C.giftStatus(db,admin,[hash,hash,'f'.repeat(64)]);assert.equal(status.gifts.length,1);assert.equal(status.gifts[0].sentAt,now);assert.equal(status.gifts[0].openedAt,now+1234);assert.equal(status.gifts[0].pending,false);assert.equal(status.gifts[0].username,'pessoa');assert(!JSON.stringify(status).includes(raw.code));assert.equal(db.writes,writes);
+ const status=await C.giftStatus(db,admin,[hash,hash,'f'.repeat(64)]);assert.equal(status.gifts.length,1);assert.equal(status.gifts[0].sentAt,now);assert.equal(status.gifts[0].openedAt,now+1234);assert.equal(status.gifts[0].pending,false);assert.equal(status.gifts[0].username,'pessoa');assert.equal(status.gifts[0].origin,'manual');assert(!JSON.stringify(status).includes(raw.code));assert.equal(db.writes,writes);
  await assert.rejects(C.giftStatus(db,{uid:'person',email:'person@example.test'},[hash]),{status:403});
 });
 test('a reserved gift whose inventory write failed is pending, never reported as delivered',async()=>{
@@ -48,4 +48,13 @@ test('cosmetic gifts can be archived while their unlock and badges are preserved
  await C.archiveGift(db,{uid:'person'},{giftId:'cosmetic-1',kind:'profile',archived:true},now+10);
  assert.deepEqual(db.data['communityImageOwnership/person/avatar-1'],{grantedAt:now});assert.equal(db.data['communityGifts/person/cosmetic-1'].assetId,'avatar-1');
  const giftId='codegift-'+id;db.data['communityCodeGifts/person/'+giftId]={title:'Devolvido',returnedAt:now};await C.archiveGift(db,{uid:'person'},{giftId,kind:'code',archived:true},now+10);await C.archiveGift(db,{uid:'person'},{giftId,kind:'code',archived:false},now+20);await assert.rejects(C.openCodeGift(db,{uid:'person'},giftId,now+30),{status:410});
+});
+
+test('status identifies automated coin deliveries separately from manual admin gifts',async()=>{
+ const db=database(),hash='a'.repeat(64),giftId='codegift-'+id;
+ db.data['communityCodeGiftAssignments/'+hash]={uid:'person',giftId,sentAt:now,senderUid:'central-economy',recipientUsername:'pessoa'};
+ db.data['communityCodeGifts/person/'+giftId]={kind:'code',senderUid:'central-economy',sentAt:now};
+ const result=await C.giftStatus(db,admin,[hash]);
+ assert.equal(result.gifts[0].origin,'economy');
+ assert(!JSON.stringify(result).includes('central-economy'));
 });
