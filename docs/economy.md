@@ -214,3 +214,11 @@ O servidor Cloudflare grava os avisos em `eco_shop_notice_queue` e somente o pr�
 O Chat Global separa os dias conforme `America/Sao_Paulo` e apresenta mensagens da loja com um atalho para `/conta.html?tab=points&shopSection=shop#eco-shop`.
 
 Testes: `node --test functions/test/economy-shop-notices.test.cjs functions/test/economy.test.cjs`, `node --test test/admin-economy-tools.test.cjs test/global-chat-ui.test.cjs`.
+
+## Resgates manuais e proteção do estoque (13/11/2026)
+
+No **Controle de Codiguinhos**, ao marcar **Código resgatado**, escolher o resultado ou preencher pela primeira vez o dia de resgate, a interface primeiro pede ao servidor que retire o hash daquele código da loja (estado `redeemed`). A compra com moedas ou vale deixa de encontrá-lo. Se houver falha nessa confirmação, a alteração não é gravada no controle. Ao desmarcar o resgate, o servidor mantém o código **fora da loja** (`hidden`); uma recolocação requer ação separada no administrador, nunca acontece automaticamente. Códigos efetivamente vendidos e vinculados a recibos preservam o status do próprio pedido.
+
+Ao desbloquear o controle, o painel confronta em lotes de no máximo 500 hashes os códigos do estoque com os registros criptografados de resgates e presentes enviados; divergências são corrigidas em lotes de até 50, sem publicar avisos retroativos. O editor impede voltar à loja códigos ainda identificados como entregues no controle, e o servidor recusa movimentar ou editar um código com status `redeemed`.
+
+O relatório de ganhadores acrescenta a coluna **Marcado como resgatado**, com data/hora de Brasília do primeiro clique que definiu o status atual. Esse horário também entra na cópia e no CSV (`marcado_resgatado_em` em ISO). O campo é independente da data de resgate informada manualmente e da data de envio do presente. Para registros anteriores à atualização que não guardavam essa informação, aparece **Não registrado**; o sistema não inventa horários antigos.
