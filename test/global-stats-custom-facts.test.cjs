@@ -120,3 +120,52 @@ test('modal contains exactly six independent selectors and two opt-in ranking to
  assert.match(script,/if\(state\.showFactRanks&&Number\.isInteger\(fact\.rank\)/);
  assert.match(script,/const facts=payload\.facts\.slice\(0,6\)/,'all six metrics must render in 16:9 too');
 });
+
+test('record cards do not repeat the highlighted points and show daily Booyahs',()=>{
+ const api=runtime(),ctx=fixture();
+ ctx.records.teamDay=[{
+  team:'Buriram United Esports',stage:'classificatoria',day:4,
+  points:151,kills:97,booyahs:4,damage:55649,matches:6
+ }];
+ api.setContext(ctx);
+ api.setSource({kind:'record',record:['teamDay','points','Maior pontuação em um dia']});
+ const payload=api.fromContext();
+ assert.equal(payload.kind,'record');
+ assert.equal(payload.main,'151');
+ assert.equal(payload.mainLabel,'PONTOS');
+ assert.equal(payload.entity,'Buriram United Esports');
+ assert.deepEqual(Array.from(payload.facts.map(f=>[f.label,f.value])),[
+  ['ABATES','97'],['BOOYAHS','4'],['DANO','55.649'],['QUEDAS','6']
+ ]);
+ assert.equal(payload.facts.filter(f=>f.label==='PONTOS').length,0);
+});
+test('team record side facts exclude any main metric and preserve Booyahs per drop',()=>{
+ const api=runtime(),ctx=fixture();
+ ctx.records.teamDrop=[{team:'Buriram United Esports',stage:'classificatoria',day:4,
+  points:34,kills:21,booyahs:1,damage:7430,matches:1}];
+ api.setContext(ctx);
+ for(const [metric,headline,sideLabels] of [
+  ['points','34',['ABATES','BOOYAHS','DANO','QUEDAS']],
+  ['kills','21',['PONTOS','BOOYAHS','DANO','QUEDAS']],
+  ['damage','7.430',['ABATES','PONTOS','BOOYAHS','QUEDAS']]
+ ]){
+  api.setSource({kind:'record',record:['teamDrop',metric,'Recorde da queda']});
+  const card=api.fromContext();
+  assert.equal(card.main,headline);
+  assert.deepEqual(Array.from(card.facts.map(f=>f.label)),sideLabels);
+  assert.equal(card.facts.find(f=>f.label==='BOOYAHS').value,'1');
+ }
+});
+test('published Mundial day 4 has four Buriram Booyahs and records aggregate each drop',()=>{
+ const results=JSON.parse(fs.readFileSync('ffws-global-2026/stages.json','utf8'));
+ const day=results.classificatoria.rounds.filter(round=>round.day===4);
+ const buriram=day.flatMap(round=>round.results.filter(team=>team.team==='Buriram United Esports'));
+ assert.equal(day.length,12);
+ assert.equal(buriram.length,6);
+ assert.equal(buriram.reduce((a,row)=>a+row.points,0),151);
+ assert.equal(buriram.reduce((a,row)=>a+row.kills,0),97);
+ assert.equal(buriram.reduce((a,row)=>a+row.booyah,0),4);
+ const global=fs.readFileSync('ffws-global-2026/global.js','utf8');
+ assert.match(global,/booyahs: number\(result\.booyahs \?\? result\.booyah/);
+ assert.match(global,/out\.booyahs \+= row\.booyahs/);
+});
