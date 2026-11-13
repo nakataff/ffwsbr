@@ -1089,6 +1089,7 @@
           team, stage, day, drop, map, roundDrop: event.roundDrop, session: event.session, matches: 1,
           points: number(result.points ?? result.pontos ?? (number(result.placementPoints) + number(result.kills))),
           kills: number(result.kills ?? result.abates),
+          booyahs: number(result.booyahs ?? result.booyah ?? (number(result.position ?? result.posicao) === 1 ? 1 : 0)),
           damage: number(damageByTeamDrop.get(`${stage}:${day}:${drop}:${normalize(team)}`))
         });
       });
@@ -1097,9 +1098,9 @@
     const teamDayMap = new Map();
     teamDrop.forEach(row => {
       const key = `${row.stage}:${row.day}:${normalize(row.team)}`;
-      if (!teamDayMap.has(key)) teamDayMap.set(key, { team: row.team, stage: row.stage, day: row.day, points: 0, kills: 0, damage: 0, matches: 0 });
+      if (!teamDayMap.has(key)) teamDayMap.set(key, { team: row.team, stage: row.stage, day: row.day, points: 0, kills: 0, booyahs: 0, damage: 0, matches: 0 });
       const out = teamDayMap.get(key);
-      out.points += row.points; out.kills += row.kills; out.damage += row.damage; out.matches += 1;
+      out.points += row.points; out.kills += row.kills; out.booyahs += row.booyahs; out.damage += row.damage; out.matches += 1;
     });
 
     return { playerDrop, playerDay: [...playerDayMap.values()], teamDrop, teamDay: [...teamDayMap.values()] };
@@ -1850,7 +1851,7 @@
       }
       globalStatsShareLoader=new Promise((resolve,reject)=>{
         const script=document.createElement('script');
-        script.src='/js/global-stats-share.js?v=20261108-rank-fit-v2';
+        script.src='/js/global-stats-share.js?v=20261113-record-booyahs-v1';
         script.async=true;
         script.onload=()=>resolve();
         script.onerror=()=>reject(Error('Não foi possível carregar o editor de cards'));
