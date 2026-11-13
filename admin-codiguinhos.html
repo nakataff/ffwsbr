@@ -1707,7 +1707,7 @@
     const resgatesPendentes = new Set();
     async function alterarResgate(codigo, entregue, aplicarAlteracao){
       if(resgatesPendentes.has(codigo))return;
-      const dados = dadosCodigo(codigo), antes = Boolean(dados.entregue), depois = Boolean(entregue);
+      const dados = dadosCodigo(codigo), antes = Boolean(dados.entregue), depois = Boolean(entregue), clicadoEm = new Date().toISOString();
       resgatesPendentes.add(codigo);
       try{
         if(antes !== depois){
@@ -1720,7 +1720,7 @@
         aplicarAlteracao(dados);
         dados.entregue = depois;
         const agora = new Date().toISOString();
-        if(marcadoAgora) dados.marcadoResgatadoEm = agora;
+        if(marcadoAgora) dados.marcadoResgatadoEm = clicadoEm;
         if(!depois) dados.marcadoResgatadoEm = null;
         dados.atualizadoEm = agora;
         salvarMemoria();
