@@ -61,3 +61,36 @@ test('codes created in the coin panel join the unlocked encrypted inventory with
   await a.w.bloquearCodiguinhos();assert.equal(a.source.inventory(),null);await assert.rejects(a.source.importStock([row],2),/Desbloqueie/);
  }finally{a.close();}
 });
+
+test('marking a redemption stores its exact click time in reports and protects inventory',async()=>{
+ const a=setup();try{
+  const requests=[];a.w.CFF_ECONOMY_STOCK_CODES=new Set(['BCDEFG123456']);
+  a.w.CFF_ECONOMY_STOCK_MARK_REDEEMED=async(code,redeemed)=>{requests.push([code,redeemed]);return {ok:true};};
+  a.w.CFF_ECONOMY_STOCK_REFRESH=()=>{};
+  const before=Date.now();
+  await a.w.setEntregue('BCDEFG123456',true);
+  assert.deepEqual(requests,[['BCDEFG123456',true]]);
+  assert.equal(a.source.inventory().find(x=>x.code==='BCDEFG123456').redeemed,true);
+  const report=a.$('#reportContent').textContent;
+  assert.match(report,/Marcado como resgatado/);
+  assert.match(report,/Resgatado com sucesso/);
+  assert.match(a.w.textoRelatorio(),/Marcado como resgatado:/);
+  const recorded=a.w.relatorioLinhas().find(x=>x.codigo==='BCDEFG123456').dados.marcadoResgatadoEm;
+  assert(Number(new Date(recorded))>=before);
+  await assert.rejects(a.source.reserved({code:'BCDEFG123456',bucket:'shop'}),/não pode voltar à loja/);
+  await a.w.setEntregue('BCDEFG123456',false);
+  assert.deepEqual(requests.at(-1),['BCDEFG123456',false]);
+  assert.equal(a.source.inventory().find(x=>x.code==='BCDEFG123456').redeemed,false);
+ }finally{a.close();}
+});
+test('an unavailable stock update does not falsely register a manual game redemption',async()=>{
+ const a=setup();try{
+  const alerts=[];
+  a.w.alert=message=>alerts.push(message);
+  a.w.CFF_ECONOMY_STOCK_CODES=new Set(['BCDEFG123456']);
+  a.w.CFF_ECONOMY_STOCK_MARK_REDEEMED=async()=>{throw Error('Erro de conexão');};
+  await a.w.setEntregue('BCDEFG123456',true);
+  assert.equal(a.source.inventory().find(x=>x.code==='BCDEFG123456').redeemed,false);
+  assert(alerts.some(x=>x.includes('Erro de conexão')));
+ }finally{a.close();}
+});
