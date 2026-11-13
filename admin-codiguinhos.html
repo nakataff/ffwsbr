@@ -1290,6 +1290,8 @@
           resultado:d.resultado || "sucesso",
           dataResgate:d.dataResgate || somenteData(d.atualizadoEm) || "",
           marcadoResgatadoEm:d.marcadoResgatadoEm || null,
+          origemEntrega:['manual','economy'].includes(d.origemEntrega)?d.origemEntrega:'',
+          origemCorrigidaEm:d.origemCorrigidaEm || null,
           atualizadoEm:d.atualizadoEm || null,
           ...(d.presente && typeof d.presente === "object" ? {presente:d.presente} : {})
         };
@@ -2143,7 +2145,7 @@
           card.dataset.stockCode = codigo.toUpperCase();
           card.className = `card ${dados.presente ? (dados.presente.pending?"gift-sent gift-pending":"gift-sent") : ""} ${dados.entregue ? (dados.resultado === "invalido" ? "invalid" : "used") : ""}`;
           card.innerHTML = `
-            ${dados.presente?`<div class="code-gift-stamp"><strong>${dados.presente.pending?'ENVIO PENDENTE':'PRESENTE ENVIADO'}</strong><span>${escapeHTML(window.CFF_CODE_STATE.dateTime(dados.presente.sentAt))} · @${escapeHTML(dados.presente.username||'destinatário')}</span><small>${dados.presente.pending?'Código reservado; confira o envio antes de tentar novamente.':'Entregue ao inventário'+(dados.presente.openedAt?' · Aberto em '+escapeHTML(window.CFF_CODE_STATE.dateTime(dados.presente.openedAt)):' · Ainda não aberto')}</small></div>`:''}
+            ${dados.presente?`<div class="code-gift-stamp"><strong>${dados.presente.pending?'ENVIO PENDENTE':origemEntrega(dados)==='manual'?'PRESENTE ENVIADO POR MIM':'PRESENTE ENVIADO'}</strong><span>${escapeHTML(window.CFF_CODE_STATE.dateTime(dados.presente.sentAt))} · @${escapeHTML(dados.presente.username||'destinatário')}</span><small>${dados.presente.pending?'Código reservado; confira o envio antes de tentar novamente.':'Entregue ao inventário'+(dados.presente.openedAt?' · Aberto em '+escapeHTML(window.CFF_CODE_STATE.dateTime(dados.presente.openedAt)):' · Ainda não aberto')}</small></div>`:''}
             <div class="code-row">
               <div class="code">${escapeHTML(codigo)}</div>
               <div class="number">#${String(index + 1).padStart(2, "0")}</div>
@@ -2153,6 +2155,7 @@
               <span>Expira: ${formatarData(fimAtual)}</span>
               ${dados.entregue && dados.dataResgate ? `<span>Resgatado em: ${formatarData(dados.dataResgate)}</span>` : ""}
               ${dados.entregue && dados.marcadoResgatadoEm ? `<span>Marcado como resgatado: ${escapeHTML(window.CFF_CODE_STATE.dateTime(dados.marcadoResgatadoEm))}</span>` : ""}
+              ${(dados.presente||dados.origemEntrega)?`<span>Origem: ${escapeHTML(origemEntregaTexto(dados))}${dados.origemEntrega?' (identificação corrigida)':''}</span>`:''}
               ${dados.entregue ? `<span class="status ${dados.resultado === "invalido" ? "invalid" : "available"}">${dados.resultado === "invalido" ? "Inválido" : "Resgatado com sucesso"}</span>` : ""}
             </div>
             <div class="receiver-wrap">
@@ -2190,6 +2193,8 @@
       renderArquivados();
     }
 
+    function origemEntrega(dados){return dados.origemEntrega||dados.presente?.origin||'unknown';}
+    function origemEntregaTexto(dados){const origem=origemEntrega(dados);return origem==='manual'?'Enviado pelo administrador':origem==='economy'?'Sistema de pontos':'Não identificada';}
     function statusTexto(dados){
       if(dados.entregue){
         const estado = dados.resultado === "invalido" ? "Inválido" : "Resgatado com sucesso";
@@ -2225,13 +2230,14 @@
       root.innerHTML = `
         <div class="report-table-wrap">
           <table>
-            <thead><tr><th>Data</th><th>Marcado como resgatado</th><th>Quem ganhou</th><th>Código</th><th>Codiguin</th><th>Item</th><th>Status</th></tr></thead>
+            <thead><tr><th>Data</th><th>Marcado como resgatado</th><th>Quem ganhou</th><th>Origem do envio</th><th>Código</th><th>Codiguin</th><th>Item</th><th>Status</th></tr></thead>
             <tbody>
               ${linhas.map(({grupo, codigo, dados}) => `
                 <tr>
                   <td>${dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"}</td>
                   <td>${dados.entregue&&dados.marcadoResgatadoEm?escapeHTML(window.CFF_CODE_STATE.dateTime(dados.marcadoResgatadoEm)):"Não registrado"}</td>
                   <td>${escapeHTML(dados.recebeu || "Sem nome")}</td>
+                  <td>${escapeHTML(origemEntregaTexto(dados))}</td>
                   <td class="code-cell">${escapeHTML(codigo)}</td>
                   <td>${escapeHTML(grupo.nome)}${grupo.arquivado ? " <span style=\"color:var(--muted);font-weight:900\">(arquivado)</span>" : ""}</td>
                   <td>${escapeHTML(grupo.item)}</td>
@@ -2247,7 +2253,7 @@
     function textoRelatorio(){
       const linhas = relatorioLinhas();
       if(linhas.length === 0) return "Nenhum código registrado no relatório.";
-      return linhas.map(({grupo, codigo, dados}) => `${dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"} | ${dados.recebeu || "Sem nome"} | ${codigo} | ${grupo.nome} | ${statusTexto(dados)} | Marcado como resgatado: ${dados.entregue&&dados.marcadoResgatadoEm?window.CFF_CODE_STATE.dateTime(dados.marcadoResgatadoEm):"Não registrado"}`).join("\n");
+      return linhas.map(({grupo, codigo, dados}) => `${dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"} | ${dados.recebeu || "Sem nome"} | ${codigo} | ${grupo.nome} | ${statusTexto(dados)} | Origem: ${origemEntregaTexto(dados)} | Marcado como resgatado: ${dados.entregue&&dados.marcadoResgatadoEm?window.CFF_CODE_STATE.dateTime(dados.marcadoResgatadoEm):"Não registrado"}`).join("\n");
     }
 
     function copiarRelatorio(){
@@ -2256,8 +2262,8 @@
 
     function exportarRelatorioCSV(){
       const linhas = relatorioLinhas();
-      const header = ["data_resgate","marcado_resgatado_em","data_envio_presente","ganhador","codigo","codiguin","item","status"];
-      const csv = [header, ...linhas.map(({grupo, codigo, dados}) => [dados.dataResgate || "", dados.entregue?dados.marcadoResgatadoEm||"":"", dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):"", dados.recebeu || "", codigo, grupo.arquivado ? `${grupo.nome} (arquivado)` : grupo.nome, grupo.item, statusTexto(dados)])]
+      const header = ["data_resgate","marcado_resgatado_em","data_envio_presente","ganhador","origem_envio","codigo","codiguin","item","status"];
+      const csv = [header, ...linhas.map(({grupo, codigo, dados}) => [dados.dataResgate || "", dados.entregue?dados.marcadoResgatadoEm||"":"", dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):"", dados.recebeu || "", origemEntregaTexto(dados), codigo, grupo.arquivado ? `${grupo.nome} (arquivado)` : grupo.nome, grupo.item, statusTexto(dados)])]
         .map(row => row.map(campoCSV).join(","))
         .join("\n");
       baixarArquivo(csv, "relatorio-codiguinhos.csv", "text/csv;charset=utf-8");
@@ -2878,7 +2884,7 @@
         if(changed||advance){salvarMemoria();if(changed){popularFiltroGrupo();render();}await window.CodiguinhosCloud.flush();}
       },
 
-      inventory(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>g.codigos.map(code=>{const d=dadosCodigo(code),receiver=String(d.recebeu||'').trim();return {code:code.toUpperCase(),groupId:String(g.id),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||'',redeemed:Boolean(d.entregue),hasGift:Boolean(d.presente),manualAssigned:Boolean(receiver&&!receiver.startsWith('Reservado para '))};}));},
+      inventory(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>g.codigos.map(code=>{const d=dadosCodigo(code),receiver=String(d.recebeu||'').trim();return {code:code.toUpperCase(),groupId:String(g.id),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||'',redeemed:Boolean(d.entregue),hasGift:Boolean(d.presente),deliveryOrigin:origemEntrega(d),originOverride:d.origemEntrega||'',manualAssigned:Boolean(receiver&&!receiver.startsWith('Reservado para '))};}));},
       archivedRedeemedCodes(){if(!controleDesbloqueado)return null;return [...new Set((memoria.__gruposArquivados||[]).flatMap(g=>(g.codigos||[]).filter(code=>{const d=dadosCodigo(code);return d.entregue;}).map(code=>code.toUpperCase())))];},
       stockPhotos(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().filter(g=>imagemGrupo(g)).map(g=>({imageUrl:imagemGrupo(g),codes:g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!d.presente&&String(d.recebeu||'').startsWith('Reservado para ');}).map(code=>code.toUpperCase())})).filter(g=>g.codes.length);},
       history(){if(!controleDesbloqueado)return [];return listarCodigos(true).filter(row=>row.dados.presente).map(row=>({code:row.codigo,title:row.grupo.item||row.grupo.nome,...row.dados.presente}));},
@@ -2887,14 +2893,28 @@
         let changed=false;
         const codes=listarCodigos(true),byCode=new Map(codes.map(row=>[row.codigo.toUpperCase(),row.codigo]));
         for(const record of records){const original=byCode.get(record.code);if(!original)continue;const d=dadosCodigo(original);if(record.returned){if(d.presente&&d.presente.giftId!==record.giftId)continue;const receiver='Reservado para '+(record.bucket==='hidden'?'estoque (fora da loja)':record.bucket==='roulette'?'roleta':record.bucket==='both'?'roleta/loja':'loja');if(d.presente||d.entregue||d.dataResgate||d.resultado||d.recebeu!==receiver){delete d.presente;d.entregue=false;d.dataResgate='';d.resultado='';d.recebeu=receiver;d.atualizadoEm=new Date().toISOString();changed=true;}continue;}if(record.pending&&d.presente&&!d.presente.pending)continue;
-          const gift={uid:record.uid,giftId:record.giftId,sentAt:record.sentAt,username:record.username,openedAt:record.openedAt||0,pending:Boolean(record.pending)};
+          const gift={uid:record.uid,giftId:record.giftId,sentAt:record.sentAt,username:record.username,openedAt:record.openedAt||0,pending:Boolean(record.pending),origin:['manual','economy'].includes(record.origin)?record.origin:(d.presente?.origin||'unknown')};
           if(JSON.stringify(d.presente)!==JSON.stringify(gift)){d.presente=gift;d.recebeu='@'+record.username+' · presente no site';d.atualizadoEm=new Date().toISOString();changed=true;}
         }
         if(changed){salvarMemoria();render();await window.CodiguinhosCloud.flush();}
       },
       read(){if(!controleDesbloqueado)return null;if(!window.CFF_CODE_GIFTS_READY)return [];return gruposOrdenadosSelector().flatMap(g=>statusGrupo(g).tipo==='available'?g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!String(d.recebeu||'').trim()&&!d.presente&&!window.CFF_ECONOMY_STOCK_CODES?.has(code.toUpperCase());}).map(code=>({code:code.toUpperCase(),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||''})):[]);},
       async reserved({code,bucket}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);if(d.entregue||d.presente||String(d.recebeu||'').trim()&&!String(d.recebeu).startsWith('Reservado para '))throw Error('Este código já tem resgate ou destinatário registrado e não pode voltar à loja.');d.recebeu='Reservado para '+(bucket==='hidden'?'estoque (fora da loja)':bucket==='roulette'?'roleta':bucket==='shop'?'loja':'roleta/loja');d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();},
-      async delivered({code,recipient,giftId,gift}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);d.recebeu='@'+recipient.username+' · presente no site';d.presente={uid:recipient.uid,giftId,sentAt:gift.sentAt,username:recipient.username};d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();}
+      async setDeliveryOrigin({code,origin}){
+        if(!controleDesbloqueado)throw Error('Desbloqueie o controle antes de corrigir a identificação.');
+        if(!['auto','manual','economy'].includes(origin))throw Error('Escolha a origem do envio.');
+        const original=listarCodigos(true).find(row=>row.codigo.toUpperCase()===String(code||'').toUpperCase())?.codigo;
+        if(!original)throw Error('Codiguinho não encontrado no controle.');
+        const dados=dadosCodigo(original),override=origin==='auto'?'':origin;
+        if(dados.origemEntrega===override)return;
+        dados.origemEntrega=override;
+        dados.origemCorrigidaEm=new Date().toISOString();
+        dados.atualizadoEm=dados.origemCorrigidaEm;
+        salvarMemoria();
+        render();
+        await window.CodiguinhosCloud.flush();
+      },
+      async delivered({code,recipient,giftId,gift}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);d.recebeu='@'+recipient.username+' · presente no site';d.presente={uid:recipient.uid,giftId,sentAt:gift.sentAt,username:recipient.username,origin:'manual'};d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();}
     };
     window.CFF_SHOWCASE_DATA = {
       read(){
