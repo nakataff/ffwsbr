@@ -1289,6 +1289,7 @@
           entregue:Boolean(d.entregue),
           resultado:d.resultado || "sucesso",
           dataResgate:d.dataResgate || somenteData(d.atualizadoEm) || "",
+          marcadoResgatadoEm:d.marcadoResgatadoEm || null,
           atualizadoEm:d.atualizadoEm || null,
           ...(d.presente && typeof d.presente === "object" ? {presente:d.presente} : {})
         };
@@ -1703,38 +1704,51 @@
       if(removeManager && removeManager.open) renderSeletorRemocao();
     }
 
-    function setEntregue(codigo, valor){
-      const d = dadosCodigo(codigo);
-      d.entregue = valor;
-      d.atualizadoEm = new Date().toISOString();
-      if(valor && !d.dataResgate) d.dataResgate = hojeISO();
-      if(!valor) d.dataResgate = "";
-      salvarMemoria();
-      render();
-      if(valor) verificarAutoArquivarPorCodigo(codigo);
-      else limparAutoArquivarSeAbaixoLimite(grupoPorCodigo(codigo));
+    const resgatesPendentes = new Set();
+    async function alterarResgate(codigo, entregue, aplicarAlteracao){
+      if(resgatesPendentes.has(codigo))return;
+      const dados = dadosCodigo(codigo), antes = Boolean(dados.entregue), depois = Boolean(entregue);
+      resgatesPendentes.add(codigo);
+      try{
+        if(antes !== depois){
+          if(typeof window.CFF_ECONOMY_STOCK_MARK_REDEEMED === "function"){
+            await window.CFF_ECONOMY_STOCK_MARK_REDEEMED(codigo, depois);
+          }else if(window.CFF_ECONOMY_STOCK_CODES?.has(codigo.toUpperCase())){
+            throw Error("O estoque da loja ainda não está sincronizado. Atualize a página antes de marcar este código.");
+          }
+        }
+        const marcadoAgora = !antes && depois;
+        aplicarAlteracao(dados);
+        dados.entregue = depois;
+        const agora = new Date().toISOString();
+        if(marcadoAgora) dados.marcadoResgatadoEm = agora;
+        if(!depois) dados.marcadoResgatadoEm = null;
+        dados.atualizadoEm = agora;
+        salvarMemoria();
+        render();
+        if(depois)verificarAutoArquivarPorCodigo(codigo);
+        else limparAutoArquivarSeAbaixoLimite(grupoPorCodigo(codigo));
+        window.CFF_ECONOMY_STOCK_REFRESH?.();
+      }catch(erro){
+        alert("Não foi possível confirmar o resgate no estoque. Nenhuma alteração foi registrada. "+(erro?.message||"Tente novamente."));
+        render();
+      }finally{resgatesPendentes.delete(codigo);}
     }
-
-    function setResultadoCodigo(codigo, valor){
-      const d = dadosCodigo(codigo);
-      d.resultado = valor;
-      d.entregue = true;
-      if(!d.dataResgate) d.dataResgate = hojeISO();
-      d.atualizadoEm = new Date().toISOString();
-      salvarMemoria();
-      render();
-      verificarAutoArquivarPorCodigo(codigo);
+    async function setEntregue(codigo, valor){
+      await alterarResgate(codigo, valor, d=>{
+        if(valor && !d.dataResgate)d.dataResgate = hojeISO();
+        if(!valor)d.dataResgate = "";
+      });
     }
-
-    function setDataResgate(codigo, valor){
-      const d = dadosCodigo(codigo);
-      d.dataResgate = valor;
-      d.atualizadoEm = new Date().toISOString();
-      if(valor) d.entregue = true;
-      salvarMemoria();
-      render();
-      if(valor) verificarAutoArquivarPorCodigo(codigo);
-      else limparAutoArquivarSeAbaixoLimite(grupoPorCodigo(codigo));
+    async function setResultadoCodigo(codigo, valor){
+      await alterarResgate(codigo, true, d=>{
+        d.resultado = valor;
+        if(!d.dataResgate)d.dataResgate = hojeISO();
+      });
+    }
+    async function setDataResgate(codigo, valor){
+      const d=dadosCodigo(codigo);
+      await alterarResgate(codigo, valor?true:d.entregue, estado=>{estado.dataResgate=valor;});
     }
 
     function copiarCodigo(codigo){
@@ -2139,6 +2153,7 @@
               <span class="status ${dados.presente?"gift-state":codigoLivre(codigo)?st.tipo:"reserved-state"}">${dados.presente?(dados.presente.pending?"Envio pendente":"Presente enviado"):dados.entregue?"Resgatado":!codigoLivre(codigo)?"Reservado / com ganhador":st.texto}</span>
               <span>Expira: ${formatarData(fimAtual)}</span>
               ${dados.entregue && dados.dataResgate ? `<span>Resgatado em: ${formatarData(dados.dataResgate)}</span>` : ""}
+              ${dados.entregue && dados.marcadoResgatadoEm ? `<span>Marcado como resgatado: ${escapeHTML(window.CFF_CODE_STATE.dateTime(dados.marcadoResgatadoEm))}</span>` : ""}
               ${dados.entregue ? `<span class="status ${dados.resultado === "invalido" ? "invalid" : "available"}">${dados.resultado === "invalido" ? "Inválido" : "Resgatado com sucesso"}</span>` : ""}
             </div>
             <div class="receiver-wrap">
@@ -2177,9 +2192,12 @@
     }
 
     function statusTexto(dados){
+      if(dados.entregue){
+        const estado = dados.resultado === "invalido" ? "Inválido" : "Resgatado com sucesso";
+        return dados.presente ? estado+" · Presente enviado em "+window.CFF_CODE_STATE.dateTime(dados.presente.sentAt) : estado;
+      }
       if(dados.presente) return dados.presente.pending?"Envio pendente":"Presente enviado em "+window.CFF_CODE_STATE.dateTime(dados.presente.sentAt);
-      if(!dados.entregue) return "Aguardando resgate";
-      return dados.resultado === "invalido" ? "Inválido" : "Resgatado com sucesso";
+      return "Aguardando resgate";
     }
 
     function relatorioLinhas(){
@@ -2188,7 +2206,7 @@
         .filter(item => item.dados.entregue || String(item.dados.recebeu || "").trim());
 
       const porNome = (a,b) => String(a.dados.recebeu || "zzzz").localeCompare(String(b.dados.recebeu || "zzzz"), "pt-BR", {sensitivity:"base"});
-      const porData = (a,b) => Number(b.dados.presente?.sentAt||Date.parse(b.dados.dataResgate)||0)-Number(a.dados.presente?.sentAt||Date.parse(a.dados.dataResgate)||0);
+      const porData = (a,b) => Number(Date.parse(b.dados.marcadoResgatadoEm)||b.dados.presente?.sentAt||Date.parse(b.dados.dataResgate)||0)-Number(Date.parse(a.dados.marcadoResgatadoEm)||a.dados.presente?.sentAt||Date.parse(a.dados.dataResgate)||0);
       const porItem = (a,b) => a.grupo.item.localeCompare(b.grupo.item, "pt-BR", {sensitivity:"base"}) || porNome(a,b);
       const porStatus = (a,b) => statusTexto(a.dados).localeCompare(statusTexto(b.dados), "pt-BR", {sensitivity:"base"}) || porNome(a,b);
 
@@ -2208,11 +2226,12 @@
       root.innerHTML = `
         <div class="report-table-wrap">
           <table>
-            <thead><tr><th>Data</th><th>Quem ganhou</th><th>Código</th><th>Codiguin</th><th>Item</th><th>Status</th></tr></thead>
+            <thead><tr><th>Data</th><th>Marcado como resgatado</th><th>Quem ganhou</th><th>Código</th><th>Codiguin</th><th>Item</th><th>Status</th></tr></thead>
             <tbody>
               ${linhas.map(({grupo, codigo, dados}) => `
                 <tr>
                   <td>${dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"}</td>
+                  <td>${dados.entregue&&dados.marcadoResgatadoEm?escapeHTML(window.CFF_CODE_STATE.dateTime(dados.marcadoResgatadoEm)):"Não registrado"}</td>
                   <td>${escapeHTML(dados.recebeu || "Sem nome")}</td>
                   <td class="code-cell">${escapeHTML(codigo)}</td>
                   <td>${escapeHTML(grupo.nome)}${grupo.arquivado ? " <span style=\"color:var(--muted);font-weight:900\">(arquivado)</span>" : ""}</td>
@@ -2229,7 +2248,7 @@
     function textoRelatorio(){
       const linhas = relatorioLinhas();
       if(linhas.length === 0) return "Nenhum código registrado no relatório.";
-      return linhas.map(({grupo, codigo, dados}) => `${dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"} | ${dados.recebeu || "Sem nome"} | ${codigo} | ${grupo.nome} | ${statusTexto(dados)}`).join("\n");
+      return linhas.map(({grupo, codigo, dados}) => `${dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):dados.dataResgate ? formatarData(dados.dataResgate) : "Sem data"} | ${dados.recebeu || "Sem nome"} | ${codigo} | ${grupo.nome} | ${statusTexto(dados)} | Marcado como resgatado: ${dados.entregue&&dados.marcadoResgatadoEm?window.CFF_CODE_STATE.dateTime(dados.marcadoResgatadoEm):"Não registrado"}`).join("\n");
     }
 
     function copiarRelatorio(){
@@ -2238,8 +2257,8 @@
 
     function exportarRelatorioCSV(){
       const linhas = relatorioLinhas();
-      const header = ["data_resgate","data_envio_presente","ganhador","codigo","codiguin","item","status"];
-      const csv = [header, ...linhas.map(({grupo, codigo, dados}) => [dados.dataResgate || "", dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):"", dados.recebeu || "", codigo, grupo.arquivado ? `${grupo.nome} (arquivado)` : grupo.nome, grupo.item, statusTexto(dados)])]
+      const header = ["data_resgate","marcado_resgatado_em","data_envio_presente","ganhador","codigo","codiguin","item","status"];
+      const csv = [header, ...linhas.map(({grupo, codigo, dados}) => [dados.dataResgate || "", dados.entregue?dados.marcadoResgatadoEm||"":"", dados.presente?window.CFF_CODE_STATE.dateTime(dados.presente.sentAt):"", dados.recebeu || "", codigo, grupo.arquivado ? `${grupo.nome} (arquivado)` : grupo.nome, grupo.item, statusTexto(dados)])]
         .map(row => row.map(campoCSV).join(","))
         .join("\n");
       baixarArquivo(csv, "relatorio-codiguinhos.csv", "text/csv;charset=utf-8");
@@ -2860,7 +2879,7 @@
         if(changed||advance){salvarMemoria();if(changed){popularFiltroGrupo();render();}await window.CodiguinhosCloud.flush();}
       },
 
-      inventory(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>g.codigos.map(code=>({code:code.toUpperCase(),groupId:String(g.id),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||''})));},
+      inventory(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>g.codigos.map(code=>({code:code.toUpperCase(),groupId:String(g.id),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||'',redeemed:Boolean(dadosCodigo(code).entregue),hasGift:Boolean(dadosCodigo(code).presente)})));},
       stockPhotos(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().filter(g=>imagemGrupo(g)).map(g=>({imageUrl:imagemGrupo(g),codes:g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!d.presente&&String(d.recebeu||'').startsWith('Reservado para ');}).map(code=>code.toUpperCase())})).filter(g=>g.codes.length);},
       history(){if(!controleDesbloqueado)return [];return listarCodigos(true).filter(row=>row.dados.presente).map(row=>({code:row.codigo,title:row.grupo.item||row.grupo.nome,...row.dados.presente}));},
       async reconcile(records){
@@ -2874,7 +2893,7 @@
         if(changed){salvarMemoria();render();await window.CodiguinhosCloud.flush();}
       },
       read(){if(!controleDesbloqueado)return null;if(!window.CFF_CODE_GIFTS_READY)return [];return gruposOrdenadosSelector().flatMap(g=>statusGrupo(g).tipo==='available'?g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!String(d.recebeu||'').trim()&&!d.presente&&!window.CFF_ECONOMY_STOCK_CODES?.has(code.toUpperCase());}).map(code=>({code:code.toUpperCase(),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||''})):[]);},
-      async reserved({code,bucket}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);d.recebeu='Reservado para '+(bucket==='hidden'?'estoque (fora da loja)':bucket==='roulette'?'roleta':bucket==='shop'?'loja':'roleta/loja');d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();},
+      async reserved({code,bucket}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);if(d.entregue||d.presente)throw Error('Este código já foi resgatado ou enviado e não pode voltar à loja.');d.recebeu='Reservado para '+(bucket==='hidden'?'estoque (fora da loja)':bucket==='roulette'?'roleta':bucket==='shop'?'loja':'roleta/loja');d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();},
       async delivered({code,recipient,giftId,gift}){if(!controleDesbloqueado)throw Error('Controle bloqueado.');const original=grupos.flatMap(g=>g.codigos).find(c=>c.toUpperCase()===code)||code;const d=dadosCodigo(original);d.recebeu='@'+recipient.username+' · presente no site';d.presente={uid:recipient.uid,giftId,sentAt:gift.sentAt,username:recipient.username};d.atualizadoEm=new Date().toISOString();salvarMemoria();render();await window.CodiguinhosCloud.flush();}
     };
     window.CFF_SHOWCASE_DATA = {
@@ -2910,6 +2929,6 @@
   </script>
   <script src="js/admin-codiguinhos-mostruario.js?v=20261008-v2"></script>
 <script src="js/admin-codiguinhos-ui.js?v=20261102-code-report-v1"></script><script type="module">import {bootAdminCodeAcquisitions} from "./js/admin-code-acquisitions.js?v=20261102-code-report-v1";bootAdminCodeAcquisitions().catch(()=>{const host=document.getElementById("eco-code-acquisitions-root");if(host)host.textContent="Não foi possível carregar o relatório de resgates.";});</script>
-<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261112-shop-removal-alert-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261019-roulette-vouchers-v1";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script><script type="module">import {bootAdminCodeReturns} from "./js/admin-code-returns.js?v=20261015-code-returns-v1";bootAdminCodeReturns().catch(()=>{const el=document.getElementById("eco-code-returns-root");if(el)el.textContent="Não foi possível carregar as devoluções. Atualize a página.";});</script></body>
+<script type="module">import {bootCodeGiftDelivery} from "./js/admin-code-gifts.js?v=20261014-code-admin-v1";bootCodeGiftDelivery().catch(()=>{});</script><script type="module" src="/js/admin-economy-stock.js?v=20261113-redeemed-protection-v1"></script><script type="module">import {bootAdminCodeVouchers} from "./js/admin-code-vouchers.js?v=20261019-roulette-vouchers-v1";bootAdminCodeVouchers().catch(()=>{const el=document.getElementById("eco-voucher-admin-root");if(el)el.textContent="Não foi possível abrir os vales. Atualize a página para tentar novamente.";});</script><script type="module">import {bootAdminCodeReturns} from "./js/admin-code-returns.js?v=20261015-code-returns-v1";bootAdminCodeReturns().catch(()=>{const el=document.getElementById("eco-code-returns-root");if(el)el.textContent="Não foi possível carregar as devoluções. Atualize a página.";});</script></body>
 </html>
 
