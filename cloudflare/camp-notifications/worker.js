@@ -201,7 +201,20 @@ export class NotificationHub extends DurableObject {
    }
    if(action==='findGiftRecipient')return json(await codeGifts.findRecipient(goalDatabase(this.goalSecret),user,b.query));
    if(action==='codeGiftStatus')return json(await codeGifts.giftStatus(goalDatabase(this.goalSecret),user,b.hashes));
-   if(action==='sendCodeGift'){admin();return await this.withAccountLock(b.targetUid,async()=>{this.economy().assertReward(b.targetUid);const result=await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b);this.ctx.storage.transactionSync(()=>this.userInbox().reward({id:'codegift:'+result.giftId,uid:result.recipient.uid,title:'Você recebeu um codiguinho!',body:result.gift.title+(result.gift.message?' — '+result.gift.message:''),url:'/conta.html?tab=inventory&section=gifts&gift='+encodeURIComponent(result.giftId),button:'Abrir presente',expiresAt:result.gift.expiresAt||0,at:result.gift.sentAt}));return json(result);});}
+   if(action==='sendCodeGift'){admin();return await this.withAccountLock(b.targetUid,async()=>{this.economy().assertReward(b.targetUid);const result=await codeGifts.sendCodeGift(goalDatabase(this.goalSecret),user,b);
+    // Um presente manual confirmado nunca pode voltar a ser vendido por engano.
+    // Falhas na baixa do estoque nao desfazem o presente que ja foi entregue.
+    try{
+     const code=String(b.code||'').trim().toUpperCase();
+     const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(code));
+     const hash=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
+     const protectedStock=await this.economy().adminHandle(user,{operation:'markStockRedeemed',hashes:[hash],redeemed:true,announce:false});
+     if(protectedStock.blocked)result.stockWarning='O estoque tem um recibo de pontos associado a este código. Confira o histórico antes de corrigir o recibo.';
+    }catch(error){
+     console.warn('[ManualGiftStock]',error);
+     result.stockWarning='O presente foi entregue, mas a baixa do estoque precisa ser conferida no painel.';
+    }
+    this.ctx.storage.transactionSync(()=>this.userInbox().reward({id:'codegift:'+result.giftId,uid:result.recipient.uid,title:'Você recebeu um codiguinho!',body:result.gift.title+(result.gift.message?' — '+result.gift.message:''),url:'/conta.html?tab=inventory&section=gifts&gift='+encodeURIComponent(result.giftId),button:'Abrir presente',expiresAt:result.gift.expiresAt||0,at:result.gift.sentAt}));return json(result);});}
    if(action==='archiveGift')return json(await codeGifts.archiveGift(goalDatabase(this.goalSecret),user,b));
    if(action==='openCodeGift'){try{return json(await this.economy().openReservedCode(user,b.giftId,b.confirmWord)||await codeGifts.openCodeGift(goalDatabase(this.goalSecret),user,b.giftId));}finally{await this.schedule();}}
    if(action==='emblemAdmin'){admin();return await this.withAccountLock(b.targetUid,async()=>{if(b.operation==='assign'&&b.emblemId)this.economy().assertReward(b.targetUid);const result=await profileEmblems.adminHandle(goalDatabase(this.goalSecret),user,b);if(b.operation==='assign'&&result.assignment?.emblemId)this.ctx.storage.transactionSync(()=>this.userInbox().reward({id:'emblem:'+b.targetUid+':'+result.assignment.emblemId+':'+result.assignment.grantedAt,uid:b.targetUid,title:'Você recebeu um emblema!',body:'Seu novo emblema já aparece no perfil e no chat da Central.',url:'/conta.html',button:'Ver meu perfil',at:result.assignment.grantedAt}));return json(result);});}
