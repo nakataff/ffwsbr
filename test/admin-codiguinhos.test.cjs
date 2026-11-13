@@ -105,3 +105,29 @@ test('archived packages expose old redeemed codes for safe stock reconciliation'
   assert.deepEqual(a.source.archivedRedeemedCodes(),['OLDREDEEM123']);
  }finally{a.close();}
 });
+
+test('delivery provenance is recorded separately from redemption, can be corrected and resets safely',async()=>{
+ const a=setup();try{
+  const gift={code:'ABCDEF123456',uid:'person',giftId:'codegift-test',username:'pessoa',sentAt:Date.parse('2026-10-14T20:30:00Z'),openedAt:Date.parse('2026-10-14T20:31:00Z'),pending:false,origin:'manual'};
+  await a.source.reconcile([gift]);
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').deliveryOrigin,'manual');
+  assert.match(a.$('[data-stock-code="ABCDEF123456"]').textContent,/PRESENTE ENVIADO POR MIM/);
+  assert.match(a.$('#reportContent').textContent,/Enviado pelo administrador/);
+  await a.source.setDeliveryOrigin({code:'ABCDEF123456',origin:'economy'});
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').deliveryOrigin,'economy');
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').originOverride,'economy');
+  await a.source.reconcile([gift]);
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').deliveryOrigin,'economy');
+  await a.source.setDeliveryOrigin({code:'ABCDEF123456',origin:'auto'});
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').deliveryOrigin,'manual');
+  await assert.rejects(a.source.setDeliveryOrigin({code:'ABCDEF123456',origin:'store'}),/Escolha a origem/);
+ }finally{a.close();}
+});
+test('when a gift is returned a corrected origin does not survive to another delivery',async()=>{
+ const a=setup();try{
+  await a.source.setDeliveryOrigin({code:'ABCDEF123456',origin:'manual'});
+  await a.source.reconcile([{code:'ABCDEF123456',returned:true,giftId:'codegift-test',bucket:'hidden'}]);
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').originOverride,'');
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').hasGift,false);
+ }finally{a.close()}
+});
