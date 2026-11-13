@@ -1073,7 +1073,10 @@
     const damageByTeamDrop = new Map();
     playerDrop.forEach(row => {
       const key = `${row.stage}:${row.day}:${row.drop}:${normalize(row.team)}`;
-      damageByTeamDrop.set(key, number(damageByTeamDrop.get(key)) + row.damage);
+      const totals = damageByTeamDrop.get(key) || { damage: 0, players: new Set() };
+      totals.damage += row.damage;
+      totals.players.add(normalize(row.name));
+      damageByTeamDrop.set(key, totals);
     });
 
     const teamDrop = [];
@@ -1085,12 +1088,13 @@
       eventResults(event).forEach(result => {
         const team = result.team || result.equipe;
         if (!team) return;
+        const coverage = damageByTeamDrop.get(`${stage}:${day}:${drop}:${normalize(team)}`);
         teamDrop.push({
           team, stage, day, drop, map, roundDrop: event.roundDrop, session: event.session, matches: 1,
           points: number(result.points ?? result.pontos ?? (number(result.placementPoints) + number(result.kills))),
           kills: number(result.kills ?? result.abates),
           booyahs: number(result.booyahs ?? result.booyah ?? (number(result.position ?? result.posicao) === 1 ? 1 : 0)),
-          damage: number(damageByTeamDrop.get(`${stage}:${day}:${drop}:${normalize(team)}`))
+          damage: coverage?.players.size === 4 ? coverage.damage : null
         });
       });
     });
@@ -1100,7 +1104,7 @@
       const key = `${row.stage}:${row.day}:${normalize(row.team)}`;
       if (!teamDayMap.has(key)) teamDayMap.set(key, { team: row.team, stage: row.stage, day: row.day, points: 0, kills: 0, booyahs: 0, damage: 0, matches: 0 });
       const out = teamDayMap.get(key);
-      out.points += row.points; out.kills += row.kills; out.booyahs += row.booyahs; out.damage += row.damage; out.matches += 1;
+      out.points += row.points; out.kills += row.kills; out.booyahs += row.booyahs; out.damage = out.damage === null || row.damage === null ? null : out.damage + row.damage; out.matches += 1;
     });
 
     return { playerDrop, playerDay: [...playerDayMap.values()], teamDrop, teamDay: [...teamDayMap.values()] };
@@ -1845,13 +1849,13 @@
       if (!document.querySelector('link[data-cff-stats-share-css]')) {
         const link=document.createElement('link');
         link.rel='stylesheet';
-        link.href='/css/global-stats-share.css?v=20261108-player-search-v1';
+        link.href='/css/global-stats-share.css?v=20261113-record-layout-v1';
         link.dataset.cffStatsShareCss='1';
         document.head.append(link);
       }
       globalStatsShareLoader=new Promise((resolve,reject)=>{
         const script=document.createElement('script');
-        script.src='/js/global-stats-share.js?v=20261113-record-booyahs-v1';
+        script.src='/js/global-stats-share.js?v=20261113-record-layout-v1';
         script.async=true;
         script.onload=()=>resolve();
         script.onerror=()=>reject(Error('Não foi possível carregar o editor de cards'));
@@ -1990,14 +1994,14 @@
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-points', records.teamDrop, row => row.points, value => String(value), 'Pts')}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-kills', records.teamDrop, row => row.kills, value => String(value), 'Kills')}</div>
-            ${playerEntries.length ? `<div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-damage', records.teamDrop, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>` : ''}
+            ${playerEntries.length ? `<div class="card"><div class="card-top-border"></div><h3>Mais Dano em uma Queda</h3>${s2StatsRecordTeamCard('rec-eq-drop-damage', records.teamDrop.filter(row => row.damage !== null), row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano')}</div>` : ''}
         </div>
 
         <h4 id="anchor-s2-rec-day-team" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Recordes por Dia - Times</h4>
         <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
             <div class="card"><div class="card-top-border"></div><h3>Mais Pontos em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-points', records.teamDay, row => row.points, value => String(value), 'Pts', true)}</div>
             <div class="card"><div class="card-top-border"></div><h3>Mais Abates em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-kills', records.teamDay, row => row.kills, value => String(value), 'Kills', true)}</div>
-            ${playerEntries.length ? `<div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-damage', records.teamDay, row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>` : ''}
+            ${playerEntries.length ? `<div class="card"><div class="card-top-border"></div><h3>Mais Dano em um Dia</h3>${s2StatsRecordTeamCard('rec-eq-day-damage', records.teamDay.filter(row => row.damage !== null), row => row.damage, value => number(value).toLocaleString('pt-BR'), 'Dano', true)}</div>` : ''}
         </div>
       </div>
       ${s2DropReportSelectorHtml(events)}

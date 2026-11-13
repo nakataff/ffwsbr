@@ -64,7 +64,8 @@ test('all seven card topics use the full 9:16 area, with and without a photo',as
   assert(texts.some(r=>r.value==='centralfreefire.com.br'));
   assert(texts.every(r=>Number.isFinite(r.x)&&Number.isFinite(r.y)));
   if(showImage&&(sample.photo||sample.logo)){
-   const portraits=rects.filter(r=>r.w>450&&r.w<550&&r.h>450&&r.h<550&&r.y<500);
+   const minPortrait=sample.kind==='record'?340:450;
+   const portraits=rects.filter(r=>r.w>minPortrait&&r.w<550&&r.h>minPortrait&&r.h<550&&r.y<500);
    assert(portraits.length>0,sample.kind+' needs featured portrait or crest');
    assert(first>Math.max(...portraits.map(r=>r.y+r.h))+30,sample.kind+' content cannot cover portrait');
   }
@@ -188,5 +189,31 @@ test('ranking principal de equipe e jogador mantém a posição completa nos qua
    format+' '+kind+' não pode mostrar uma posição truncada');
   assert.equal(canvas.width,formats[format][0]);
   assert.equal(canvas.height,formats[format][1]);
+ }
+});
+
+test('record layouts emphasize the headline metric and align optional badges in each format',async()=>{
+ const api=setup(),row={
+  title:'MAIOR PONTUAÇÃO EM UM DIA',entity:'Buriram United Esports',main:'151',mainLabel:'PONTOS',
+  facts:[{label:'ABATES',value:'97',metric:'kills',rank:2},
+   {label:'BOOYAHS',value:'4',metric:'booyahs',rank:1},
+   {label:'DANO',value:'55.649',metric:'damage',rank:3},
+   {label:'QUEDAS',value:'6',metric:'matches',rank:1}]
+ };
+ for(const format of Object.keys(formats)){
+  api.state.showFactRanks=true;
+  const {texts}=await render(api,format,'record',true,row);
+  const numbers=row.facts.map(f=>texts.find(t=>t.value===f.value));
+  assert(numbers.every(n=>n&&n.font>=50),format+' readable secondary numbers');
+  assert(texts.find(t=>t.value==='151').font>numbers[0].font*2);
+  assert.equal(texts.filter(t=>t.value==='PONTOS').length,1);
+  const rank=texts.find(t=>t.value==='#2');
+  assert(rank&&rank.x>numbers[0].x&&Math.abs(rank.y-numbers[0].y)<24);
+  assert(texts.some(t=>t.value.includes('ESPORTS')));
+  if(format==='wide')assert.equal(new Set(numbers.map(n=>n.y)).size,1);
+  if(format==='feed'||format==='square')assert.equal(new Set(numbers.map(n=>n.y)).size,2);
+  api.state.showFactRanks=false;
+  const plain=await render(api,format,'record',false,row);
+  assert(!plain.texts.some(t=>/^#\d+$/.test(t.value)));
  }
 });

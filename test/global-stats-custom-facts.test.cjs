@@ -185,8 +185,32 @@ test('record builder aggregates live Buriram Booyahs before generating the card'
  const entries=individual.entries.filter(e=>e.stage==='classificatoria'&&e.day===4);
  const records=build(events,entries),row=records.teamDay.find(r=>r.team==='Buriram United Esports'&&r.day===4);
  assert.deepEqual([row.points,row.kills,row.booyahs,row.damage,row.matches],[151,97,4,55649,6]);
+ const drop=events.find(e=>e.results.some(r=>r.team===row.team)).drop;
+ const missing=entries.find(e=>e.team===row.team&&e.drop===drop);
+ assert(missing);
+ const partial=build(events,entries.filter(e=>e!==missing));
+ assert.equal(partial.teamDay.find(r=>r.team===row.team).damage,null);
  const api=runtime();api.setContext({...fixture(),records,events});
  api.setSource({kind:'record',record:['teamDay','points','Maior pontuação em um dia']});
  const card=api.fromContext();
  assert.deepEqual(Array.from(card.facts.map(r=>[r.label,r.value])),[['ABATES','97'],['BOOYAHS','4'],['DANO','55.649'],['QUEDAS','6']]);
+});
+
+test('secondary ranks are optional and compare records at the same granularity',()=>{
+ const api=runtime(),ctx=fixture();
+ const row={team:'Buriram United Esports',stage:'classificatoria',day:4,points:151,kills:97,booyahs:4,damage:55649,matches:6};
+ ctx.records.teamDay=[row,
+  {team:'Outra equipe',stage:'classificatoria',day:2,points:140,kills:99,booyahs:2,damage:null,matches:6},
+  {team:'Outra equipe',stage:'classificatoria',day:3,points:132,kills:96,booyahs:4,damage:60000,matches:6}];
+ ctx.records.teamDrop=[{team:'Outra equipe',kills:120}];
+ api.setContext(ctx);
+ api.setSource({kind:'record',record:['teamDay','points','Maior pontuação em um dia']});
+ assert(api.fromContext().facts.every(f=>f.rank===null));
+ api.state.showFactRanks=true;
+ assert.deepEqual(Array.from(api.fromContext().facts,f=>[f.metric,f.value,f.rank]),
+  [['kills','97',2],['booyahs','4',1],['damage','55.649',2],['matches','6',1]]);
+ api.setSource({kind:'record',record:['playerDay','kills','Abates em um dia']});
+ const individual=api.fromContext();
+ assert(individual.facts.every(f=>f.metric!=='kills'));
+ assert.equal(individual.facts.find(f=>f.metric==='assists').rank,1);
 });

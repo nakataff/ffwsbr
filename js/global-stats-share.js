@@ -71,6 +71,11 @@ function sorted(rows,metric){
  const lowerFirst=metric==='avgPosition';
  return [...(rows||[])].sort((a,b)=>(lowerFirst?num(a[metric])-num(b[metric]):num(b[metric])-num(a[metric]))||num(b.kills)-num(a.kills)||String(a.team||a.name).localeCompare(String(b.team||b.name),'pt-BR'));
 }
+function sortedRecords(scope,metric){
+ const tie=scope.startsWith('team')?'points':'damage';
+ return dataRows(scope).filter(row=>known(row[metric])).sort((a,b)=>
+  Number(b[metric])-Number(a[metric])||num(b.kills)-num(a.kills)||num(b[tie])-num(a[tie]));
+}
 function optionsFor(select,rows,getValue,getLabel,selected){
  select.replaceChildren();
  (rows||[]).forEach(row=>{
@@ -169,12 +174,30 @@ function rankFor(row,type,metric){
  const actual=metricValue(row,type,metric);
  if(actual===null||!Number.isFinite(actual))return null;
  const all=(type==='team'?context?.teams:context?.players)||[];
- const comparison=all.map(item=>metricValue(item,type,metric)).filter(value=>value!==null&&Number.isFinite(value));
- if(!comparison.length)return null;
- const lowFirst=metric==='avgPosition';
- // Competition ranking: ties share the same position (#1, #1, #3).
- return 1+comparison.filter(value=>lowFirst?value<actual-1e-7:value>actual+1e-7).length;
+ return positionFor(actual,all.map(item=>metricValue(item,type,metric)),metric==='avgPosition');
 }
+function positionFor(actual,values,lowFirst=false){
+ if(!known(actual))return null;
+ const target=Number(actual),comparison=values.filter(known);
+ if(!comparison.length)return null;
+ // Ties share the same position (#1, #1, #3).
+ return 1+comparison.filter(value=>lowFirst?value<target-1e-7:value>target+1e-7).length;
+}
+function recordFacts(row,scope,primary){
+ const metrics=scope.startsWith('team')?['kills','points','booyahs','damage','matches']:
+  ['kills','points','damage','assists','matches'];
+ const candidates=dataRows(scope);
+ return metrics.filter(metric=>metric!==primary&&known(row[metric])).map(metric=>({
+  ...stat(LABELS[metric],row[metric],metric),metric,
+  rank:state.showFactRanks?positionFor(row[metric],candidates.map(candidate=>candidate[metric])):null
+ }));
+}
+function comparisonFact(row,type,metric){
+ const value=metricValue(row,type,metric);
+ return {label:metric==='avgKills'?'K / QUEDA':LABELS[metric],value:metricText(value,metric),
+  rank:state.showFactRanks?rankFor(row,type,metric):null};
+}
+
 function customFacts(row,type){
  const chosen=(Array.isArray(state.slotMetrics)?state.slotMetrics:[]).slice(0,6);
  return chosen.filter(Boolean).map(metric=>{
@@ -235,30 +258,16 @@ function fromContext(){
   payload.logo=rows[0]?.logo||'';payload.photo=rows[0]?.photo||'';
  }else if(kind==='record'){
   const rec=choice.record||selectedRecord(),scope=rec[0],metric=rec[1],title=choice.title||rec[2];
-  const row=choice.row||sorted(dataRows(scope),metric)[0];
-  if(!row)return null;
+  const row=choice.row||sortedRecords(scope,metric)[0];
+  if(!row||!known(row[metric]))return null;
   payload.title=title.toUpperCase();payload.main=fmt(row[metric],metric);payload.mainLabel=LABELS[metric];
   payload.entity=row.team&&scope.startsWith('team')?row.team:row.name;
   payload.team=row.team||'';payload.logo=logoSrc(row.team);payload.photo=scope.startsWith('player')?playerSrc(row.name,row.team):'';
+  payload.isPlayerRecord=scope.startsWith('player');
   const day=row.day?'DIA '+row.day:'',map=row.map||'';
   payload.subtitle=[row.team&&scope.startsWith('player')?row.team:'',row.stage?STAGES[row.stage]:'',day,scope.endsWith('Drop')?'QUEDA '+(row.roundDrop||row.drop):'',
     scope.endsWith('Drop')?map:''].filter(Boolean).join(' · ');
-  // In record cards, the headline already highlights the winning metric.
-  // Team records show Booyahs from that specific day/drop instead of repeating
-  // points (or the other headline metric) in the four supporting stat panels.
-  payload.facts=scope.startsWith('team')?[
-   ...(metric!=='kills'?[stat('ABATES',row.kills,'kills')]:[]),
-   ...(metric!=='points'&&row.points!==undefined?[stat('PONTOS',row.points,'points')]:[]),
-   ...(row.booyahs!==undefined?[stat('BOOYAHS',row.booyahs,'booyahs')]:[]),
-   ...(metric!=='damage'&&row.damage!==undefined?[stat('DANO',row.damage,'damage')]:[]),
-   ...(row.matches!==undefined?[stat('QUEDAS',row.matches,'matches')]:[])
-  ]:[
-   stat('ABATES',row.kills,'kills'),
-   ...(row.points!==undefined?[stat('PONTOS',row.points,'points')]:[]),
-   ...(row.damage!==undefined?[stat('DANO',row.damage,'damage')]:[]),
-   ...(row.assists!==undefined?[stat('ASSIST.',row.assists,'assists')]:[]),
-   ...(row.matches!==undefined?[stat('QUEDAS',row.matches,'matches')]:[])
-  ];
+  payload.facts=recordFacts(row,scope,metric);
  }else if(kind==='comparePlayer'){
   const first=findComparePlayer(state.playerA),second=findComparePlayer(state.playerB);
   if(!first||!second||playerRef(first)===playerRef(second))return null;
@@ -297,6 +306,9 @@ function settingsUI(){
  $('.cff-share-single-setting').hidden=kind!=='single';
  const details=kind==='player'||kind==='team';
  $('.cff-share-stat-settings').hidden=!details;
+ const rankings=details||kind==='record'||kind==='compare'||kind==='comparePlayer';
+ $('.cff-share-fact-ranking').hidden=!rankings;
+ $('.cff-share-stat-note').textContent=kind==='record'?'Posição entre os resultados do recorte, por dia ou por queda. Empates dividem a posição.':'Posição de cada métrica no recorte aberto no site. Empates dividem a posição.';
  if(details){
   const allowed=METRIC_GROUPS[kind];
   const fields=modal.querySelectorAll('[data-share-slot]');
@@ -331,7 +343,8 @@ function fitRankLine(ctx,text,x,y,maxWidth,preferredSize,color,weight='900',alig
   ctx.font=weight+' '+size+'px "Arial Narrow","Barlow Condensed",Arial,sans-serif';
  }
  // Canvas maxWidth is a final safeguard for unusually long ranks or narrow viewports.
- ctx.fillText(value,x,y,width);
+ if(ctx.measureText(value).width>width)ctx.fillText(value,x,y,width);
+ else ctx.fillText(value,x,y);
 }
 function rounded(ctx,x,y,w,h,r,color,stroke){
  const radius=Math.min(r,w/2,h/2);
@@ -413,6 +426,78 @@ function drawHeroPortrait(ctx,photo,emblem,x,y,size,accent,dark,surface){
  ctx.restore();
  rounded(ctx,x,y,size,size,radius,null,dark?'#31516b':'#b5cbdc');
 }
+function drawRecord(ctx,payload,art,{w,h,pad,footerY,accent,dark,surface,ink,muted}){
+ const wide=state.format==='wide',story=state.format==='stories',feed=state.format==='feed';
+ const top=wide?154:190,heroEnd=wide?458:story?755:feed?664:558;
+ const width=w-2*pad,hasArt=state.showImage&&(art.photo||art.emblem);
+ const portrait=hasArt?(wide?254:story?402:feed?326:260)*(payload.isPlayerRecord?1:.9):0;
+ const portraitX=w-pad-portrait;
+ const copyWidth=hasArt?portraitX-pad-(wide?38:28):width;
+ const highlight=dark?accent:{blue:'#006d90',red:'#a5122e',gold:'#805509',green:'#087451'}[state.accent]||'#006d90';
+ const gold=dark?'#f3c466':'#805509';
+ if(hasArt)drawHeroPortrait(ctx,art.photo,art.emblem,portraitX,top+(heroEnd-top-portrait)/2,portrait,accent,dark,surface);
+
+ let cursor=top;
+ const heading=(value,size,color)=>{
+  if(!value)return;
+  const layout=headlineLayout(ctx,value,copyWidth,size);
+  cursor+=layout.size;
+  layout.lines.forEach((line,i)=>{
+   fitRankLine(ctx,line,pad,cursor+i*layout.size*1.05,copyWidth,layout.size,color,'900','left',layout.size);
+  });
+  cursor+=(layout.lines.length-1)*layout.size*1.05;
+ };
+ heading(payload.title,wide?39:story?58:feed?52:43,ink);
+ if(payload.entity){
+  cursor+=wide?9:14;
+  heading(payload.entity.toUpperCase(),wide?28:story?38:feed?36:30,ink);
+ }
+ const meta=state.showFilters?payload.subtitle:payload.isPlayerRecord?payload.team:'';
+ if(state.showSubtitle&&meta){
+  cursor+=wide?22:30;
+  fitRankLine(ctx,meta,pad,cursor,copyWidth,wide?16:22,muted,'700','left',13);
+ }
+ const labelY=heroEnd-(wide?13:17),valueY=labelY-(wide?30:39);
+ const maxScore=wide?158:story?235:feed?215:170;
+ const scoreSize=Math.min(maxScore,Math.max(42,Math.floor((valueY-cursor-10)/.83)));
+ fitRankLine(ctx,payload.main,pad,valueY,copyWidth,scoreSize,highlight,'900','left',38);
+ fitRankLine(ctx,payload.mainLabel,pad,labelY,copyWidth,wide?22:story?30:26,highlight,'900','left',16);
+
+ const facts=payload.facts.slice(0,6);
+ if(!facts.length)return;
+ const gap=wide?12:18;
+ const columns=wide?Math.min(4,facts.length):story||(feed&&facts.length===2)?1:Math.min(2,facts.length);
+ const rows=Math.ceil(facts.length/columns),gridTop=heroEnd+(wide?14:25);
+ const gridBottom=footerY-(wide?37:52);
+ const boxHeight=Math.min(story?(facts.length===1?680:470):wide?142:feed?(facts.length===1?410:225):165,(gridBottom-gridTop-gap*(rows-1))/rows);
+ facts.forEach((fact,index)=>{
+  const row=Math.floor(index/columns),column=index%columns;
+  const rowLength=Math.min(columns,facts.length-row*columns);
+  const boxWidth=(width-gap*(rowLength-1))/rowLength;
+  const x=pad+column*(boxWidth+gap),y=gridTop+row*(boxHeight+gap);
+  const booyah=fact.metric==='booyahs',color=booyah?gold:ink;
+  rounded(ctx,x,y,boxWidth,boxHeight,wide?12:19,
+   booyah?(dark?'#211e20':'#fff7e4'):surface,
+   booyah?(dark?'#715735':'#c9a05b'):(dark?'#2a405b':'#bacddd'));
+  const inset=wide?18:27;
+  const numberFont=wide?Math.min(62,boxHeight*.5):story?Math.min(105,boxHeight*.51):Math.min(feed?90:69,boxHeight*.52);
+  const labelFont=wide?17:story?27:22;
+  const numberY=y+boxHeight*.59,labelBaseline=y+boxHeight*.83;
+  const ranked=state.showFactRanks&&Number.isInteger(fact.rank)&&fact.rank>0;
+  const rankWidth=ranked?(wide?59:story?100:84):0;
+  fitRankLine(ctx,fact.value,x+inset,numberY,boxWidth-2*inset-rankWidth,numberFont,color,'900','left',23);
+  fitRankLine(ctx,fact.label,x+inset,labelBaseline,boxWidth-2*inset,labelFont,booyah?gold:muted,'800','left',14);
+  if(ranked){
+   const rankX=x+boxWidth-inset-rankWidth;
+   const badgeHeight=wide?33:story?50:43;
+   const badgeY=numberY-badgeHeight*.78;
+   rounded(ctx,rankX,badgeY,rankWidth,badgeHeight,wide?7:10,
+    booyah?(dark?'#392b1d':'#f7e5bc'):(dark?'#1b3046':'#e6eff8'));
+   fitRankLine(ctx,'#'+fact.rank,rankX+rankWidth/2,badgeY+badgeHeight*.72,rankWidth-12,
+    wide?21:story?33:28,booyah?gold:highlight,'900','center',14);
+  }
+ });
+}
 async function draw(payload){
  const canvas=modal.querySelector('canvas'),ctx=canvas.getContext('2d',{alpha:false});
  const [w,h]=FORMATS[state.format]||FORMATS.feed;
@@ -420,7 +505,7 @@ async function draw(payload){
  const generation=++renderSeq;
  const story=state.format==='stories',feed=state.format==='feed';
  const [brand,emblem,photo,rowImages,compareImages]=await Promise.all([
-  image(BRAND),image(payload.logo),state.showImage?image(payload.photo):Promise.resolve(null),
+  image(BRAND),state.showImage?image(payload.logo):Promise.resolve(null),state.showImage?image(payload.photo):Promise.resolve(null),
   payload.rows?.length&&state.showImage?Promise.all(payload.rows.slice(0,5).map(row=>image(row.logo))):Promise.resolve([]),
   (payload.two||payload.twoPlayers)&&state.showImage?Promise.all((payload.twoPlayers||payload.two).map(row=>image(payload.twoPlayers?playerSrc(row.name,row.team):logoSrc(row.team)))):Promise.resolve([])
  ]);
@@ -430,7 +515,7 @@ async function draw(payload){
  const grad=ctx.createLinearGradient(0,0,w,h);grad.addColorStop(0,bg);grad.addColorStop(.7,dark?'#0b1e32':'#dbeaf6');grad.addColorStop(1,dark?'#06111f':'#f7fbff');
  ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
  ctx.globalAlpha=dark?.06:.07;ctx.strokeStyle=accent;ctx.lineWidth=3;
- for(let i=-7;i<14;i++){ctx.beginPath();ctx.moveTo(w*.55+i*95,-100);ctx.lineTo(w*.15+i*95,h+100);ctx.stroke()}
+ for(let i=-7;payload.kind!=='record'&&i<14;i++){ctx.beginPath();ctx.moveTo(w*.55+i*95,-100);ctx.lineTo(w*.15+i*95,h+100);ctx.stroke()}
  ctx.globalAlpha=1;
  ctx.fillStyle=accent;ctx.fillRect(0,0,w,Math.max(9,w*.008));
  const pad=w*.07;const compact=h<=760;const wideList=compact&&payload.rows.length>0;
@@ -442,6 +527,8 @@ async function draw(payload){
  ctx.fillStyle=dark?'#34526c':'#b5cad9';ctx.fillRect(pad,headY+61,w-2*pad,2);
  // Canvas text coordinates are baselines: make headline, player, filters and score separate rows.
  const footerY=h-(compact?69:113);
+ if(payload.kind==='record')drawRecord(ctx,payload,{photo,emblem},{w,h,pad,footerY,accent,dark,surface,ink,muted});
+ else{
  // All Stories now use their own 9:16 layout. Feed, square and wide stay unchanged.
  const legacyPanelTop=compact?497:Math.floor(h*.58);
  const heroVisible=state.showImage&&(photo||emblem)&&!wideList;
@@ -551,14 +638,14 @@ async function draw(payload){
     if(logo)contain(ctx,logo,x+boxW-195,y+40,145,145);
     textLine(ctx,fmt(isPlayer?row.kills:row.points,isPlayer?'kills':'points'),x+40,y+225,boxW*.66,93,accent,'950');
     textLine(ctx,isPlayer?'ABATES':'PONTOS',x+40,y+257,boxW*.55,20,muted,'850');
-    const fields=isPlayer?[['DANO',fmt(row.damage,'damage')],['ASSIST.',fmt(row.assists,'assists')],['QUEDAS',fmt(row.matches,'matches')]]:
-     [['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
+    const metrics=isPlayer?['damage','assists','matches']:['kills','booyahs','matches'];
     const cellW=(boxW-80)/3;
-    fields.forEach(([label,value],j)=>{
-     const xCell=x+40+cellW*j;
+    metrics.forEach((metric,j)=>{
+     const fact=comparisonFact(row,isPlayer?'player':'team',metric),xCell=x+40+cellW*j;
      ctx.fillStyle=dark?'#29445e':'#c8d8e6';ctx.fillRect(xCell,y+boxH-120,cellW-15,2);
-     textLine(ctx,label,xCell,y+boxH-90,cellW-13,15,muted,'850');
-     textLine(ctx,value,xCell,y+boxH-36,cellW-13,36,ink,'900');
+     textLine(ctx,fact.label,xCell,y+boxH-90,cellW-13,15,muted,'850');
+     fitRankLine(ctx,fact.value,xCell,y+boxH-36,cellW-(fact.rank?84:13),36,ink,'900','left');
+     if(fact.rank)fitRankLine(ctx,'#'+fact.rank,xCell+cellW-15,y+boxH-38,63,23,accent);
     });
    });
   }else{
@@ -579,20 +666,23 @@ async function draw(payload){
      if(isPlayer)textLine(ctx,row.team,x+22,y+106,logo?colW-150:colW-44,18,muted,'750');
      textLine(ctx,fmt(isPlayer?row.kills:row.points,isPlayer?'kills':'points'),x+22,y+205,colW-44,69,accent,'950');
      textLine(ctx,isPlayer?'ABATES':'PONTOS',x+22,y+232,colW-44,18,muted,'850');
-     const details=isPlayer?[['DANO',fmt(row.damage,'damage')],['ASSISTÊNCIAS',fmt(row.assists,'assists')],['K / QUEDA',fmt(row.avgKills,'avgKills')],['QUEDAS',fmt(row.matches,'matches')]]:
-      [['ABATES',fmt(row.kills,'kills')],['BOOYAHS',fmt(row.booyahs,'booyahs')],['QUEDAS',fmt(row.matches,'matches')]];
+     const metrics=isPlayer?['damage','assists','avgKills','matches']:['kills','booyahs','matches'];
      const detailsY=y+boxH-(isPlayer?264:204);
-     details.forEach(([title,value],j)=>{
-      const lineY=detailsY+j*(isPlayer?59:63);
+     metrics.forEach((metric,j)=>{
+      const fact=comparisonFact(row,isPlayer?'player':'team',metric),lineY=detailsY+j*(isPlayer?59:63);
+      const right=x+colW-23,rankSpace=fact.rank?69:0;
       ctx.fillStyle=dark?'#29445e':'#c8d8e6';ctx.fillRect(x+22,lineY,colW-44,2);
-      textLine(ctx,title,x+24,lineY+34,colW*.46,19,muted,'850');
-      textLine(ctx,value,x+colW-23,lineY+35,colW*.44,30,ink,'900','right');
+      textLine(ctx,fact.label,x+24,lineY+34,colW*.44,19,muted,'850');
+      fitRankLine(ctx,fact.value,right-rankSpace,lineY+35,colW*.45-rankSpace,30,ink);
+      if(fact.rank)fitRankLine(ctx,'#'+fact.rank,right,lineY+34,61,20,accent);
      });
     }else{
      textLine(ctx,isPlayer?row.name:row.team,x+18,y+(small?28:42),colW-36,small?20:27,ink);
      if(isPlayer&&!small)textLine(ctx,row.team,x+18,y+66,colW-36,14,muted,'750');
      textLine(ctx,fmt(isPlayer?row.kills:row.points,isPlayer?'kills':'points')+(isPlayer?' K':' PTS'),x+18,y+(small?68:110),colW-36,small?34:46,accent);
-     textLine(ctx,fmt(isPlayer?row.damage:row.kills,isPlayer?'damage':'kills')+(isPlayer?' DANO':' ABATES'),x+18,y+boxH-17,colW-36,small?14:22,muted);
+     const fact=comparisonFact(row,isPlayer?'player':'team',isPlayer?'damage':'kills');
+     textLine(ctx,fact.value+' '+fact.label,x+18,y+boxH-17,colW-(fact.rank?108:36),small?14:22,muted);
+     if(fact.rank)fitRankLine(ctx,'#'+fact.rank,x+colW-18,y+boxH-17,64,small?16:22,accent,'900','right',13);
     }
    });
   }
@@ -635,6 +725,7 @@ async function draw(payload){
     }
    });
   }
+ }
  }
  ctx.fillStyle=accent;ctx.fillRect(pad,footerY-22,w-2*pad,3);
  textLine(ctx,'centralfreefire.com.br',pad,footerY+18,w*.72,compact?21:28,ink);
@@ -862,10 +953,9 @@ function prepareModal(){
    '<fieldset class="cff-share-stat-settings" hidden><legend>Conteúdos do card · <span class="cff-share-stat-kind">jogador</span></legend>',
     '<p>Escolha até 6 informações, na ordem em que devem aparecer. Selecione “Ocultar” para não exibir uma delas.</p>',
     '<div class="cff-share-stat-slots">'+Array.from({length:6},(_,i)=>'<label>Informação '+(i+1)+'<select data-share-slot="'+i+'" aria-label="Informação '+(i+1)+'"></select></label>').join('')+'</div>',
-    '<div class="cff-share-stat-options"><label><input type="checkbox" data-share-field="showMainRank"> Mostrar posição do destaque principal</label>',
-    '<label><input type="checkbox" data-share-field="showFactRanks"> Mostrar posição de cada informação</label></div>',
-    '<p class="cff-share-stat-note">As posições usam os dados do recorte aberto no site. Dados indisponíveis aparecem como “—”, sem inventar números.</p>',
+    '<div class="cff-share-stat-options"><label><input type="checkbox" data-share-field="showMainRank"> Mostrar posição do destaque principal</label></div>',
    '</fieldset>',
+   '<div class="cff-share-fact-ranking" hidden><label><input type="checkbox" data-share-field="showFactRanks"> Mostrar posição de cada estatística secundária</label><small class="cff-share-stat-note"></small></div>',
    '<fieldset><legend>Formato da imagem</legend><div class="cff-share-formats"><label><input type="radio" name="cff-share-format" value="stories">Stories <small>1080 × 1920</small></label><label><input type="radio" name="cff-share-format" value="feed">Feed 4:5 <small>1080 × 1350</small></label><label><input type="radio" name="cff-share-format" value="square">Quadrado <small>1080 × 1080</small></label><label><input type="radio" name="cff-share-format" value="wide">16:9 <small>1280 × 720</small></label></div></fieldset>',
    '<div class="cff-share-options-grid"><label>Tema<select data-share-field="theme"><option value="dark">Escuro</option><option value="light">Claro</option></select></label><label>Cor de destaque<select data-share-field="accent"><option value="blue">Azul CFF</option><option value="red">Vermelho</option><option value="gold">Dourado</option><option value="green">Verde</option></select></label></div>',
    '<label>Título personalizado<input type="text" maxlength="85" placeholder="Usar título automático" class="cff-share-custom-title" data-share-field="title"><small class="cff-share-title-help"></small></label>',
@@ -1053,7 +1143,7 @@ function decorate(){
    card.classList.add('cff-stats-share-card');
    const header=card.querySelector('h3');if(header)header.append(shareButton(title,()=>open(src),true));
    const metric=group==='record'?def[2]:def[1],source=group==='record'?def[1]:group;
-   const candidates=sorted(dataRows(source),metric);
+   const candidates=group==='record'?sortedRecords(source,metric):sorted(dataRows(source),metric);
    const offset=Math.max(0,Number(window.__ffwsGlobalStatsPages?.[def[0]]||0))*4;
    const displayRows=candidates.slice(offset,offset+4);
    const listRows=[...card.children].filter(el=>el.tagName==='DIV'&&el.style.alignItems==='center'&&el.style.display==='grid');
