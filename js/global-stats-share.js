@@ -243,11 +243,22 @@ function fromContext(){
   const day=row.day?'DIA '+row.day:'',map=row.map||'';
   payload.subtitle=[row.team&&scope.startsWith('player')?row.team:'',row.stage?STAGES[row.stage]:'',day,scope.endsWith('Drop')?'QUEDA '+(row.roundDrop||row.drop):'',
     scope.endsWith('Drop')?map:''].filter(Boolean).join(' · ');
-  payload.facts=[stat('ABATES',row.kills,'kills'),
+  // In record cards, the headline already highlights the winning metric.
+  // Team records show Booyahs from that specific day/drop instead of repeating
+  // points (or the other headline metric) in the four supporting stat panels.
+  payload.facts=scope.startsWith('team')?[
+   ...(metric!=='kills'?[stat('ABATES',row.kills,'kills')]:[]),
+   ...(metric!=='points'&&row.points!==undefined?[stat('PONTOS',row.points,'points')]:[]),
+   ...(row.booyahs!==undefined?[stat('BOOYAHS',row.booyahs,'booyahs')]:[]),
+   ...(metric!=='damage'&&row.damage!==undefined?[stat('DANO',row.damage,'damage')]:[]),
+   ...(row.matches!==undefined?[stat('QUEDAS',row.matches,'matches')]:[])
+  ]:[
+   stat('ABATES',row.kills,'kills'),
    ...(row.points!==undefined?[stat('PONTOS',row.points,'points')]:[]),
    ...(row.damage!==undefined?[stat('DANO',row.damage,'damage')]:[]),
    ...(row.assists!==undefined?[stat('ASSIST.',row.assists,'assists')]:[]),
-   ...(row.matches!==undefined?[stat('QUEDAS',row.matches,'matches')]:[])];
+   ...(row.matches!==undefined?[stat('QUEDAS',row.matches,'matches')]:[])
+  ];
  }else if(kind==='comparePlayer'){
   const first=findComparePlayer(state.playerA),second=findComparePlayer(state.playerB);
   if(!first||!second||playerRef(first)===playerRef(second))return null;
