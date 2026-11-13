@@ -2879,6 +2879,7 @@
       },
 
       inventory(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().flatMap(g=>g.codigos.map(code=>({code:code.toUpperCase(),groupId:String(g.id),title:String(g.item||g.nome).slice(0,100),imageUrl:imagemGrupo(g)||'',expires:fimGrupo(g)||'',redeemed:Boolean(dadosCodigo(code).entregue),hasGift:Boolean(dadosCodigo(code).presente)})));},
+      archivedRedeemedCodes(){if(!controleDesbloqueado)return null;return [...new Set((memoria.__gruposArquivados||[]).flatMap(g=>(g.codigos||[]).filter(code=>{const d=dadosCodigo(code);return d.entregue||d.presente;}).map(code=>code.toUpperCase())))];},
       stockPhotos(){if(!controleDesbloqueado)return null;return gruposOrdenadosSelector().filter(g=>imagemGrupo(g)).map(g=>({imageUrl:imagemGrupo(g),codes:g.codigos.filter(code=>{const d=dadosCodigo(code);return !d.entregue&&!d.presente&&String(d.recebeu||'').startsWith('Reservado para ');}).map(code=>code.toUpperCase())})).filter(g=>g.codes.length);},
       history(){if(!controleDesbloqueado)return [];return listarCodigos(true).filter(row=>row.dados.presente).map(row=>({code:row.codigo,title:row.grupo.item||row.grupo.nome,...row.dados.presente}));},
       async reconcile(records){
