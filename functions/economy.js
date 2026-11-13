@@ -261,7 +261,7 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
      if(b.redeemed){
       if(item.bucket==='redeemed')continue;
       sql.exec("UPDATE eco_stock SET bucket='redeemed' WHERE hash=? AND receipt IS NULL",hash);updated++;
-      if(b.announce===true&&unique.length===1){
+      if(b.announce===true&&unique.length===1&&['shop','both','roulette'].includes(item.bucket)){
        const remaining=rows("SELECT COUNT(*) AS n FROM eco_stock WHERE title=? AND receipt IS NULL AND (expires=0 OR expires>?) AND bucket IN ('shop','both','roulette')",item.title,now())[0].n;
        if(!remaining)shopRemoval={title:item.title,reason:''};
       }
