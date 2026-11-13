@@ -125,7 +125,7 @@
       if(!p.dailyDate){p.dailyDate=date;p.updatedAt=stamp();persist(true,'Iniciar checklist NFA Legends');}
       const locked=p.dailyDate!==date,fs=nfaFields(),done=fs.filter(f=>f.done).length;
       const displayDate=d=>d?d.split('-').reverse().join('/'):'—';
-      $('projects-summary').innerHTML=`<div><strong>${done}<span> / ${fs.length}</span></strong><small>tarefas concluídas</small></div><div><strong>${fs.length-done}</strong><small>tarefas pendentes</small></div><div><strong>${escape(displayDate(p.dailyDate))}</strong><small>dia do checklist</small></div><div class="project-total-progress"><span>${fs.length?Math.round(done/fs.length*100):0}% concluído</span><progress value="${done}" max="${fs.length||1}"></progress></div>`;
+      $('projects-summary').innerHTML=`<div><strong>${done}<span> / ${fs.length}</span></strong><small>tarefas concluídas</small></div><div><strong>${fs.length-done}</strong><small>tarefas pendentes</small></div><div><strong>${locked?escape(displayDate(p.dailyDate).slice(0,5)):'Hoje'}</strong><small>dia do checklist</small></div><div class="project-total-progress"><span>${fs.length?Math.round(done/fs.length*100):0}% concluído</span><progress value="${done}" max="${fs.length||1}"></progress></div>`;
       $('project-pending-summary').innerHTML=locked?`<div class="nfa-day-alert"><strong>Checklist de ${escape(displayDate(p.dailyDate))}</strong><span>Inicie o dia de hoje para limpar as marcações anteriores e continuar a rotina.</span><button type="button" class="primary" data-nfa-new-day>Iniciar dia ${escape(displayDate(date))}</button></div>`:'';
       const cards=companies().map((c,index)=>{
         const tasks=networks(c.id).flatMap(n=>fields(n.id));
