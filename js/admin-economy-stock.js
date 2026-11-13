@@ -100,7 +100,7 @@ async function loadStock(force=false,quiet=false){if(!host||!isAdmin()||source()
  const previouslyRedeemed=[];
  for(let j=0;j<part.length;j++){
   const item=byHash.get(ids[j]);
-  if(item?.status==='available'&&(part[j].redeemed||part[j].hasGift))previouslyRedeemed.push(ids[j]);
+  if(item?.status==='available'&&part[j].redeemed)previouslyRedeemed.push(ids[j]);
  }
  // Backfill old encrypted records in bounded batches. Fail closed if the server cannot protect them.
  for(let j=0;j<previouslyRedeemed.length;j+=50){
