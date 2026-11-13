@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=v=>Number(v||0).toLocaleString('pt-BR');
-const CACHE='cff_home_global_summary_v3_day3',TTL=300000;let booted=false,payload=null,loading=null,lastFetch=0,selectedDay='',dayChosen=false;
+const CACHE='cff_home_global_summary_v3_week2day1',TTL=300000;let booted=false,payload=null,loading=null,lastFetch=0,selectedDay='',dayChosen=false;
 function empty(text){return `<tr><td colspan="5" class="home-weekly-empty">${esc(text)}</td></tr>`}
 function playerLink(p){return '/ffws-global-2026/jogador/?id='+encodeURIComponent(p.id)}
 function playerRows(rows,metric){return rows.length?rows.slice(0,6).map((r,i)=>`<tr><td class="home-rank-pos">${i+1}</td><td class="home-rank-media"><a href="${playerLink(r)}"><img class="home-rank-avatar" src="${esc(r.photo||'/silhueta.webp')}" onerror="this.onerror=null;this.src='/silhueta.webp'" alt="" loading="lazy" width="32" height="32"></a></td><td class="home-rank-main"><a class="home-rank-identity" href="${playerLink(r)}"><span><b>${esc(r.name)}</b><small>${esc(r.team)}${r.coverage?.[metric]<r.matches?' · parcial':''}</small></span></a></td><td class="home-rank-number">${fmt(r[metric])}</td><td class="home-rank-number home-rank-matches">${fmt(r.coverage?.[metric]??r.matches)}</td></tr>`).join(''):empty('Aguardando dados individuais do Mundial.')}
@@ -54,7 +54,7 @@ async function load(){
   let staticReady=false;
   // The home loads the precomputed 4.8KB summary, not the full match database.
   try{
-   const response=await fetch('/ffws-global-2026/home-resumo.json?v=20261108-mundial-dia3-v1',{cache:'default'});
+   const response=await fetch('/ffws-global-2026/home-resumo.json?v=20261113-week2-day1-v1',{cache:'default'});
    if(!response.ok)throw Error('Resumo estático indisponível');
    const summary=await response.json();
    if(!Array.isArray(summary.teams)||summary.teams.length<6||!summary.rankings?.kills?.length)throw Error('Resumo incompleto');

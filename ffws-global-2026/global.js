@@ -3,8 +3,8 @@
 
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
-    stagesUrl: 'ffws-global-2026/stages.json?v=20261108-mundial-dia3-v1',
-    playersUrl: 'ffws-global-2026/players.json?v=20261108-mundial-dia3-v1',
+    stagesUrl: 'ffws-global-2026/stages.json?v=20261113-week2-day1-v1',
+    playersUrl: 'ffws-global-2026/players.json?v=20261113-week2-day1-v1',
     datesUrl: 'ffws-global-2026/dates.json?v=20261016-global-format-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
