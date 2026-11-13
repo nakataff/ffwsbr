@@ -18,10 +18,10 @@
     const dates = row => ({updatedAt:str(row.updatedAt||'',50),completedAt:str(row.completedAt||'',50)});
     const projects=list('projects',r=>{
       const dailyDate=str(r.dailyDate||'',10);
-      if(dailyDate && !/^\\d{4}-\\d{2}-\\d{2}$/.test(dailyDate))throw Error('Data do checklist inválida');
+      if(dailyDate && !/^\d{4}-\d{2}-\d{2}$/.test(dailyDate))throw Error('Data do checklist inválida');
       const dailyHistory=(Array.isArray(r.dailyHistory)?r.dailyHistory:[]).slice(-60).map(row=>{
         const date=str(row.date||'',10),completed=Number(row.completed),total=Number(row.total);
-        if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||!Number.isInteger(completed)||!Number.isInteger(total)||completed<0||total<0||completed>total)throw Error('Histórico do checklist inválido');
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isInteger(completed)||!Number.isInteger(total)||completed<0||total<0||completed>total)throw Error('Histórico do checklist inválido');
         return {date,completed,total};
       });
       return {name:str(r.name,160),description:str(r.description||'',1000),dailyDate,dailyHistory,...dates(r)};
