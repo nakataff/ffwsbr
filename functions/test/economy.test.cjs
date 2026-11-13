@@ -216,3 +216,13 @@ test('manually redeemed stock is excluded from the shop even after reactivation 
  await s.core.adminHandle(admin,{operation:'markStockRedeemed',hashes:[used.hash],redeemed:true,announce:false});
  assert.equal((await s.core.state(user)).shop.find(x=>x.title===title).quantity,1);
 });
+
+test('reversing an old encrypted redemption never leaves its stock listed for purchase',async()=>{
+ const s=setup(),title='Prêmio legado';
+ await s.core.adminHandle(admin,{operation:'addStock',code:'LEGACYUSED123',title,bucket:'shop'});
+ const hash=s.sql.exec('SELECT hash FROM eco_stock WHERE title=?',title)[0].hash;
+ const corrected=await s.core.adminHandle(admin,{operation:'markStockRedeemed',hashes:[hash],redeemed:false});
+ assert.equal(corrected.updated,1);
+ assert.equal((await s.core.state(user)).codeStock.shop,0);
+ assert.equal((await s.core.adminHandle(admin,{operation:'stockStatus',hashes:[hash]})).stock[0].bucket,'hidden');
+});
