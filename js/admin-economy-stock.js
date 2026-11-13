@@ -81,7 +81,7 @@ function editFields(){
  origin.disabled=busy||!row||!item;
  host.querySelector('[data-origin-submit]').disabled=busy||!row||!item;
  const identified=row?.deliveryOrigin==='manual'?'Enviado manualmente pelo administrador':row?.deliveryOrigin==='economy'?'Resgatado pelo sistema de pontos':'Origem não identificada';
- host.querySelector('[data-origin-current]').textContent=row&&item?'Origem registrada: '+identified+'. A correção não altera recibos, carteira ou destinatário.':'Selecione um codiguinho do estoque para conferir a origem.';
+ host.querySelector('[data-origin-current]').textContent=row&&item?'Origem registrada: '+identified+'. A correção não altera recibos, carteira ou destinatário.'+(item.status==='claimed'&&row.deliveryOrigin==='manual'?' Atenção: há um recibo de pontos vinculado ao estoque; confira o relatório financeiro antes de qualquer ajuste nesse recibo.':''):'Selecione um codiguinho do estoque para conferir a origem.';
  toggleRemovalReason();
  preview('edit','[data-edit-photo]');
 }
