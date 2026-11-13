@@ -94,3 +94,14 @@ test('an unavailable stock update does not falsely register a manual game redemp
   assert(alerts.some(x=>x.includes('Erro de conexão')));
  }finally{a.close();}
 });
+
+test('archived packages expose old redeemed codes for safe stock reconciliation',()=>{
+ const a=setup();try{
+  const group={id:'archived',nome:'Antigo',item:'Skin antiga',inicio:'2025-01-01',fim:'2025-05-01',codigos:['OLDREDEEM123','OLDSENT123']};
+  a.w.aplicarEstadoCodiguinhos({__gruposAtivos:[],__gruposArquivados:[group],codigos:{
+   OLDREDEEM123:{entregue:true,recebeu:'Pessoa',dataResgate:'2025-03-03'},
+   OLDSENT123:{entregue:false,recebeu:'Pessoa 2',presente:{uid:'friend',giftId:'codegift-sent',sentAt:Date.now()}}
+  }});
+  assert.deepEqual(a.source.archivedRedeemedCodes(),['OLDREDEEM123']);
+ }finally{a.close();}
+});
