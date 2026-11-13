@@ -1711,11 +1711,10 @@
       resgatesPendentes.add(codigo);
       try{
         if(antes !== depois){
-          if(typeof window.CFF_ECONOMY_STOCK_MARK_REDEEMED === "function"){
-            await window.CFF_ECONOMY_STOCK_MARK_REDEEMED(codigo, depois);
-          }else if(window.CFF_ECONOMY_STOCK_CODES?.has(codigo.toUpperCase())){
-            throw Error("O estoque da loja ainda não está sincronizado. Atualize a página antes de marcar este código.");
+          if(typeof window.CFF_ECONOMY_STOCK_MARK_REDEEMED !== "function"){
+            throw Error("A conexão com o estoque da loja ainda não está pronta. Atualize a página e tente novamente.");
           }
+          await window.CFF_ECONOMY_STOCK_MARK_REDEEMED(codigo, depois);
         }
         const marcadoAgora = !antes && depois;
         aplicarAlteracao(dados);
