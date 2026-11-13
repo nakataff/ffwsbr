@@ -131,3 +131,41 @@ test('when a gift is returned a corrected origin does not survive to another del
   assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').hasGift,false);
  }finally{a.close()}
 });
+
+test('a manual gift with a claimed stock receipt shows manual provenance and still opens the origin editor',async()=>{
+ const a=setup();try{
+  const gift={code:'ABCDEF123456',uid:'person',giftId:'codegift-test',username:'pessoa',sentAt:Date.parse('2026-10-14T20:30:00Z'),pending:false,origin:'manual'};
+  await a.source.reconcile([gift]);
+  Object.defineProperty(a.w.crypto,'subtle',{value:crypto.subtle});
+  a.w.TextEncoder=TextEncoder;
+  a.w.getApps=()=>[{name:'[DEFAULT]'}];a.w.initializeApp=()=>({});
+  const admin={uid:'admin',email:'admin@centralfreefire.com.br'};
+  a.w.getAuth=()=>({currentUser:admin});a.w.onAuthStateChanged=(_auth,fn)=>fn(admin);
+  a.w.createStockBridge=(await import('../js/admin-stock-bridge.mjs')).createStockBridge;
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('ABCDEF123456'));
+  const hash=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  a.w.economyRequest=async(_auth,op,body)=>{
+   if(op==='stockBridge')return {entries:[],nextCursor:0,hasMore:false};
+   if(op==='stockStatus')return {codePrice:1000,stock:body.hashes.filter(h=>h===hash).map(h=>({hash:h,title:'Diamantes',bucket:'shop',status:'claimed',image:'',expires:0,receipt:'receipt-old'}))};
+   if(op==='shopNoticeConfig')return {settings:{},stock:[]};
+   return {ok:true};
+  };
+  a.w.loadEconomyStyle=()=>{};a.w.esc=String;a.w.prepareEconomyPhoto=async x=>x;
+  a.w.eval(fs.readFileSync('js/admin-code-promotions.mjs','utf8').replace(/^export /gm,''));
+  a.w.eval(fs.readFileSync(require.resolve('../js/admin-economy-stock.js'),'utf8').replace(/^import .*\n/gm,''));
+  for(let n=0;n<30;n++)await new Promise(r=>setTimeout(r,0));
+  let card=a.$('[data-stock-code="ABCDEF123456"]');
+  assert(card);
+  assert(!card.classList.contains('eco-reward-claimed'));
+  assert.match(card.querySelector('.eco-code-destination')?.textContent||'',/Enviado por mim/);
+  card.querySelector('.eco-code-destination').click();
+  assert.equal(a.$('[name=editCode]').value,'ABCDEF123456');
+  assert.equal(a.$('[data-origin-submit]').disabled,false);
+  assert.equal(a.$('[data-move-submit]').disabled,true);
+  assert.match(a.$('[data-origin-current]').textContent,/recibo de pontos/);
+  a.$('[name=deliveryOrigin]').value='economy';
+  a.$('[data-origin-submit]').click();
+  for(let n=0;n<20;n++)await new Promise(r=>setTimeout(r,0));
+  assert.equal(a.source.inventory().find(x=>x.code==='ABCDEF123456').originOverride,'economy');
+ }finally{a.close();}
+});
