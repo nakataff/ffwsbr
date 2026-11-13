@@ -28,9 +28,9 @@ function create({sql,transaction,now=()=>Date.now()}){
   const id=crypto.randomUUID();
   sql.exec('INSERT INTO eco_shop_notice_queue(id,at,data,sent,attempts,retryAt) VALUES(?,?,?,0,0,?)',id,at,JSON.stringify({type,text:String(text).slice(0,460),...detail}),at);
  }
- function scan({removed=null}={}){
+ function scan({removed=null,silent=false}={}){
   return transaction(()=>{
-   const config=settings(),current=stock(),prior=rows('SELECT * FROM eco_shop_notice_state'),map=new Map(prior.map(x=>[x.title,x]));
+   const config=silent?Object.fromEntries(Object.keys(DEFAULTS).map(k=>[k,false])):settings(),current=stock(),prior=rows('SELECT * FROM eco_shop_notice_state'),map=new Map(prior.map(x=>[x.title,x]));
    // A deliberate withdrawal is not a sold-out event.
    const withdrawal=removed&&typeof removed.title==='string'&&!current.some(item=>item.title===removed.title)?removed:null;
    if(withdrawal&&config.removed){
