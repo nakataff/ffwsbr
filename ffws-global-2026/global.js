@@ -46,7 +46,7 @@
     selectionWeekStage: 'segundaFase',
     selectionTab: 'torneio',
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
-    statsEvolution: { metric: 'position', teams: [], view: 'day', day: '', drop: '', colors: {}, showValues: false },
+    statsEvolution: { metric: 'position', teams: [], view: 'day', day: '', drop: '', colors: {}, showValues: false, markers: 'dot' },
     statsEvolutionPlayers: { metric: 'kills', players: null, search: '' },
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
     notesOpenMulti: '',
@@ -1609,7 +1609,8 @@
       <div class="ffws-global-panel-head"><div><h2>Comparação de Evolução das Equipes</h2><p>Compare as equipes no recorte selecionado.</p></div>
         <details class="ffws-global-evolution-settings"><summary aria-label="Configurações da evolução" title="Configurações da evolução"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M10 3h4l.6 2.5 1.7 1 2.5-.7 2 3.4-1.9 1.8v2l1.9 1.8-2 3.4-2.5-.7-1.7 1L14 21h-4l-.6-2.5-1.7-1-2.5.7-2-3.4 1.9-1.8v-2L3.2 9.2l2-3.4 2.5.7 1.7-1z"/><circle cx="12" cy="12" r="3"/></svg></summary>
           <div class="ffws-global-evolution-settings-panel"><strong>Cor das equipes</strong><div id="ffws-global-evolution-colors">${s2StatsEvolutionColorsHtml()}</div>
-          <label class="ffws-global-evolution-values"><input type="checkbox" onchange="setFFWSGlobalEvolutionValues(this.checked)"${state.statsEvolution.showValues?' checked':''}> Mostrar valores no gráfico</label></div>
+          <label class="ffws-global-evolution-values"><input id="ffws-global-evolution-values" type="checkbox" onchange="setFFWSGlobalEvolutionValues(this.checked)"${state.statsEvolution.showValues||state.statsEvolution.markers==='above'?' checked':''}${state.statsEvolution.markers==='above'?' disabled':''}> Mostrar valores no gráfico</label>
+          <label class="ffws-global-evolution-markers"><span>Marcadores do gráfico</span><select onchange="setFFWSGlobalEvolutionMarkers(this.value)">${Object.entries(evolutionMarkerOptions).map(([value,label])=>`<option value="${value}"${state.statsEvolution.markers===value?' selected':''}>${label}</option>`).join('')}</select></label></div>
         </details>
       </div>
       <div id="ffws-global-evolution-filters" class="ffws-global-evolution-filters">${s2StatsEvolutionFiltersHtml(events)}</div>
@@ -1688,6 +1689,7 @@
 }
 
   const evolutionPalette = ['#00c8ff','#ffd34d','#7fe29a','#ff7a90','#b68cff'];
+  const evolutionMarkerOptions = {dot:'Bolinha normal',crest:'Bolinha com escudo',above:'Bolinha + escudo acima do valor'};
   const evolutionColor = (team,index) => state.statsEvolution.colors[normalize(team)] || evolutionPalette[index];
 
   function s2StatsEvolutionColorsHtml() {
@@ -1771,33 +1773,69 @@
     return value + ({position:'º',points:' PTS',kills:' ABATES'}[metric]||'');
   }
 
-  function s2StatsEvolutionLabels(metric) {
+  function drawEvolutionCrest(ctx,img,x,y,size,color) {
+    ctx.beginPath();
+    ctx.arc(x,y,size/2,0,2*Math.PI);
+    ctx.fillStyle='#0a1220';
+    ctx.fill();
+    ctx.strokeStyle=color;
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+    const scale=(size-4)/Math.max(img.naturalWidth,img.naturalHeight);
+    const width=img.naturalWidth*scale, height=img.naturalHeight*scale;
+    ctx.drawImage(img,x-width/2,y-height/2,width,height);
+  }
+
+  function s2StatsEvolutionLabels(metric,showValues,mode,images) {
     return {id:'cffTeamEvolutionValues', afterDatasetsDraw(chart) {
       const {ctx,chartArea:area} = chart, taken=[];
-      ctx.save();
-      ctx.font='700 11px system-ui,sans-serif';
-      ctx.textAlign='center';
-      ctx.textBaseline='middle';
+      const points=[], byIndex=new Map();
       chart.data.datasets.forEach((dataset,i) => {
         if (!chart.isDatasetVisible(i)) return;
         chart.getDatasetMeta(i).data.forEach(({x,y,skip},index) => {
           const value=dataset.data[index];
           if (value==null || skip || !Number.isFinite(x+y)) return;
-          const label=s2StatsEvolutionValue(value,metric),width=ctx.measureText(label).width+8;
-          const center=Math.max(area.left+width/2,Math.min(area.right-width/2,x));
-          ctx.fillStyle=dataset.borderColor;
-          ctx.strokeStyle='#0a1220';
-          ctx.lineWidth=4;
-          for (const offset of [-14,14,-30,30,-46,46,-62,62]) {
-            const yy=y+offset, box={x:center-width/2,y:yy-7,width};
-            if (box.y<area.top-16 || box.y+14>area.bottom+8 || taken.some(b=>
-              box.x<b.x+b.width && box.x+width>b.x && Math.abs(b.y-box.y)<14)) continue;
+          const image=images[i];
+          const point={x,y,value,index,color:dataset.borderColor,crest:image?.complete&&image.naturalWidth>0?image:null};
+          points.push(point);
+          if (!byIndex.has(index)) byIndex.set(index,[]);
+          byIndex.get(index).push(point);
+        });
+      });
+      ctx.save();
+      if (mode==='crest') points.forEach(point => {
+        const {crest,x,y,color,index}=point;
+        if (crest && byIndex.get(index).every(other=>other===point||Math.abs(other.y-y)>=19)) {
+          drawEvolutionCrest(ctx,crest,x,y,18,color);
+          taken.push({x:x-10,y:y-10,width:20,bottom:y+10});
+        }
+      });
+      if (!showValues) { ctx.restore(); return; }
+      ctx.font='700 11px system-ui,sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      const offsets=mode==='crest'?[-19,19,-35,35,-51,51,-67,67]:[-14,14,-30,30,-46,46,-62,62];
+      points.forEach(({x,y,value,color,crest}) => {
+        const label=s2StatsEvolutionValue(value,metric),width=Math.max(20,ctx.measureText(label).width+8);
+        const center=Math.max(area.left+width/2,Math.min(area.right-width/2,x));
+        const place = icon => {
+          for (const offset of offsets) {
+            const yy=y+offset+(icon&&offset>0?22:0);
+            const box={x:center-width/2,y:yy-(icon?29:7),width,bottom:yy+7};
+            if (box.y<area.top-(icon?25:16) || box.bottom>area.bottom+8 || taken.some(b=>
+              box.x<b.x+b.width && box.x+width>b.x && box.y<b.bottom && box.bottom>b.y)) continue;
             taken.push(box);
+            if (icon) drawEvolutionCrest(ctx,icon,center,yy-19,16,color);
+            ctx.fillStyle=color;
+            ctx.strokeStyle='#0a1220';
+            ctx.lineWidth=4;
             ctx.strokeText(label,center,yy);
             ctx.fillText(label,center,yy);
-            break;
+            return true;
           }
-        });
+          return false;
+        };
+        if (!(mode==='above'&&crest&&place(crest))) place(null);
       });
       ctx.restore();
     }};
@@ -1809,7 +1847,8 @@
     const version = ++s2StatsEvolutionDrawVersion;
     if (s2StatsEvolutionObserver) { s2StatsEvolutionObserver.disconnect(); s2StatsEvolutionObserver = null; }
     const events = filteredStatsEvents();
-    const {teams:selected,metric,view,day,drop,showValues} = state.statsEvolution;
+    const {teams:selected,metric,view,day,drop,markers} = state.statsEvolution;
+    const showValues = state.statsEvolution.showValues || markers==='above';
     const byDrop = view==='drop';
     const periods = byDrop ? s2StatsEvolutionDrops(events).filter(period =>
       (!day || day===period.stage+':'+period.day) && (!drop || drop===String(period.drop))) : s2StatsEvolutionPeriods(events);
@@ -1822,7 +1861,7 @@
       if(s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart=null; }
       return;
     }
-    const spacing = showValues ? (metric==='kills'?86:67) : byDrop ? 48 : 0;
+    const spacing = showValues ? (metric==='kills'?86:67) : byDrop||markers==='crest' ? 48 : 0;
     wrap.style.minWidth = (periods.length*spacing+(spacing?56:0))+'px';
     scroll.tabIndex = wrap.offsetWidth > scroll.clientWidth ? 0 : -1;
     const draw = () => {
@@ -1834,16 +1873,21 @@
         const dropLabel = period.session ? 'R'+period.session+' · Q'+period.roundDrop : 'Queda '+period.drop;
         return day ? dropLabel : [dayLabel,dropLabel];
       });
+      const teamButtons = document.querySelectorAll('#ffws-global-evolution-team-buttons button[aria-pressed="true"]');
+      const images = markers==='dot'?[]:selected.map(team => [...teamButtons].find(button=>button.title===team)?.querySelector('img'));
       s2StatsEvolutionChart = new window.Chart(canvas.getContext('2d'), {
         type:'line',
         data:{ labels, datasets:data.map(({team,values},index)=>({ label:abbreviation(team), data:values, borderColor:evolutionColor(team,index), backgroundColor:evolutionColor(team,index), tension:.2, borderWidth:2.25, pointRadius:3, pointHoverRadius:5, spanGaps:false })) },
-        plugins:showValues?[s2StatsEvolutionLabels(metric)]:[],
+        plugins:showValues||markers!=='dot'?[s2StatsEvolutionLabels(metric,showValues,markers,images)]:[],
         options:{ responsive:true, maintainAspectRatio:false, devicePixelRatio:wrap.offsetWidth>1800?1:undefined, interaction:{mode:'nearest',intersect:false},
           plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}},
             tooltip:{callbacks:{label:item=>item.dataset.label+': '+s2StatsEvolutionValue(item.parsed.y,metric)}}},
-          layout:{padding:showValues?{top:10,right:10}:0},
+          layout:{padding:markers==='above'?{top:22,right:12}:showValues||markers==='crest'?{top:10,right:12}:0},
           scales:{x:{offset:periods.length===1,ticks:{color:'#7893b5',maxRotation:0,autoSkip:!showValues},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',grace:showValues?'12%':0,ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
       });
+      for (const image of images) if (image&&!image.complete) image.addEventListener('load',()=>{
+        if (version===s2StatsEvolutionDrawVersion&&canvas.isConnected) s2StatsEvolutionChart?.draw();
+      },{once:true});
     };
     const loadAndDraw = () => (typeof window.cffLoadChartJS === 'function' ? window.cffLoadChartJS() : Promise.resolve(window.Chart)).then(draw).catch(()=>{});
     if ('IntersectionObserver' in window) {
@@ -2766,6 +2810,16 @@
   };
   window.setFFWSGlobalEvolutionValues = checked => {
     state.statsEvolution.showValues = checked;
+    renderS2StatsEvolutionChart();
+  };
+  window.setFFWSGlobalEvolutionMarkers = mode => {
+    if (!Object.hasOwn(evolutionMarkerOptions,mode)) return;
+    state.statsEvolution.markers = mode;
+    const values = document.getElementById('ffws-global-evolution-values');
+    if (values) {
+      values.disabled = mode==='above';
+      values.checked = values.disabled || state.statsEvolution.showValues;
+    }
     renderS2StatsEvolutionChart();
   };
   window.setFFWSGlobalEvolutionColor = (team,color) => {

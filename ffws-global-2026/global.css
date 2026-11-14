@@ -776,6 +776,8 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 #ffws-global-evolution-colors input[type=color]{width:38px;height:32px;flex:none;cursor:pointer;background:#182a40;border:1px solid #305170;border-radius:5px;padding:2px}
 .ffws-global-evolution-values{justify-content:flex-start;border-top:1px solid #28435c;padding-top:10px;cursor:pointer}
 .ffws-global-evolution-values input{accent-color:#00c8ff}
+.ffws-global-evolution-markers{display:grid;gap:6px;margin-top:11px;color:#d4e8f9;font-size:.8rem}
+.ffws-global-evolution-markers select{width:100%;min-height:38px;border:1px solid #305170;border-radius:7px;padding:6px 8px;background:#101f34;color:#eef7ff;font:inherit}
 .ffws-global-evolution-scroll{overflow-x:auto;margin-top:11px;padding-bottom:4px}
 #anchor-s2-evolucao .ffws-global-evolution-canvas-wrap{height:400px}
 #ffws-global-stats-evolution-empty[hidden]{display:none}

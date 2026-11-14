@@ -171,6 +171,35 @@ test('team chart filters real drops, formats labels, and applies the chosen team
    ctx:{save(){},restore(){},strokeText(){},measureText:()=>({width:36}),fillText:text=>painted.push(text)}
   });
   assert.deepEqual(painted,['32 PTS']);
+  const markers=section().querySelector('.ffws-global-evolution-markers select');
+  assert.deepEqual(Array.from(markers.options,o=>o.value),['dot','crest','above']);
+  assert.equal(markers.value,'dot');
+  show.click();
+  const logo=section().querySelector('#ffws-global-evolution-team-buttons button[title="LOUD"] img');
+  Object.defineProperties(logo,{complete:{value:true},naturalWidth:{value:64},naturalHeight:{value:48}});
+  const renderMarkers=async mode=>{
+   markers.value=mode;
+   markers.dispatchEvent(new w.Event('change'));
+   await settle();
+   const current=draws.at(-1), output={icons:[],labels:[]};
+   current.plugins[0]?.afterDatasetsDraw({
+    data:current.data,chartArea:{left:10,right:480,top:45,bottom:315},
+    isDatasetVisible:()=>true,getDatasetMeta:()=>({data:[{x:200,y:97,skip:false}]}),
+    ctx:{save(){},restore(){},beginPath(){},arc(){},fill(){},stroke(){},strokeText(){},
+     drawImage:(image,x,y,width,height)=>output.icons.push({image,x:x+width/2,y:y+height/2}),
+     measureText:()=>({width:36}),fillText:(text,x,y)=>output.labels.push({text,x,y})}
+   });
+   return output;
+  };
+  const crest=await renderMarkers('crest');
+  assert.deepEqual(crest,{icons:[{image:logo,x:200,y:97}],labels:[]});
+  const above=await renderMarkers('above');
+  assert.equal(above.icons[0].image,logo);
+  assert.equal(above.labels[0].text,'32 PTS');
+  assert(above.icons[0].y<above.labels[0].y);
+  assert(show.checked&&show.disabled);
+  assert.deepEqual(await renderMarkers('dot'),{icons:[],labels:[]});
+  assert(!show.checked&&!show.disabled);
   select('metric','position');
   await settle();
   assert.deepEqual(Array.from(draws.at(-1).data.datasets[0].data),[1]);
