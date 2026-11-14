@@ -17,10 +17,14 @@ test('home waits for its route and uses two static summaries without Firebase',a
   d.getElementById('home').classList.add('active');
   await wait(()=>d.querySelector('#home-tbody-players tr a'));
   assert.deepEqual(calls.sort(),['ffws-global-2026/home-resumo.json','ffws-global-2026/selecoes-resumo.json']);
-  assert.match(d.getElementById('home-tbody-teams').querySelector('tr').textContent,/P Esports.*325/);
+  const summary=read('ffws-global-2026/home-resumo.json');
+  const leader=d.getElementById('home-tbody-teams').querySelector('tr');
+  assert.equal(leader.querySelector('.home-rank-identity b').textContent,summary.teams[0].name);
+  assert.equal(Number(leader.querySelector('.home-rank-points').textContent),summary.teams[0].points);
   assert.match(d.getElementById('home-tbody-players').textContent,/BuTziN/);
   assert.equal(d.querySelectorAll('.cff-gsel-home-row').length,5);
-  assert.match(d.getElementById('global-selection-home-widget').textContent,/COACH.*Lipão/i);
+  const coach=w.CFFGlobalSelections.coachNames[summary.teams[0].id];
+  assert.match(d.getElementById('global-selection-home-widget').textContent,new RegExp('COACH.*'+coach,'i'));
   assert(d.querySelector('.cff-gsel-home-row img[src*="/160/"]'));
   w.cffHomeRenderFinalStats();w.cffHomeRenderFinalStats();assert.equal(calls.length,2);
  }finally{w.close();}

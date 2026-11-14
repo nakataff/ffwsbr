@@ -40,7 +40,7 @@ test('directory uses native team-page links, searchable players and group filter
  }finally{u.close();}
 });
 test('direct team page has its own heading, title, navigation, published scores and no floating window',async()=>{
- const u=await ui({page:'equipe',search:'?time=loud'});try{assert(u.$('.gteam-profile'));assert.equal(u.$('h1').textContent,'LOUD');assert(u.w.document.title.startsWith('LOUD · Mundial 2026'));assert.equal(u.all('.gteam-roster>div').length,5);assert(u.$('.gteam-profile').textContent.includes('Nickz7'));assert.equal(u.$('.gteam-overview strong').textContent,'161');assert(!u.$('dialog'));assert.equal(u.all('[data-gteam]').length,0);assert(u.$('.gteam-breadcrumb a[href="/ffws-global-2026/equipes"]'));assert.equal(u.calls.length,1);}finally{u.close();}
+ const u=await ui({page:'equipe',search:'?time=loud'});try{assert(u.$('.gteam-profile'));assert.equal(u.$('h1').textContent,'LOUD');assert(u.w.document.title.startsWith('LOUD · Mundial 2026'));assert.equal(u.all('.gteam-roster>div').length,5);assert(u.$('.gteam-profile').textContent.includes('Nickz7'));const loud=read(base+'equipes-resumo.json').teams.find(team=>team.id==='loud');assert.equal(Number(u.$('.gteam-overview strong').textContent),loud.statsByStage.classificatoria.kills);assert(!u.$('dialog'));assert.equal(u.all('[data-gteam]').length,0);assert(u.$('.gteam-breadcrumb a[href="/ffws-global-2026/equipes"]'));assert.equal(u.calls.length,1);}finally{u.close();}
  const missing=await ui({page:'equipe',search:'?time=unknown'});try{assert(missing.$('h1').textContent.includes('Equipe não encontrada'));assert(!missing.$('.gteam-profile'));}finally{missing.close();}
 
 });

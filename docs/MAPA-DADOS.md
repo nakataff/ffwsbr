@@ -123,11 +123,18 @@ ligados por ID e equipe. O campo `drop` identifica a queda dentro do dia (1–12
 para combinar com a tabela ao vivo; `roundDrop` exibe Q1–Q6 dentro de cada rodada.
 PRT é Pirate Esports; PE é P Esports. Confira os mapas e a soma dos abates por
 equipe/queda contra os placares publicados antes de incorporar novos dados.
-Para atualizar: rode `python scripts/import-global-garena.py /caminho/planilha.xlsx`
-(requer openpyxl). A prévia valida as abas `Day N - Week N`, os confrontos,
-12 equipes e 4 jogadores por equipe por queda, mapas e abates. Repita com
-`--write` e rode `node scripts/prepare-competition-publication.cjs global --write`
-para gerar todos os resumos. O XLSX de origem não vai para o site.
+Para importar um dia, informe `--week` e `--day` com os números da aba
+`Day N - Week N`. A prévia valida os confrontos, as 12 equipes e os quatro
+jogadores por equipe em cada queda, os mapas e os abates. Rode sem `--write`
+para conferir antes de gravar. Exemplo para o Dia 2 da Semana 2 (requer openpyxl):
+
+```sh
+python scripts/import-global-garena.py /caminho/planilha.xlsx --week 2 --day 2 --write
+node scripts/prepare-competition-publication.cjs global --write
+```
+
+O preparo gera também `ffws-global-2026/home-resumo.json`, com até seis equipes
+e seis jogadores por métrica. Publique os JSONs, mantendo o XLSX fora do site.
 
 Para MVP e Seleções, as posições da planilha `RUSHER`, `RIFLER` e `SUPPORT`
 contam como Rush, `BOMBER` como Granadeiro e `SNIPER` como Suporte. Joker

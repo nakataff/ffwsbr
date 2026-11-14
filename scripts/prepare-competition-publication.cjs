@@ -68,7 +68,7 @@ async function main(){
  const stale=result.generatedFolders.flatMap(dir=>fs.existsSync(path.join(ROOT,dir))?fs.readdirSync(path.join(ROOT,dir)).filter(name=>name.endsWith('.json')&&!Object.hasOwn(result.files,dir+'/'+name)).map(name=>dir+'/'+name):[]);
  const changed=artifacts.filter(a=>a.old!==a.content);
  for(const {period,drops} of result.coverage)console.log(period+': '+drops+' quedas verificadas');
- for(const a of artifacts.filter(a=>/mvp-resumo|selecoes-resumo/.test(a.name)))console.log(a.name+': '+Buffer.byteLength(a.content)+' bytes / '+zlib.gzipSync(a.content).length+' gzip');
+ for(const a of artifacts.filter(a=>/home-resumo|mvp-resumo|selecoes-resumo/.test(a.name)))console.log(a.name+': '+Buffer.byteLength(a.content)+' bytes / '+zlib.gzipSync(a.content).length+' gzip');
  console.log(changed.length+' de '+artifacts.length+' arquivos a atualizar; '+stale.length+' arquivos gerados obsoletos.');
  for(const a of changed.slice(0,24))console.log('  '+a.name+' ('+Buffer.byteLength(a.old||'')+' → '+Buffer.byteLength(a.content)+' bytes)');
  if(changed.length>24)console.log('  … mais '+(changed.length-24)+' arquivos.');

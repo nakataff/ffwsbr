@@ -35,6 +35,41 @@ function aggregate(events) {
 function compactRows(rows) {
   return rows.filter(r => !r.placeholder && num(r.matches) > 0).map((r,i) => ({team:r.team, position:num(r.position)||i+1, points:num(r.points), kills:num(r.kills), booyahs:num(r.booyahs), matches:num(r.matches)}));
 }
+function homeSummary(tables, teams, roster, entries) {
+  const latest = keys.flatMap(stage => tables[stage].days.filter(day => day.rows.length).map(day => ({stage, ...day})))
+    .sort((a, b) => a.date.localeCompare(b.date)).at(-1);
+  if (!latest) return null;
+  const {stage, date} = latest;
+  const table = stage === 'segundaFase' ? latest.rows : tables[stage].rows;
+  const teamsByName = new Map(teams.map(t => [norm(t.name), t]));
+  const people = new Map(roster.map(p => [p.id, p]));
+  const totals = new Map();
+  const metrics = ['kills', 'damage', 'assists'];
+  for (const e of entries) {
+    const p = people.get(e.playerId);
+    if (!p || !keys.includes(e.stage) || e.matches === 0) continue;
+    if (!totals.has(p.id)) {
+      totals.set(p.id, {id:p.id, name:p.name, team:p.team, photo:p.photo ? '/' + p.photo.replace(/^\//, '') : '',
+        kills:0, damage:0, assists:0, matches:0, coverage:{kills:0, damage:0, assists:0}});
+    }
+    const row = totals.get(p.id);
+    const matches = num(e.matches) || 1;
+    row.matches += matches;
+    for (const metric of metrics) {
+      if (e[metric] == null || e[metric] === '') continue;
+      row[metric] += num(e[metric]);
+      row.coverage[metric] += matches;
+    }
+  }
+  const ranking = metric => [...totals.values()].filter(row => row.coverage[metric] > 0)
+    .sort((a, b) => b[metric] - a[metric] || b.kills - a.kills || b.damage - a.damage || b.assists - a.assists || a.name.localeCompare(b.name, 'pt-BR'))
+    .slice(0, 6);
+  return {updatedAt:date, source:'Resultados oficiais do Mundial', stage, date, partial:false,
+    teams:table.slice(0, 6).map(({team, points, kills, booyahs, matches}) => {
+      const {id, name, logo} = teamsByName.get(norm(team));
+      return {id, name, logo, points, kills, booyahs, matches};
+    }), rankings:Object.fromEntries(metrics.map(metric => [metric, ranking(metric)])), days:[]};
+}
 // Home and selections need totals per player/day, not one record for each drop.
 function selectionSummary(roster, entries, metadata, schedule, fallback, stages) {
   const teamsByAlias = new Map(metadata.flatMap(t => [t.id,t.name,t.abbreviation].map(k => [norm(k),t])));
@@ -128,7 +163,9 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
         statsByStage:Object.fromEntries(['geral',...keys].map(key=>[key,sumEntries(entries.filter(e=>sameTeam(e.team,t)&&norm(e.name||e.player)===norm(p.name)&&(key==='geral'?keys.includes(e.stage):e.stage===key)))]))})),
       fixtures:dates.rounds.filter(r=>r.stage==='classificatoria'&&r.groups?.includes(groupById.get(t.id))).map(r=>({date:r.date,time:r.time24,label:r.label,groups:r.groups}))};
   });
+  const home=homeSummary(tables,metadata,roster,entries);
   return {
+    ...(home?{'home-resumo.json':home}:{}),
     'equipes-resumo.json':{updatedAt,teams:teamProfiles},
     'inicio-resumo.json':{tournament:stages.tournament,updatedAt,finished:!!stages.finished,format,teams:metadata,tables,rounds:dates.rounds.map(r=>({key:r.key,stage:r.stage,day:r.day,label:r.label,date:r.date,time24:r.time24,groups:r.groups,matches:r.matches}))},
     'inicio-mvp-top10.json':{updatedAt,top10},

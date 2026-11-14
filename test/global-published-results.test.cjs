@@ -78,11 +78,13 @@ test('Classificatória and Stats share published scores, preserve session filter
    assert.equal(officialDrops,api.state.stages.classificatoria.rounds.length);
    const archived=api.stageEvents('classificatoria')[0];
    assert.equal(archived.results.find(row=>row.team==='LOUD').points,22);
-   published={...published,'classificatoria-7':makeRound('classificatoria-7',7)};
+   const nextRound=Math.max(...api.state.stages.classificatoria.rounds.map(r=>r.round))+1;
+   const nextKey='classificatoria-'+nextRound;
+   published={...published,[nextKey]:makeRound(nextKey,7)};
    await api.loadLiveResults(true);
    const merged=api.stageEvents('classificatoria');
    assert.equal(merged.length,officialDrops+1);
-   assert.equal(merged.at(-1).round,7);
+   assert.equal(merged.at(-1).round,nextRound);
    assert.equal(merged[0],archived);
   }
   fail=true;const count=api.stageEvents('classificatoria').length;

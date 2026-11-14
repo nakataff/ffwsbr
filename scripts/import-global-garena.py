@@ -67,14 +67,24 @@ def import_sheet(sheet, rounds, groups, teams, roster, identities):
             aliases[t['id'], norm(name)].add(p['id'])
     blocks = collections.defaultdict(list)
     drop = None
-    for row in sheet.values:
-        row = (*row, *([None] * 15))
-        if re.fullmatch(r'R\d+', str(row[0])) and not row[7]:
-            drop = int(row[0][1:])
+    rows = iter(sheet.values)
+    headers = [norm(value) for value in next(rows, ())]
+    fields = ('teamname', 'rankingplacement', 'booyah', 'rankingscore', 'killingscore',
+              'map', 'playername', 'totalkill', 'kills', 'assists', 'damage')
+    invalid = [field for field in fields if headers.count(field) != 1]
+    if invalid:
+        raise ValueError(f'{sheet.title}: colunas ausentes ou duplicadas: {", ".join(invalid)}')
+    columns = {field: headers.index(field) for field in fields}
+    for values in rows:
+        row = {field: values[i] if i < len(values) else None for field, i in columns.items()}
+        if all(norm(row[field]) == field for field in fields):
+            continue
+        if re.fullmatch(r'R\d+', str(row['teamname'])) and not row['playername']:
+            drop = int(row['teamname'][1:])
             if drop in blocks:
                 raise ValueError(f'{sheet.title}: marcador R{drop} repetido')
             blocks[drop] = []
-        elif drop and row[7]:
+        elif drop and row['playername']:
             blocks[drop].append(row)
     expected = sum(r['matches'] for r in rounds)
     if sorted(blocks) != list(range(1, expected + 1)):
@@ -87,8 +97,8 @@ def import_sheet(sheet, rounds, groups, teams, roster, identities):
             meta = dict(day=round['day'], round=round['round'], roundDrop=n, drop=drop, date=round['date'])
             results, used, count, kills, maps = {}, set(), collections.Counter(), collections.Counter(), set()
             for row in blocks[drop]:
-                team_id = codes[row[0].strip().upper()]
-                nick = row[7].strip()
+                team_id = codes[row['teamname'].strip().upper()]
+                nick = row['playername'].strip()
                 identity = ALIASES.get(nick.upper())
                 candidates = {identity} if identity else aliases[team_id, norm(nick.split('.', 1)[-1])]
                 if len(candidates) != 1:
@@ -98,18 +108,19 @@ def import_sheet(sheet, rounds, groups, teams, roster, identities):
                 if team_id not in team_ids or team['id'] != team_id or p['id'] in used:
                     raise ValueError(f'{sheet.title} R{drop}: jogador/equipe duplicado ou fora da rodada {nick}')
                 used.add(p['id'])
-                map_name = MAPS[row[6].strip().upper()]
+                map_name = MAPS[row['map'].strip().upper()]
                 maps.add(map_name)
-                player_kills = integer(row[9])
+                player_kills = integer(row['kills'])
                 count[team_id] += 1
                 kills[team_id] += player_kills
                 entries.append(dict(playerId=p['id'], name=p['name'], team=team['name'], stage=STAGE,
-                                    **meta, map=map_name, kills=player_kills, assists=integer(row[10]), damage=integer(row[14])))
-                if row[1] is not None:
+                                    **meta, map=map_name, kills=player_kills, assists=integer(row['assists']), damage=integer(row['damage'])))
+                if row['rankingplacement'] is not None:
                     if team_id in results:
                         raise ValueError(f'{sheet.title} R{drop}: placar duplicado de {team_id}')
-                    pos, booyah, place, team_kills = map(integer, (row[1], row[3], row[4], row[5]))
-                    if booyah != int(pos == 1) or team_kills != integer(row[8]):
+                    pos, booyah, place, team_kills = map(integer, (row['rankingplacement'], row['booyah'],
+                                                                   row['rankingscore'], row['killingscore']))
+                    if booyah != int(pos == 1) or team_kills != integer(row['totalkill']):
                         raise ValueError(f'{sheet.title} R{drop}: placar inconsistente de {team_id}')
                     results[team_id] = dict(team=team['name'], position=pos, kills=team_kills,
                                             points=place + team_kills, placementPoints=place, booyah=booyah)
@@ -123,23 +134,19 @@ def import_sheet(sheet, rounds, groups, teams, roster, identities):
     return entries, events
 
 
-def write(name, payload, fields):
-    # Keep one compact record per line so future imports have a small readable diff.
-    header = {k: v for k, v in payload.items() if k not in fields}
-    encode = lambda value: json.dumps(value, ensure_ascii=False, separators=(',', ':'))
-    text = encode(header)[:-1]
-    for key in fields:
-        if text != '{':
-            text += ','
-        text += f'\n"{key}":[\n' + ',\n'.join(encode(row) for row in payload[key]) + '\n]'
-    (BASE / (name + '.json')).write_text(text + '\n}\n')
+def write(name, payload):
+    (BASE / (name + '.json')).write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('workbook')
+    parser.add_argument('--week', type=int, help='Importa apenas a semana selecionada, junto com --day')
+    parser.add_argument('--day', type=int, help='Importa apenas o dia selecionado, junto com --week')
     parser.add_argument('--write', action='store_true')
     args = parser.parse_args()
+    if (args.week is None) != (args.day is None):
+        parser.error('--week e --day devem ser informados juntos')
     players, stages = read('players'), read('stages')
     schedule = read('dates')['rounds']
     teams, groups = read('teams')['teams'], read('groups')['groups']
@@ -152,12 +159,15 @@ def main():
         if not title:
             continue
         day, week = map(int, title.groups())
+        if args.week is not None and (week, day) != (args.week, args.day):
+            continue
         rounds = [r for r in schedule if r['stage'] == STAGE and r['week'] == week and r['dayInWeek'] == day]
         if not rounds or rounds[0]['date'] in imported:
             raise ValueError(f'Aba fora do calendário ou repetida: {sheet.title}')
         imported[rounds[0]['date']] = import_sheet(sheet, rounds, groups, teams, roster, identities)
     if not imported:
-        raise ValueError('Nenhuma aba Day N - Week N encontrada.')
+        expected = f'Day {args.day} - Week {args.week}' if args.week is not None else 'Day N - Week N'
+        raise ValueError(f'Nenhuma aba {expected} encontrada.')
     phase = stages[STAGE]
     for date, (entries, events) in sorted(imported.items()):
         print(f'{date}: {len(events)} quedas, {len(entries)} participações, {len({p["playerId"] for p in entries})} jogadores')
@@ -170,12 +180,8 @@ def main():
         phase['rounds'].sort(key=lambda e: (e.get('date', ''), e.get('drop', 0)))
         players['updatedAt'] = max(players['updatedAt'], max(imported))
         stages['updatedAt'] = max(stages['updatedAt'], max(imported))
-        write('players', players, ('players', 'entries'))
-        # Keep existing phase metadata readable; the compact drop array stays cacheable.
-        stage_text = json.dumps(stages, ensure_ascii=False, indent=2)
-        verbose = json.dumps(phase['rounds'], ensure_ascii=False, indent=2).replace('\n', '\n    ')
-        compact = '[\n' + ',\n'.join('      ' + json.dumps(e, ensure_ascii=False, separators=(',', ':')) for e in phase['rounds']) + '\n    ]'
-        (BASE / 'stages.json').write_text(stage_text.replace(verbose, compact, 1) + '\n')
+        write('players', players)
+        write('stages', stages)
 
 
 if __name__ == '__main__':
