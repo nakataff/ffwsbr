@@ -163,6 +163,7 @@ test('team chart filters real drops, formats labels, and applies the chosen team
   await settle();
   const chart=draws.at(-1);
   assert.equal(chart.data.datasets[0].borderColor,'#ff6600');
+  assert.equal(chart.options.scales.x.offset,true,'a single drop is centered');
   const painted=[];
   chart.plugins[0].afterDatasetsDraw({
    data:chart.data,chartArea:{left:10,right:480,top:45,bottom:315},

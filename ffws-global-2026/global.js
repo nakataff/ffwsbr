@@ -1842,7 +1842,7 @@
           plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}},
             tooltip:{callbacks:{label:item=>item.dataset.label+': '+s2StatsEvolutionValue(item.parsed.y,metric)}}},
           layout:{padding:showValues?{top:10,right:10}:0},
-          scales:{x:{ticks:{color:'#7893b5',maxRotation:0,autoSkip:!showValues},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',grace:showValues?'12%':0,ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
+          scales:{x:{offset:periods.length===1,ticks:{color:'#7893b5',maxRotation:0,autoSkip:!showValues},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',grace:showValues?'12%':0,ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
       });
     };
     const loadAndDraw = () => (typeof window.cffLoadChartJS === 'function' ? window.cffLoadChartJS() : Promise.resolve(window.Chart)).then(draw).catch(()=>{});
