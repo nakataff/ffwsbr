@@ -1774,16 +1774,23 @@
   }
 
   function drawEvolutionCrest(ctx,img,x,y,size,color) {
-    ctx.beginPath();
-    ctx.arc(x,y,size/2,0,2*Math.PI);
-    ctx.fillStyle='#0a1220';
-    ctx.fill();
-    ctx.strokeStyle=color;
-    ctx.lineWidth=1.5;
-    ctx.stroke();
-    const scale=(size-4)/Math.max(img.naturalWidth,img.naturalHeight);
+    ctx.save();
+    if (color) {
+      ctx.beginPath();
+      ctx.arc(x,y,size/2,0,2*Math.PI);
+      ctx.fillStyle='#0a1220';
+      ctx.fill();
+      ctx.strokeStyle=color;
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+    } else {
+      ctx.shadowColor='rgba(0,0,0,.8)';
+      ctx.shadowBlur=4;
+    }
+    const scale=(size-(color?4:0))/Math.max(img.naturalWidth,img.naturalHeight);
     const width=img.naturalWidth*scale, height=img.naturalHeight*scale;
     ctx.drawImage(img,x-width/2,y-height/2,width,height);
+    ctx.restore();
   }
 
   function s2StatsEvolutionLabels(metric,showValues,mode,images) {
@@ -1815,17 +1822,18 @@
       ctx.textAlign='center';
       ctx.textBaseline='middle';
       const offsets=mode==='crest'?[-19,19,-35,35,-51,51,-67,67]:[-14,14,-30,30,-46,46,-62,62];
+      const crestSize=24, crestLift=21;
       points.forEach(({x,y,value,color,crest}) => {
-        const label=s2StatsEvolutionValue(value,metric),width=Math.max(20,ctx.measureText(label).width+8);
+        const label=s2StatsEvolutionValue(value,metric),width=Math.max(mode==='above'?crestSize+4:20,ctx.measureText(label).width+8);
         const center=Math.max(area.left+width/2,Math.min(area.right-width/2,x));
         const place = icon => {
           for (const offset of offsets) {
-            const yy=y+offset+(icon&&offset>0?22:0);
-            const box={x:center-width/2,y:yy-(icon?29:7),width,bottom:yy+7};
-            if (box.y<area.top-(icon?25:16) || box.bottom>area.bottom+8 || taken.some(b=>
+            const yy=y+offset+(icon&&offset>0?crestLift+crestSize/2-5:0);
+            const box={x:center-width/2,y:yy-(icon?crestLift+crestSize/2+2:7),width,bottom:yy+7};
+            if (box.y<area.top-(icon?30:16) || box.bottom>area.bottom+8 || taken.some(b=>
               box.x<b.x+b.width && box.x+width>b.x && box.y<b.bottom && box.bottom>b.y)) continue;
             taken.push(box);
-            if (icon) drawEvolutionCrest(ctx,icon,center,yy-19,16,color);
+            if (icon) drawEvolutionCrest(ctx,icon,center,yy-crestLift,crestSize);
             ctx.fillStyle=color;
             ctx.strokeStyle='#0a1220';
             ctx.lineWidth=4;
@@ -1882,7 +1890,7 @@
         options:{ responsive:true, maintainAspectRatio:false, devicePixelRatio:wrap.offsetWidth>1800?1:undefined, interaction:{mode:'nearest',intersect:false},
           plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}},
             tooltip:{callbacks:{label:item=>item.dataset.label+': '+s2StatsEvolutionValue(item.parsed.y,metric)}}},
-          layout:{padding:markers==='above'?{top:22,right:12}:showValues||markers==='crest'?{top:10,right:12}:0},
+          layout:{padding:markers==='above'?{top:30,right:12}:showValues||markers==='crest'?{top:10,right:12}:0},
           scales:{x:{offset:periods.length===1,ticks:{color:'#7893b5',maxRotation:0,autoSkip:!showValues},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',grace:showValues?'12%':0,ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
       });
       for (const image of images) if (image&&!image.complete) image.addEventListener('load',()=>{

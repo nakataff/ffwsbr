@@ -181,24 +181,26 @@ test('team chart filters real drops, formats labels, and applies the chosen team
    markers.value=mode;
    markers.dispatchEvent(new w.Event('change'));
    await settle();
-   const current=draws.at(-1), output={icons:[],labels:[]};
+   const current=draws.at(-1), output={icons:[],labels:[],circles:[]};
    current.plugins[0]?.afterDatasetsDraw({
     data:current.data,chartArea:{left:10,right:480,top:45,bottom:315},
     isDatasetVisible:()=>true,getDatasetMeta:()=>({data:[{x:200,y:97,skip:false}]}),
-    ctx:{save(){},restore(){},beginPath(){},arc(){},fill(){},stroke(){},strokeText(){},
-     drawImage:(image,x,y,width,height)=>output.icons.push({image,x:x+width/2,y:y+height/2}),
+    ctx:{save(){},restore(){},beginPath(){},arc:(x,y,radius)=>output.circles.push({x,y,radius}),fill(){},stroke(){},strokeText(){},
+     drawImage:(image,x,y,width,height)=>output.icons.push({image,x:x+width/2,y:y+height/2,width,height}),
      measureText:()=>({width:36}),fillText:(text,x,y)=>output.labels.push({text,x,y})}
    });
    return output;
   };
   const crest=await renderMarkers('crest');
-  assert.deepEqual(crest,{icons:[{image:logo,x:200,y:97}],labels:[]});
+  assert.deepEqual(crest,{icons:[{image:logo,x:200,y:97,width:14,height:10.5}],labels:[],circles:[{x:200,y:97,radius:9}]});
   const above=await renderMarkers('above');
   assert.equal(above.icons[0].image,logo);
   assert.equal(above.labels[0].text,'32 PTS');
-  assert(above.icons[0].y<above.labels[0].y);
+  assert.equal(above.icons[0].width,24);
+  assert(above.icons[0].y+above.icons[0].height/2<above.labels[0].y-7);
+  assert.deepEqual(above.circles,[]);
   assert(show.checked&&show.disabled);
-  assert.deepEqual(await renderMarkers('dot'),{icons:[],labels:[]});
+  assert.deepEqual(await renderMarkers('dot'),{icons:[],labels:[],circles:[]});
   assert(!show.checked&&!show.disabled);
   select('metric','position');
   await settle();
