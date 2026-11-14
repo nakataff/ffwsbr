@@ -217,3 +217,24 @@ test('record layouts emphasize the headline metric and align optional badges in 
   assert(!plain.texts.some(t=>/^#\d+$/.test(t.value)));
  }
 });
+
+test('team cards give both metrics and the optional official standing distinct space',async()=>{
+ const api=setup();
+ const payload={main:'533',mainLabel:'PONTOS',mainRank:2,mainRankLabel:'PONTOS',
+  standing:{position:7,label:'Fase 1'},facts:facts(6).map((fact,i)=>({...fact,rank:i+1}))};
+ for(const format of Object.keys(formats)){
+  api.state.showTeamStanding=true;api.state.showMainRank=true;api.state.showFactRanks=true;
+  const {texts}=await render(api,format,'team',true,payload);
+  const primary=texts.find(t=>t.value==='533');
+  const numbers=payload.facts.map(f=>texts.find(t=>t.value===f.value));
+  assert(primary.font>=145,format);
+  assert(numbers.every(n=>n.font>=(format==='wide'||format==='square'?55:65)),format);
+  assert(texts.find(t=>t.value==='7º').y<primary.y,format);
+  assert(texts.some(t=>t.value==='NA TABELA'),format);
+  assert(texts.some(t=>t.value==='#2'&&t.x===primary.x),format);
+  if(format==='wide')assert(numbers.every(n=>n.x>primary.x+480));
+  api.state.showTeamStanding=false;
+  const plain=await render(api,format,'team',false,payload);
+  assert(!plain.texts.some(t=>t.value==='7º'||t.value==='NA TABELA'));
+ }
+});

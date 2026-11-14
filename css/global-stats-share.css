@@ -228,6 +228,7 @@
   padding:12px 11px 14px;border-color:#37607b;background:#101f33;
 }
 .cff-stats-share-dialog .cff-share-stat-settings[hidden]{display:none!important}
+.cff-stats-share-dialog .cff-share-team-highlight[hidden]{display:none!important}
 .cff-stats-share-dialog .cff-share-stat-settings>p{
   color:#9bbbd3;font-size:11px;line-height:1.55;margin:0
 }

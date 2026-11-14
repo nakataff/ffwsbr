@@ -91,24 +91,36 @@ test('per-slot custom values use verified records and shares, with absent data d
  api.state.slotMetrics=['kills','', 'assists','','avgKills','avgDamage'];
  assert.equal(api.fromContext().facts.length,4,'hidden slots are not printed');
 });
-test('teams can use six requested default metrics, but partial player exports never invent team damage',()=>{
+test('teams use points and Booyahs by default and keep incomplete player totals unavailable',()=>{
  const api=runtime(),ctx=fixture();api.setContext(ctx);api.setSource(null);
  api.state.kind='team';api.state.team='Fluxo W7M';api.resetSlots('team');
  const initial=api.fromContext();
  assert.deepEqual(Array.from(initial.facts.map(x=>x.label)),[
-  'ABATES','DANO','ASSISTÊNCIAS','QUEDAS','ABATES / QUEDA','DANO / QUEDA'
+  'ABATES','BOOYAHS','DANO','ASSISTÊNCIAS','QUEDAS','ABATES / QUEDA'
  ]);
- assert.equal(initial.facts[1].value,'—');
+ assert.equal(initial.mainLabel,'PONTOS');
  assert.equal(initial.facts[2].value,'—');
- assert.equal(initial.facts[5].value,'—');
+ assert.equal(initial.facts[3].value,'—');
  // Four player appearances per team match provide a complete aggregation.
  ctx.teams[0].matches=2;
  ctx.players=[0,1,2,3].map(i=>player('Fluxo'+i,'Fluxo W7M',3,1000+i*200,5,2));
  const complete=api.fromContext();
- assert.equal(complete.facts[1].value,'5.200');
- assert.equal(complete.facts[2].value,'20');
- assert.equal(complete.facts[5].value,'2.600,00');
+ assert.equal(complete.facts[2].value,'5.200');
+ assert.equal(complete.facts[3].value,'20');
  assert.equal(complete.mainRank,1);
+ ctx.standingForTeam=()=>({position:2,label:'Fase 1'});
+ api.state.teamHighlight='booyahs';
+ api.state.slotMetrics=['standing','points','booyahs','avgDamage','',''];
+ const custom=api.fromContext();
+ assert.equal(custom.main,'4');
+ assert.equal(custom.mainLabel,'BOOYAHS');
+ assert.equal(custom.mainRank,1);
+ assert.equal(custom.standing.position,2);
+ assert.deepEqual(Array.from(custom.facts.map(f=>[f.label,f.value])),[
+  ['POSIÇÃO NA TABELA','2º'],['PONTOS','321'],['DANO / QUEDA','2.600,00']
+ ]);
+ api.setSource({kind:'team',row:ctx.teams[0],metric:'avgDamage'});
+ assert.equal(api.fromContext().main,'2.600,00');
 });
 test('modal contains exactly six independent selectors and two opt-in ranking toggles',()=>{
  assert.match(script,/Array\.from\(\{length:6\}/);

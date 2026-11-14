@@ -40,7 +40,7 @@ const STAGES={classificatoria:'Knockout · Fase 1',segundaFase:'Knockout · Fase
 let context=null,modal=null,livePayload=null,previewBlob=null,renderSeq=0,currentSource=null,modelRoot=null;
 const imgCache=new Map();
 const PLAYER_SLOTS=['kills','damage','assists','matches','avgKills','avgDamage'];
-const TEAM_SLOTS=['kills','damage','assists','matches','avgKills','avgDamage'];
+const TEAM_SLOTS=['kills','booyahs','damage','assists','matches','avgKills'];
 const METRIC_GROUPS={
  player:[['kills','Abates'],['damage','Dano'],['assists','Assistências'],['matches','Quedas'],
   ['avgKills','Abates / queda'],['avgDamage','Dano / queda'],['avgAssists','Assistências / queda'],
@@ -50,7 +50,7 @@ const METRIC_GROUPS={
   ['bestDropDamage','Recorde de dano em uma queda'],['bestDayDamage','Recorde de dano em um dia'],
   ['bestDropAssists','Recorde de assistências em uma queda']],
  team:[['kills','Abates'],['points','Pontos'],['booyahs','Booyahs'],['matches','Quedas'],
-  ['avgKills','Abates / queda'],['avgPoints','Pontos / queda'],['top3','Top 3'],['top3Rate','Taxa Top 3'],
+  ['avgKills','Abates / queda'],['avgPoints','Pontos / queda'],['top3','Top 3'],['top3Rate','Taxa Top 3'],['top12','Últimos lugares'],
   ['avgPosition','Posição média'],['damage','Dano da equipe (quando completo)'],
   ['assists','Assistências da equipe (quando completo)'],['avgDamage','Dano / queda'],
   ['bestDropKills','Recorde de abates em uma queda'],['bestDayKills','Recorde de abates em um dia'],
@@ -59,7 +59,7 @@ const METRIC_GROUPS={
 const SLOT_LABELS=Object.fromEntries([...METRIC_GROUPS.team,...METRIC_GROUPS.player]);
 const state={kind:'summary',format:'feed',theme:'dark',accent:'blue',showSubtitle:true,showFilters:true,showImage:true,
  title:'',team:'',player:'',teamB:'',playerA:'',playerB:'',topEntity:'team',metric:'points',record:'teamDay|points',single:'points',
- showMainRank:true,showFactRanks:false,slotMetrics:PLAYER_SLOTS.slice()};
+ teamHighlight:'points',showTeamStanding:false,showMainRank:true,showFactRanks:false,slotMetrics:PLAYER_SLOTS.slice()};
 function dataRows(entity){
  if(!context)return [];
  return entity==='team'?context.teams:entity==='player'?context.players:entity==='contribution'?context.playerShareRows:context.records?.[entity]||[];
@@ -198,13 +198,23 @@ function comparisonFact(row,type,metric){
   rank:state.showFactRanks?rankFor(row,type,metric):null};
 }
 
-function customFacts(row,type){
+function teamStanding(row){
+ return row?context?.standingForTeam?.(row.team):null;
+}
+function teamHighlight(row,metric){
+ return METRIC_GROUPS.team.some(([value])=>value===metric)&&metricValue(row,'team',metric)!==null?metric:'points';
+}
+function customFacts(row,type,primary){
  const chosen=(Array.isArray(state.slotMetrics)?state.slotMetrics:[]).slice(0,6);
- return chosen.filter(Boolean).map(metric=>{
+ return chosen.filter(metric=>metric&&metric!==primary).map(metric=>{
+  if(metric==='standing'){
+   const standing=teamStanding(row);
+   return standing?{label:'POSIÇÃO NA TABELA',value:standing.position+'º',metric}:null;
+  }
   const value=metricValue(row,type,metric),rank=rankFor(row,type,metric);
   return {label:(SLOT_LABELS[metric]||LABELS[metric]||metric).toUpperCase(),value:metricText(value,metric),
    rank,metric};
- });
+ }).filter(Boolean);
 }
 function resetSlots(kind){state.slotMetrics=(kind==='team'?TEAM_SLOTS:PLAYER_SLOTS).slice();}
 function fromContext(){
@@ -230,12 +240,13 @@ function fromContext(){
   const row=choice.row||findRow(state.team,'team');
   if(!row)return null;
   payload.title='DESEMPENHO DA EQUIPE';payload.entity=row.team;payload.team=row.team;payload.logo=logoSrc(row.team);
-  const leading=choice.metric&&row[choice.metric]!==undefined?choice.metric:'points';
-  payload.main=fmt(row[leading],leading);payload.mainLabel=LABELS[leading]||'PONTOS';
-  payload.facts=customFacts(row,'team');
+  const leading=teamHighlight(row,choice.metric||state.teamHighlight);
+  const label=LABELS[leading]||SLOT_LABELS[leading].toUpperCase();
+  payload.main=metricText(metricValue(row,'team',leading),leading);payload.mainLabel=label;
+  payload.facts=customFacts(row,'team',leading);
   payload.mainRank=rankFor(row,'team',leading);
-  payload.mainRankLabel=LABELS[leading]||SLOT_LABELS[leading]||'PONTOS';
-  payload.subtitle=row.team+' · '+contextLabel();
+  payload.mainRankLabel=label;
+  payload.standing=teamStanding(row);
  }else if(kind==='player'){
   const row=choice.row||findComparePlayer(state.player)||findRow(state.player,'player');
   if(!row)return null;
@@ -297,6 +308,7 @@ function settingsUI(){
  const $=q=>modal.querySelector(q);
  const kind=state.kind;
  $('.cff-share-entity-team').hidden=kind!=='team'&&kind!=='compare';
+ $('.cff-share-team-label').textContent=kind==='compare'?'Equipe A':'Equipe';
  $('.cff-share-team-b').hidden=kind!=='compare';
  $('.cff-share-entity-player').hidden=kind!=='player';
  $('.cff-share-compare-player-a').hidden=kind!=='comparePlayer';
@@ -306,14 +318,29 @@ function settingsUI(){
  $('.cff-share-single-setting').hidden=kind!=='single';
  const details=kind==='player'||kind==='team';
  $('.cff-share-stat-settings').hidden=!details;
+ const isTeam=kind==='team';
+ $('.cff-share-team-highlight').hidden=!isTeam;
+ $('.cff-share-team-standing').hidden=!isTeam;
  const rankings=details||kind==='record'||kind==='compare'||kind==='comparePlayer';
  $('.cff-share-fact-ranking').hidden=!rankings;
  $('.cff-share-stat-note').textContent=kind==='record'?'Posição entre os resultados do recorte, por dia ou por queda. Empates dividem a posição.':'Posição de cada métrica no recorte aberto no site. Empates dividem a posição.';
  if(details){
-  const allowed=METRIC_GROUPS[kind];
+  let allowed=METRIC_GROUPS[kind];
+  let primary='';
+  if(isTeam){
+   const row=currentSource?.row||findRow(state.team,'team');
+   const standing=teamStanding(row);
+   primary=teamHighlight(row,currentSource?.metric||state.teamHighlight);
+   const highlight=$('[data-share-field="teamHighlight"]');
+   optionsFor(highlight,allowed.filter(([metric])=>metricValue(row,'team',metric)!==null),v=>v[0],v=>v[1],primary);
+   $('[data-share-field="showTeamStanding"]').disabled=!standing;
+   $('.cff-share-standing-detail').textContent=standing?'Tabela oficial · '+standing.label:'Posição indisponível para esta fase ou recorte.';
+   allowed=allowed.filter(([metric])=>metric!==primary);
+   if(standing)allowed=[['standing','Posição na tabela · '+standing.label],...allowed];
+  }
   const fields=modal.querySelectorAll('[data-share-slot]');
   fields.forEach((select,i)=>{
-   optionsFor(select,[['','Ocultar esta informação'],...allowed],item=>item[0],item=>item[1],state.slotMetrics[i]||'');
+   optionsFor(select,[['','Ocultar esta informação'],...allowed],item=>item[0],item=>item[1],state.slotMetrics[i]===primary?'':state.slotMetrics[i]||'');
   });
   $('.cff-share-stat-kind').textContent=kind==='player'?'jogador':'equipe';
  }
@@ -463,19 +490,24 @@ function drawRecord(ctx,payload,art,{w,h,pad,footerY,accent,dark,surface,ink,mut
  fitRankLine(ctx,payload.main,pad,valueY,copyWidth,scoreSize,highlight,'900','left',38);
  fitRankLine(ctx,payload.mainLabel,pad,labelY,copyWidth,wide?22:story?30:26,highlight,'900','left',16);
 
- const facts=payload.facts.slice(0,6);
- if(!facts.length)return;
  const gap=wide?12:18;
- const columns=wide?Math.min(4,facts.length):story||(feed&&facts.length===2)?1:Math.min(2,facts.length);
- const rows=Math.ceil(facts.length/columns),gridTop=heroEnd+(wide?14:25);
- const gridBottom=footerY-(wide?37:52);
- const boxHeight=Math.min(story?(facts.length===1?680:470):wide?142:feed?(facts.length===1?410:225):165,(gridBottom-gridTop-gap*(rows-1))/rows);
+ const count=payload.facts.length;
+ drawSpotlightFacts(ctx,payload.facts,{x:pad,top:heroEnd+(wide?14:25),width,bottom:footerY-(wide?37:52),gap,
+  columns:wide?4:story||(feed&&count===2)?1:2,maxHeight:story?(count===1?680:470):wide?142:feed?(count===1?410:225):165,
+  wide,story,feed,highlight,gold,dark,surface,ink,muted});
+}
+function drawSpotlightFacts(ctx,items,{x:origin,top,width,bottom,gap,columns,maxHeight,wide,story,feed,highlight,gold,dark,surface,ink,muted}){
+ const facts=items.slice(0,6);
+ if(!facts.length)return;
+ columns=Math.min(columns,facts.length);
+ const rows=Math.ceil(facts.length/columns);
+ const boxHeight=Math.min(maxHeight,(bottom-top-gap*(rows-1))/rows);
  facts.forEach((fact,index)=>{
   const row=Math.floor(index/columns),column=index%columns;
   const rowLength=Math.min(columns,facts.length-row*columns);
   const boxWidth=(width-gap*(rowLength-1))/rowLength;
-  const x=pad+column*(boxWidth+gap),y=gridTop+row*(boxHeight+gap);
-  const booyah=fact.metric==='booyahs',color=booyah?gold:ink;
+  const x=origin+column*(boxWidth+gap),y=top+row*(boxHeight+gap);
+  const booyah=fact.metric==='booyahs'||fact.metric==='standing',color=booyah?gold:ink;
   rounded(ctx,x,y,boxWidth,boxHeight,wide?12:19,
    booyah?(dark?'#211e20':'#fff7e4'):surface,
    booyah?(dark?'#715735':'#c9a05b'):(dark?'#2a405b':'#bacddd'));
@@ -485,7 +517,7 @@ function drawRecord(ctx,payload,art,{w,h,pad,footerY,accent,dark,surface,ink,mut
   const numberY=y+boxHeight*.59,labelBaseline=y+boxHeight*.83;
   const ranked=state.showFactRanks&&Number.isInteger(fact.rank)&&fact.rank>0;
   const rankWidth=ranked?(wide?59:story?100:84):0;
-  fitRankLine(ctx,fact.value,x+inset,numberY,boxWidth-2*inset-rankWidth,numberFont,color,'900','left',23);
+  fitRankLine(ctx,fact.value,x+inset,numberY,boxWidth-2*inset-rankWidth,Math.floor(numberFont),color,'900','left',23);
   fitRankLine(ctx,fact.label,x+inset,labelBaseline,boxWidth-2*inset,labelFont,booyah?gold:muted,'800','left',14);
   if(ranked){
    const rankX=x+boxWidth-inset-rankWidth;
@@ -497,6 +529,62 @@ function drawRecord(ctx,payload,art,{w,h,pad,footerY,accent,dark,surface,ink,mut
     wide?21:story?33:28,booyah?gold:highlight,'900','center',14);
   }
  });
+}
+function drawTeamCard(ctx,payload,emblem,{w,pad,footerY,accent,dark,surface,ink,muted,highlight,gold}){
+ const wide=state.format==='wide',story=state.format==='stories',feed=state.format==='feed';
+ const width=w-2*pad,heroEnd=wide?600:story?735:feed?636:518;
+ const hasFacts=payload.facts.length>0,hasArt=state.showImage&&emblem;
+ const split=wide&&hasFacts;
+ const heroWidth=split?width*.43:width;
+ const portrait=hasArt?(wide?(split?119:294):story?456:feed?324:260):0;
+ const artX=pad+heroWidth-portrait;
+ const copyWidth=heroWidth-(hasArt&&!split?portrait+28:0);
+ const nameWidth=split&&hasArt?copyWidth-portrait-15:copyWidth;
+ const top=wide?159:story||feed?199:176;
+ const standing=state.showTeamStanding&&payload.standing;
+ if(standing){
+  const badgeW=wide?283:303,x=w-pad-badgeW,y=wide?31:53;
+  rounded(ctx,x,y,badgeW,wide?77:86,13,dark?'#272521':'#fff4db',dark?'#77623c':'#c0a267');
+  fitRankLine(ctx,standing.position+'º',x+16,y+(wide?55:59),73,wide?45:51,gold,'900','left',25);
+  fitRankLine(ctx,'NA TABELA',x+100,y+31,badgeW-115,wide?17:20,gold,'900','left',14);
+  fitRankLine(ctx,standing.label,x+100,y+53,badgeW-115,wide?15:18,ink,'800','left',12);
+ }
+ if(portrait)drawHeroPortrait(ctx,null,emblem,artX,top+20,portrait,accent,dark,surface);
+
+ let cursor=top;
+ const drawHeading=(value,max,size,color)=>{
+  const layout=headlineLayout(ctx,value,max,size);
+  cursor+=layout.size;
+  layout.lines.forEach((line,i)=>fitRankLine(ctx,line,pad,cursor+i*layout.size*1.05,max,layout.size,color,'900','left',layout.size));
+  cursor+=(layout.lines.length-1)*layout.size*1.05;
+ };
+ drawHeading(payload.title,nameWidth,wide?25:story?35:29,muted);
+ cursor+=wide?9:15;
+ drawHeading((payload.entity||'').toUpperCase(),nameWidth,wide?48:story?57:48,ink);
+ if(state.showSubtitle&&state.showFilters&&payload.subtitle){
+  cursor+=wide?24:29;
+  fitRankLine(ctx,payload.subtitle,pad,cursor,nameWidth,wide?18:22,muted,'750','left',13);
+ }
+ const showMetricRank=state.showMainRank&&Number.isInteger(payload.mainRank)&&payload.mainRank>0;
+ const reserved=showMetricRank?(wide?51:50):0;
+ const labelY=(hasFacts?heroEnd:Math.min(footerY-75,heroEnd+(story?180:105)))-(wide?42:18)-reserved;
+ const valueY=labelY-(wide?24:30);
+ const scoreSize=Math.min(wide?178:story?244:feed?224:184,Math.max(42,Math.floor((valueY-cursor-10)/.75)));
+ fitRankLine(ctx,payload.main,pad,valueY,copyWidth,scoreSize,highlight,'900','left',40);
+ fitRankLine(ctx,payload.mainLabel,pad,labelY,copyWidth,wide?22:30,highlight,'900','left',16);
+ if(showMetricRank){
+  const y=labelY+(wide?39:45);
+  const rankWidth=wide?105:111;
+  fitRankLine(ctx,'#'+payload.mainRank,pad,y,rankWidth,wide?34:42,highlight,'950','left',21);
+  fitRankLine(ctx,'RANKING DE',pad+rankWidth,y-7,copyWidth-rankWidth,wide?12:15,muted,'850','left',10);
+  fitRankLine(ctx,payload.mainRankLabel||payload.mainLabel,pad+rankWidth,y+13,copyWidth-rankWidth,wide?14:17,ink,'850','left',10);
+ }
+ if(hasFacts){
+  const x=split?pad+width*.48:pad;
+  drawSpotlightFacts(ctx,payload.facts,{x,top:split?155:heroEnd+(story?44:26),width:w-pad-x,
+   bottom:footerY-(wide?38:53),gap:wide?12:18,columns:story?1:2,maxHeight:story?530:wide?230:feed?315:225,
+   wide,story,feed,highlight,gold,dark,surface,ink,muted});
+ }
 }
 async function draw(payload){
  const canvas=modal.querySelector('canvas'),ctx=canvas.getContext('2d',{alpha:false});
@@ -515,7 +603,7 @@ async function draw(payload){
  const grad=ctx.createLinearGradient(0,0,w,h);grad.addColorStop(0,bg);grad.addColorStop(.7,dark?'#0b1e32':'#dbeaf6');grad.addColorStop(1,dark?'#06111f':'#f7fbff');
  ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
  ctx.globalAlpha=dark?.06:.07;ctx.strokeStyle=accent;ctx.lineWidth=3;
- for(let i=-7;payload.kind!=='record'&&i<14;i++){ctx.beginPath();ctx.moveTo(w*.55+i*95,-100);ctx.lineTo(w*.15+i*95,h+100);ctx.stroke()}
+ for(let i=-7;payload.kind!=='record'&&payload.kind!=='team'&&i<14;i++){ctx.beginPath();ctx.moveTo(w*.55+i*95,-100);ctx.lineTo(w*.15+i*95,h+100);ctx.stroke()}
  ctx.globalAlpha=1;
  ctx.fillStyle=accent;ctx.fillRect(0,0,w,Math.max(9,w*.008));
  const pad=w*.07;const compact=h<=760;const wideList=compact&&payload.rows.length>0;
@@ -528,6 +616,9 @@ async function draw(payload){
  // Canvas text coordinates are baselines: make headline, player, filters and score separate rows.
  const footerY=h-(compact?69:113);
  if(payload.kind==='record')drawRecord(ctx,payload,{photo,emblem},{w,h,pad,footerY,accent,dark,surface,ink,muted});
+ else if(payload.kind==='team')drawTeamCard(ctx,payload,emblem,{w,pad,footerY,accent,dark,surface,ink,muted,
+  highlight:dark?accent:{blue:'#006d90',red:'#a5122e',gold:'#805509',green:'#087451'}[state.accent]||'#006d90',
+  gold:dark?'#f3c466':'#805509'});
  else{
  // All Stories now use their own 9:16 layout. Feed, square and wide stay unchanged.
  const legacyPanelTop=compact?497:Math.floor(h*.58);
@@ -554,7 +645,7 @@ async function draw(payload){
  const labelY=valueY+(compact?30:36);
  if(payload.main){
   const available=wideList?w*.38:contentWidth;
-  const rankShown=(payload.kind==='player'||payload.kind==='team')&&state.showMainRank&&Number.isInteger(payload.mainRank)&&payload.mainRank>0;
+  const rankShown=payload.kind==='player'&&state.showMainRank&&Number.isInteger(payload.mainRank)&&payload.mainRank>0;
   const rankWidth=rankShown?Math.min(190,Math.max(116,available*.34)):0;
   const numberWidth=rankShown?Math.max(80,available-rankWidth-12):available;
   let font=compact?77:story?clamp(w*.118,84,143):clamp(w*.107,76,130);
@@ -943,13 +1034,15 @@ function prepareModal(){
   '<div class="cff-stats-share-body"><section class="cff-stats-share-controls">',
    '<label>Tipo de card<select data-share-field="kind"><option value="summary">Resumo do recorte</option><option value="single">Estatística única</option><option value="team">Equipe</option><option value="player">Jogador</option><option value="top">Top 5 / ranking</option><option value="record">Recorde</option><option value="compare">Comparar equipes</option><option value="comparePlayer">Comparar jogadores</option></select></label>',
    '<label class="cff-share-single-setting">Estatística<select data-share-field="single"><option value="points">Pontos</option><option value="kills">Abates</option><option value="booyahs">Booyahs</option><option value="drops">Quedas</option><option value="avgPoints">Média de pontos</option><option value="avgPosition">Colocação média</option></select></label>',
-   '<label class="cff-share-entity-team">Equipe A<select data-share-field="team"></select></label>',
+   '<label class="cff-share-entity-team"><span class="cff-share-team-label">Equipe</span><select data-share-field="team"></select></label>',
    '<label class="cff-share-team-b">Equipe B<select data-share-field="teamB"></select></label>',
    '<div class="cff-share-player-field cff-share-entity-player"><label for="cff-share-search-player">Jogador</label><div class="cff-share-player-combobox"><input type="search" id="cff-share-search-player" data-share-player-search="player" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cff-share-results-player" placeholder="Buscar jogador ou equipe..." maxlength="75" autocomplete="off"><div class="cff-share-player-results" id="cff-share-results-player" data-share-player-results role="listbox" hidden></div></div><select data-share-field="player" class="cff-share-player-native" hidden tabindex="-1" aria-hidden="true"></select></div>',
    '<div class="cff-share-player-field cff-share-compare-player-a"><label for="cff-share-search-playerA">Jogador A</label><div class="cff-share-player-combobox"><input type="search" id="cff-share-search-playerA" data-share-player-search="playerA" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cff-share-results-playerA" placeholder="Buscar jogador ou equipe..." maxlength="75" autocomplete="off"><div class="cff-share-player-results" id="cff-share-results-playerA" data-share-player-results role="listbox" hidden></div></div><select data-share-field="playerA" class="cff-share-player-native" hidden tabindex="-1" aria-hidden="true"></select></div>',
    '<div class="cff-share-player-field cff-share-compare-player-b"><label for="cff-share-search-playerB">Jogador B</label><div class="cff-share-player-combobox"><input type="search" id="cff-share-search-playerB" data-share-player-search="playerB" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cff-share-results-playerB" placeholder="Buscar jogador ou equipe..." maxlength="75" autocomplete="off"><div class="cff-share-player-results" id="cff-share-results-playerB" data-share-player-results role="listbox" hidden></div></div><select data-share-field="playerB" class="cff-share-player-native" hidden tabindex="-1" aria-hidden="true"></select></div>',
    '<div class="cff-share-top-settings"><label>Ranking<select data-share-field="topEntity"><option value="team">Equipes</option><option value="player">Jogadores</option><option value="contribution">Participação individual</option></select></label><label>Indicador<select data-share-field="metric"></select></label></div>',
    '<label class="cff-share-record-setting">Recorde<select data-share-field="record"></select></label>',
+   '<label class="cff-share-team-highlight" hidden>Destaque principal<select data-share-field="teamHighlight"></select></label>',
+   '<div class="cff-share-team-standing cff-share-fact-ranking" hidden><label><input type="checkbox" data-share-field="showTeamStanding"> Mostrar posição na tabela em um selo</label><small class="cff-share-standing-detail"></small></div>',
    '<fieldset class="cff-share-stat-settings" hidden><legend>Conteúdos do card · <span class="cff-share-stat-kind">jogador</span></legend>',
     '<p>Escolha até 6 informações, na ordem em que devem aparecer. Selecione “Ocultar” para não exibir uma delas.</p>',
     '<div class="cff-share-stat-slots">'+Array.from({length:6},(_,i)=>'<label>Informação '+(i+1)+'<select data-share-slot="'+i+'" aria-label="Informação '+(i+1)+'"></select></label>').join('')+'</div>',
@@ -972,8 +1065,13 @@ function prepareModal(){
  modal.querySelectorAll('[data-share-field]').forEach(control=>{
   const prop=control.dataset.shareField;
   control.addEventListener(control.tagName==='INPUT'&&control.type==='text'?'input':'change',()=>{
+   if(prop==='teamHighlight'){
+    const row=currentSource?.row||findRow(state.team,'team');
+    const previous=teamHighlight(row,currentSource?.metric||state.teamHighlight);
+    state.slotMetrics=state.slotMetrics.map(metric=>metric===control.value?previous:metric);
+   }
    state[prop]=control.type==='checkbox'?control.checked:control.value;
-   if(prop==='kind'||prop==='topEntity'||prop==='metric'||prop==='record'||prop==='single'||prop==='team'||prop==='player'||prop==='teamB'||prop==='playerA'||prop==='playerB')currentSource=null;
+   if(['kind','topEntity','metric','record','single','team','teamHighlight','player','teamB','playerA','playerB'].includes(prop))currentSource=null;
    if(prop==='kind')resetSlots(state.kind);
    if(prop==='topEntity')syncMetricOptions();
    refresh();
@@ -1011,6 +1109,7 @@ function open(source){
  if(source?.playerA)state.playerA=source.playerA;
  if(source?.playerB)state.playerB=source.playerB;
  if(source?.metric)state.metric=source.metric;
+ if(source?.kind==='team')state.teamHighlight=source.metric||'points';
  if(source?.entity)state.topEntity=source.entity;
  if(source?.record)state.record=source.record[0]+'|'+source.record[1];
  resetSlots(state.kind);

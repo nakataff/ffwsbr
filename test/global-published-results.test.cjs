@@ -20,7 +20,7 @@ test('Classificatória and Stats share published scores, preserve session filter
    if(name==='stages')data.classificatoria.rounds=[];
    return {ok:true,json:async()=>data};
   };
-  const source=fs.readFileSync('ffws-global-2026/global.js','utf8').replace("  if (document.readyState === 'loading')","  window.__resultTest={state,loadData,loadLiveResults,stageEvents,renderPage,aggregateStatsTeams,statsStageEvents};\n  if (document.readyState === 'loading')");
+  const source=fs.readFileSync('ffws-global-2026/global.js','utf8').replace("  if (document.readyState === 'loading')","  window.__resultTest={state,loadData,loadLiveResults,stageEvents,renderPage,aggregateStatsTeams,statsStageEvents,statsTeamStandings};\n  if (document.readyState === 'loading')");
   w.eval(source);
   const api=w.__resultTest,d=w.document;
   await api.loadData();await Promise.all([api.loadLiveResults(),api.loadLiveResults()]);await api.loadLiveResults();
@@ -90,6 +90,12 @@ test('Classificatória and Stats share published scores, preserve session filter
    // The same live drops must not replace or duplicate the official workbook,
    // and a newer live-only round still extends the static archive.
    api.state.stages=json('stages');
+   const standings=api.statsTeamStandings({stage:'classificatoria',days:['1'],maps:['Bermuda']});
+   assert.equal(standings.FLUXOW7M.position,2,'day and map filters do not change the official phase table');
+   assert.equal(Object.keys(api.statsTeamStandings({stage:'geral',days:[]})).length,0);
+   assert.equal(Object.keys(api.statsTeamStandings({stage:'segundaFase',days:['1','2']})).length,0);
+   api.state.stages.final.rows=[{team:'LOUD',position:1,points:125},{team:'LOS',position:2,points:145}];
+   assert.equal(api.statsTeamStandings({stage:'final',days:[]}).LOUD.position,1,'use the official Champion Rush result');
    const officialDrops=api.stageEvents('classificatoria').length;
    assert.equal(officialDrops,api.state.stages.classificatoria.rounds.length);
    const archived=api.stageEvents('classificatoria')[0];

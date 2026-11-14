@@ -357,7 +357,7 @@
     });
   }
 
-  function aggregateStageRows(stageKey, events) {
+  function aggregateStageRows(stageKey, events, overall = isOverallStageFilter(stageKey)) {
     const payload = state.stages?.[stageKey] || {};
     const baseRows = Array.isArray(payload.rows) ? payload.rows : [];
     const map = new Map();
@@ -384,12 +384,28 @@
     }));
     const rows = [...map.values()];
     const hasEvents = events.some(event => eventResults(event).length);
-    if (stageKey === 'segundaFase' && hasEvents && isOverallStageFilter(stageKey)) rows.forEach(row => { row.points += number(row.bonus); });
+    if (stageKey === 'segundaFase' && hasEvents && overall) rows.forEach(row => { row.points += number(row.bonus); });
     if (hasEvents) {
       rows.sort((a, b) => Boolean(b.matches) - Boolean(a.matches) || b.points - a.points || b.booyahs - a.booyahs || b.kills - a.kills || (a.lastPlace || 99) - (b.lastPlace || 99) || (b.lastPoints || 0) - (a.lastPoints || 0) || a.team.localeCompare(b.team, 'pt-BR'));
       rows.forEach((row, index) => { row.position = row.matches ? index + 1 : null; });
     }
     return rows;
+  }
+
+  function statsTeamStandings({stage, days}) {
+    if (stage === 'geral') return {};
+    const daily = stage === 'segundaFase' && stageFormat(stage).resetEachDay;
+    if (daily && days.length !== 1) return {};
+    const payload = state.stages?.[stage] || {};
+    const official = Array.isArray(payload.rows) ? payload.rows : [];
+    if (stage === 'final' && !official.length) return {};
+    const fullDays = stageEvents(stage).filter(event => !daily || String(event.day || event.round || event.number) === days[0]);
+    const rows = (stage === 'final' || !fullDays.length) && official.length
+      ? official.filter(row => !daily || String(row.day || payload.day) === days[0])
+      : aggregateStageRows(stage, fullDays, !daily);
+    const label = daily ? 'Fase 2 · Dia ' + days[0] : stageLabel(stage).replace('Knockout • ', '');
+    return Object.fromEntries(rows.filter(row => !row.placeholder && number(row.position) > 0)
+      .map(row => [normalize(row.team), {position:number(row.position), label}]));
   }
 
   function isOverallStageFilter(stageKey) {
@@ -1849,13 +1865,13 @@
       if (!document.querySelector('link[data-cff-stats-share-css]')) {
         const link=document.createElement('link');
         link.rel='stylesheet';
-        link.href='/css/global-stats-share.css?v=20261113-record-layout-v1';
+        link.href='/css/global-stats-share.css?v=20261114-team-cards-v1';
         link.dataset.cffStatsShareCss='1';
         document.head.append(link);
       }
       globalStatsShareLoader=new Promise((resolve,reject)=>{
         const script=document.createElement('script');
-        script.src='/js/global-stats-share.js?v=20261113-record-layout-v1';
+        script.src='/js/global-stats-share.js?v=20261114-team-cards-v1';
         script.async=true;
         script.onload=()=>resolve();
         script.onerror=()=>reject(Error('Não foi possível carregar o editor de cards'));
@@ -2009,8 +2025,10 @@
       ${statsBlocks}
       ${s2StatsBackTopButtonHtml()}
     </div>`;
+    const standings = statsTeamStandings(state.statsFilters);
     attachGlobalStatsShare(root, {
       teams, players, playerShareRows, records, events,
+      standingForTeam: name => standings[normalize(name)],
       summary: {drops:events.length,points:totalPoints,kills:totalKills,booyahs:totalBooyahs,
         avgPoints:totalResults?totalPoints/totalResults:0,avgPosition:avgPosition},
       filters: {stage:state.statsFilters.stage,days:[...state.statsFilters.days],maps:[...state.statsFilters.maps]},
