@@ -42,6 +42,11 @@ test('Classificatória and Stats share published scores, preserve session filter
   assert(!statsRoot.querySelector('#anchor-s2-totais-jogador'));
   assert.match(statsRoot.textContent,/estatísticas individuais serão exibidas/);
   assert(!statsRoot.textContent.includes('Mais Dano em uma Queda'));
+  const filters=statsRoot.querySelector('#anchor-s2-filtros');
+  assert.equal(filters.querySelectorAll('select').length,1);
+  assert.equal(filters.querySelector('select').options.length,5);
+  assert.equal(filters.querySelectorAll('[data-global-multi]').length,2);
+  assert.equal(filters.querySelectorAll('button[onclick*="setFFWSGlobalStatsStage"]').length,0);
   if(published===fixture){
    assert.deepEqual(Array.from(api.stageEvents('classificatoria'),e=>[e.day,e.round,e.roundDrop,e.drop]),[[1,1,1,1],[1,2,1,7]]);
    const rounds=[...statsRoot.querySelectorAll('.ffws-global-drop-round')];
@@ -59,6 +64,17 @@ test('Classificatória and Stats share published scores, preserve session filter
    w.openFFWSGlobalDayReport('classificatoria',1);
    assert.match(report.querySelector('.ffws-global-drop-report-title').textContent,/DIA 1 • 2 QUEDAS/);
    w.closeFFWSGlobalDropReport();
+   w.setFFWSGlobalStatsMulti('days','1',true);
+   w.setFFWSGlobalStatsMulti('maps','Bermuda',true);
+   statsRoot.querySelector('#ffws-global-stats-stage').focus();
+   w.setFFWSGlobalStatsStage('geral');
+   const stage=statsRoot.querySelector('#ffws-global-stats-stage');
+   assert.equal(stage.value,'geral');
+   assert.equal(stage.selectedOptions[0].textContent,'Todas as fases');
+   assert.equal(stage,d.activeElement);
+   assert.equal(api.state.statsFilters.days.length,0);
+   assert.equal(api.state.statsFilters.maps.length,0);
+   w.setFFWSGlobalStatsStage('classificatoria');
    w.setFFWSGlobalStageFilter('classificatoria','period','2');
    assert.equal(classRoot.querySelectorAll('tbody tr').length,12);
    assert(!classRoot.querySelector('.ffws-global-pool-legend,.ffws-global-pool-band'));

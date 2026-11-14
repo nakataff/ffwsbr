@@ -1896,15 +1896,7 @@
     const avgPosition = totalResults ? teams.reduce((sum, row) => sum + row.positionSum, 0) / totalResults : 0;
     const totalRanking = [...teams].sort((a, b) => b.points - a.points || b.booyahs - a.booyahs || b.kills - a.kills);
     const avgRanking = [...teams].sort((a, b) => b.avgPoints - a.avgPoints || b.avgKills - a.avgKills || a.avgPosition - b.avgPosition);
-    const stageOptions = [['classificatoria','Knockout • Fase 1'],['segundaFase','Knockout • Fase 2'],['lastChance','Last Chance'],['final','Grande Final'],['geral','Geral']];
-    const stageQuickOptions = [
-      ['classificatoria','FASE 1','Knockout • Fase 1'],
-      ['segundaFase','FASE 2','Knockout • Fase 2'],
-      ['lastChance','LAST CHANCE','Última chance'],
-      ['geral','GERAL','Fases somadas'],
-      ['final','FINAL','Decisão']
-    ];
-    const activeStageMeta = stageQuickOptions.find(row => row[0] === state.statsFilters.stage) || stageQuickOptions[0];
+    const stageOptions = [['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Last Chance'],['final','Grande Final'],['geral','Todas as fases']];
 
     const teamTotals = new Map();
     playerEntries.forEach(entry => {
@@ -1928,9 +1920,8 @@
     const summaryBlock = events.length ? `<section id="anchor-s2-resumo" class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Resumo do recorte</h2><p>Visão rápida do recorte atualmente selecionado.</p></div><span class="ffws-global-badge">${events.length} quedas</span></div>
       <div class="ffws-global-stats-grid">${[['Quedas disputadas',events.length],['Total de pontos',totalPoints],['Total de abates',totalKills],['Total de booyahs',totalBooyahs],['Média de pontos',totalResults ? (totalPoints / totalResults).toFixed(2) : '0.00'],['Colocação média',avgPosition ? `${avgPosition.toFixed(2)}º` : '—']].map(([label, value]) => `<div class="ffws-global-stat-card"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div></div></section>` : '';
 
-    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-global-panel ffws-global-stats-filter-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Filtros do torneio</h2><p>Escolha a etapa, o dia e o mapa.</p></div><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('stats')">↻ Atualizar</button><span class="ffws-global-badge">${activeStageMeta[1]} • ${events.length} quedas</span></div>
-      <nav class="ffws-global-stats-stage-switch" aria-label="Fase das estatísticas">${stageQuickOptions.map(([value,title,sub]) => `<button type="button" class="ffws-global-stats-stage-btn ${state.statsFilters.stage === value ? 'is-active' : ''} is-${value}" onclick="setFFWSGlobalStatsStage('${value}')"><strong>${title}</strong><small>${sub}</small></button>`).join('')}</nav>
-      <div class="ffws-global-filters"><label class="ffws-global-filter"><span>Etapa:</span><select onchange="setFFWSGlobalStatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('maps','Mapa',options.maps)}</div>${liveStatus()}</div></section>`;
+    const filterBlock = `<section id="anchor-s2-filtros" class="ffws-global-panel ffws-global-stats-filter-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Filtros</h2><span class="ffws-global-badge">${events.length} ${events.length === 1 ? 'queda' : 'quedas'}</span><button type="button" class="ffws-global-badge ffws-global-stats-refresh" onclick="refreshFFWSGlobalResults('stats')">↻ Atualizar</button></div>
+      <div class="ffws-global-filters"><label class="ffws-global-filter"><span>Fase</span><select id="ffws-global-stats-stage" onchange="setFFWSGlobalStatsStage(this.value)">${stageOptions.map(([value,label]) => `<option value="${value}"${state.statsFilters.stage === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>${statsMultiFilter('days','Dias',options.days)}${statsMultiFilter('maps','Mapa',options.maps)}</div>${liveStatus()}</div></section>`;
 
     const statsBlocks = events.length ? `<div class="ffws-global-stats-body" style="margin-top: 4px;">
         <h4 id="anchor-s2-totais-equipe" style="color:#66b3ff; margin: 0 0 15px 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px;">Totais por Equipe</h4>
@@ -2618,7 +2609,13 @@
     renderSelections();
   };
   window.setFFWSGlobalSelectionTab = tab => { state.selectionTab = S2_SELECTION_PHASES[tab] ? tab : 'semanal'; renderSelections(); };
-  window.setFFWSGlobalStatsStage = value => { state.statsStage = value; state.statsFilters.stage = String(value || 'classificatoria'); state.statsFilters.days = []; state.statsFilters.maps = []; renderStats(); };
+  window.setFFWSGlobalStatsStage = value => {
+    const restoreFocus = document.activeElement?.id === 'ffws-global-stats-stage';
+    state.statsStage = value;
+    state.statsFilters = { stage: String(value || 'classificatoria'), days: [], maps: [] };
+    renderStats();
+    if (restoreFocus) document.getElementById('ffws-global-stats-stage')?.focus({ preventScroll:true });
+  };
   window.refreshFFWSGlobalResults = page => {
     const pageId = PAGE_PREFIX + page;
     if (!LIVE_PAGES.has(pageId) || state.liveLoading) return;
