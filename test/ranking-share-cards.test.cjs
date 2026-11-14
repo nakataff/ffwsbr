@@ -213,8 +213,10 @@ test('world player cards expose real damage and peak stats without inventing ran
  const base={id:'fx-butzin',kind:'players',mode:'player',event:'FFWS Global Finals 2026',stage:'Geral',title:'BuTziN · Desempenho',metric:'kills',url:'https://centralfreefire.com.br/ffws-global-2026/jogador/?id=fx-butzin'};
  const original={name:p.name,team:p.team.name,photo:p.photoLarge,logo:p.team.logo,rank:p.ranks.geral,ranking:p.ranks.geral,bestDrop:p.highlights.geral.drop.kills,bestRound:p.highlights.geral.round.kills,...p.stats.geral};
  const data=m.normalizePayload({...base,rows:[original]});
- assert.equal(data.mode,'player');assert.equal(data.rows[0].ranking,1);assert.equal(m.statText(data.rows[0],'avgDamage'),'1.888,17');
- assert.equal(m.statText(data.rows[0],'bestRound'),'28');
+ const stats=p.stats.geral;
+ const avgDamage=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(stats.damage/stats.matches);
+ assert.equal(data.mode,'player');assert.equal(data.rows[0].ranking,p.ranks.geral);assert.equal(m.statText(data.rows[0],'avgDamage'),avgDamage);
+ assert.equal(m.statText(data.rows[0],'bestRound'),String(p.highlights.geral.round.kills));
  const noRank=m.normalizePayload({...base,rows:[{...original,rank:null,ranking:null,bestDrop:null,bestRound:null}]});
  assert.equal(noRank.rows[0].rank,null);assert.equal(noRank.rows[0].ranking,null);
  assert.equal(m.statValue(noRank.rows[0],'bestDrop'),null);
@@ -230,8 +232,8 @@ test('world player cards expose real damage and peak stats without inventing ran
   renderRankingCard(c,combined,options,{images:photos});
   assert.equal(c.width,m.FORMATS[format].width);assert.equal(c.height,m.FORMATS[format].height);
   assert(painted.some(v=>v.value==='BuTziN'),format+' '+template);
-  assert(painted.some(v=>v.value==='55'),format+' '+template);
-  assert(painted.some(v=>v.value==='22.658'),format+' '+template);
+  assert(painted.some(v=>v.value===String(stats.kills)),format+' '+template);
+  assert(painted.some(v=>v.value===stats.damage.toLocaleString('pt-BR')),format+' '+template);
   assert(drawn.some(v=>v===photos.get(p.photoLarge)),format+' '+template+' photo');
   assert(!painted.some(v=>v.value.includes('nullº')));
  }
