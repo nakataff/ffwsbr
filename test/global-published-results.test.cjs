@@ -113,3 +113,69 @@ test('Classificatória and Stats share published scores, preserve session filter
   await api.loadLiveResults(true);assert.equal(api.stageEvents('classificatoria').length,count);
  }finally{w.close();}
 });
+
+test('team chart filters real drops, formats labels, and applies the chosen team color',async()=>{
+ const dom=new JSDOM('<main id="ffws-global-2026-stats-content"></main>',{
+  url:'https://centralfreefire.com.br/ffws-global-2026/stats/',runScripts:'dangerously'
+ });
+ const w=dom.window;
+ const draws=[];
+ try{
+  w.requestAnimationFrame=()=>0;
+  w.HTMLCanvasElement.prototype.getContext=()=>({});
+  w.Chart=function(_ctx,config){draws.push(config);this.data=config.data;this.update=()=>{};this.destroy=()=>{};};
+  w.eval(fs.readFileSync('ffws-global-2026/global.js','utf8').replace("  if (document.readyState === 'loading')",
+   "  window.__evolution={state,renderStats,renderS2StatsEvolutionChart};\n  if (document.readyState === 'loading')"));
+  const {state,renderStats,renderS2StatsEvolutionChart}=w.__evolution;
+  const [teams,stages]=['teams','stages'].map(name=>JSON.parse(fs.readFileSync('ffws-global-2026/'+name+'.json','utf8')));
+  stages.classificatoria.rounds=stages.classificatoria.rounds.filter(round=>round.day<=5);
+  state.teams=teams.teams;
+  state.stages=stages;
+  state.statsEvolution.teams=['LOUD'];
+  const root=w.document.getElementById('ffws-global-2026-stats-content');
+  const section=()=>root.querySelector('#anchor-s2-evolucao');
+  const field=name=>section().querySelector(`[data-evolution-field="${name}"]`);
+  const select=(name,value)=>{
+   const control=field(name);
+   control.value=value;
+   control.dispatchEvent(new w.Event('change'));
+  };
+  const settle=()=>new Promise(resolve=>setImmediate(resolve));
+  renderStats();
+  renderS2StatsEvolutionChart();
+  await settle();
+  assert.equal(draws.at(-1).data.labels.length,5);
+  select('view','drop');
+  await settle();
+  assert.equal(draws.at(-1).data.labels.length,60);
+  select('day','classificatoria:5');
+  assert.equal(field('drop').options.length,13);
+  assert.equal(field('drop').options[7].textContent,'Rodada 2 · Queda 1');
+  select('drop','1');
+  select('metric','points');
+  await settle();
+  assert.deepEqual(Array.from(draws.at(-1).data.datasets[0].data),[32]);
+  const swatch=section().querySelector('input[type=color]');
+  swatch.value='#ff6600';
+  swatch.dispatchEvent(new w.Event('input'));
+  const show=section().querySelector('input[type=checkbox]');
+  show.click();
+  await settle();
+  const chart=draws.at(-1);
+  assert.equal(chart.data.datasets[0].borderColor,'#ff6600');
+  const painted=[];
+  chart.plugins[0].afterDatasetsDraw({
+   data:chart.data,chartArea:{left:10,right:480,top:45,bottom:315},
+   isDatasetVisible:()=>true,getDatasetMeta:()=>({data:[{x:200,y:97,skip:false}]}),
+   ctx:{save(){},restore(){},strokeText(){},measureText:()=>({width:36}),fillText:text=>painted.push(text)}
+  });
+  assert.deepEqual(painted,['32 PTS']);
+  select('metric','position');
+  await settle();
+  assert.deepEqual(Array.from(draws.at(-1).data.datasets[0].data),[1]);
+  select('day','');
+  assert.equal(field('drop').value,'');
+  await settle();
+  assert.equal(draws.at(-1).data.labels.length,60);
+ }finally{w.close();}
+});

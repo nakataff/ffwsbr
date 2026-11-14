@@ -46,7 +46,7 @@
     selectionWeekStage: 'segundaFase',
     selectionTab: 'torneio',
     statsFilters: { stage: 'classificatoria', days: [], maps: [] },
-    statsEvolution: { metric: 'position', teams: [] },
+    statsEvolution: { metric: 'position', teams: [], view: 'day', day: '', drop: '', colors: {}, showValues: false },
     statsEvolutionPlayers: { metric: 'kills', players: null, search: '' },
     notesFilters: { mode: 'day', stage: ['classificatoria'], team: [], role: [], day: [], map: [], drop: [], halfMatches: true },
     notesOpenMulti: '',
@@ -1543,6 +1543,7 @@
 
   let s2StatsEvolutionChart = null;
   let s2StatsEvolutionObserver = null;
+  let s2StatsEvolutionDrawVersion = 0;
   let s2StatsPlayerEvolutionChart = null;
   let s2StatsPlayerEvolutionObserver = null;
   let s2StatsEvolutionPlayerOptions = [];
@@ -1603,10 +1604,17 @@
   function s2StatsEvolutionHtml(events) {
     const teams = s2StatsEvolutionTeamList(events);
     const selected = new Set((state.statsEvolution.teams || []).map(normalize));
+    syncEvolutionDropFilters(events);
     return `<section id="anchor-s2-evolucao" class="ffws-global-panel ffws-global-stats-evolution"><div class="ffws-global-panel-inner">
-      <div class="ffws-global-panel-head"><div><h2>Comparação de Evolução das Equipes</h2><p>Gráfico no mesmo estilo da S1, usando o recorte definido nos filtros acima.</p></div><span class="ffws-global-badge">até 5 equipes</span></div>
-      <div class="ffws-global-evolution-controls"><label class="ffws-global-filter"><span>Métrica do gráfico:</span><select onchange="setFFWSGlobalStatsEvolutionMetric(this.value)"><option value="position"${state.statsEvolution.metric==='position'?' selected':''}>Posição geral (acumulada)</option><option value="points"${state.statsEvolution.metric==='points'?' selected':''}>Pontos por dia</option><option value="kills"${state.statsEvolution.metric==='kills'?' selected':''}>Abates por dia</option></select></label><div class="ffws-global-evolution-team-wrap"><span>Equipes (máx. 5):</span><div class="ffws-global-evolution-team-carousel"><button type="button" class="ffws-global-evolution-arrow" data-direction="-1" onclick="scrollFFWSGlobalEvolutionTeams(-1)" aria-label="Ver equipes anteriores" title="Equipes anteriores" disabled>&#8249;</button><div class="ffws-global-evolution-team-buttons" id="ffws-global-evolution-team-buttons" role="group" aria-label="Selecione até cinco equipes" onscroll="updateFFWSGlobalEvolutionTeamArrows()">${teams.map(team => `<button type="button" class="${selected.has(normalize(team)) ? 'active' : ''}" onclick="toggleFFWSGlobalStatsEvolutionTeam('${jsAttr(team)}')" title="${escapeHtml(team)}"><img src="${escapeHtml(logo(team))}" data-cff-global-team-logo="${escapeHtml(team)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><b>${escapeHtml(abbreviation(team))}</b></button>`).join('')}</div><button type="button" class="ffws-global-evolution-arrow" data-direction="1" onclick="scrollFFWSGlobalEvolutionTeams(1)" aria-label="Ver próximas equipes" title="Próximas equipes">&#8250;</button></div></div></div>
-      <div class="ffws-global-evolution-canvas-wrap"><canvas id="ffws-global-stats-evolution-chart"></canvas><div id="ffws-global-stats-evolution-empty" class="ffws-global-empty" hidden><div><strong>Sem dados suficientes</strong>Selecione ao menos uma equipe com resultados no recorte.</div></div></div>
+      <div class="ffws-global-panel-head"><div><h2>Comparação de Evolução das Equipes</h2><p>Compare as equipes no recorte selecionado.</p></div>
+        <details class="ffws-global-evolution-settings"><summary aria-label="Configurações da evolução" title="Configurações da evolução"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M10 3h4l.6 2.5 1.7 1 2.5-.7 2 3.4-1.9 1.8v2l1.9 1.8-2 3.4-2.5-.7-1.7 1L14 21h-4l-.6-2.5-1.7-1-2.5.7-2-3.4 1.9-1.8v-2L3.2 9.2l2-3.4 2.5.7 1.7-1z"/><circle cx="12" cy="12" r="3"/></svg></summary>
+          <div class="ffws-global-evolution-settings-panel"><strong>Cor das equipes</strong><div id="ffws-global-evolution-colors">${s2StatsEvolutionColorsHtml()}</div>
+          <label class="ffws-global-evolution-values"><input type="checkbox" onchange="setFFWSGlobalEvolutionValues(this.checked)"${state.statsEvolution.showValues?' checked':''}> Mostrar valores no gráfico</label></div>
+        </details>
+      </div>
+      <div id="ffws-global-evolution-filters" class="ffws-global-evolution-filters">${s2StatsEvolutionFiltersHtml(events)}</div>
+      <div class="ffws-global-evolution-team-wrap"><span>Equipes (máx. 5):</span><div class="ffws-global-evolution-team-carousel"><button type="button" class="ffws-global-evolution-arrow" data-direction="-1" onclick="scrollFFWSGlobalEvolutionTeams(-1)" aria-label="Ver equipes anteriores" title="Equipes anteriores" disabled>&#8249;</button><div class="ffws-global-evolution-team-buttons" id="ffws-global-evolution-team-buttons" role="group" aria-label="Selecione até cinco equipes" onscroll="updateFFWSGlobalEvolutionTeamArrows()">${teams.map(team => `<button type="button" class="${selected.has(normalize(team)) ? 'active' : ''}" aria-pressed="${selected.has(normalize(team))}" onclick="toggleFFWSGlobalStatsEvolutionTeam('${jsAttr(team)}')" title="${escapeHtml(team)}"><img src="${escapeHtml(logo(team))}" data-cff-global-team-logo="${escapeHtml(team)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'"><b>${escapeHtml(abbreviation(team))}</b></button>`).join('')}</div><button type="button" class="ffws-global-evolution-arrow" data-direction="1" onclick="scrollFFWSGlobalEvolutionTeams(1)" aria-label="Ver próximas equipes" title="Próximas equipes">&#8250;</button></div></div>
+      <div class="ffws-global-evolution-scroll" role="region" aria-label="Gráfico de evolução das equipes"><div class="ffws-global-evolution-canvas-wrap"><canvas id="ffws-global-stats-evolution-chart"></canvas></div><div id="ffws-global-stats-evolution-empty" class="ffws-global-empty" hidden>Selecione ao menos uma equipe com resultados no recorte.</div></div>
     </div></section>`;
   }
 
@@ -1679,12 +1687,58 @@
   </div></section>`;
 }
 
-  function s2StatsEvolutionSeries(events, teamName, metric) {
-    const periods = s2StatsEvolutionPeriods(events);
+  const evolutionPalette = ['#00c8ff','#ffd34d','#7fe29a','#ff7a90','#b68cff'];
+  const evolutionColor = (team,index) => state.statsEvolution.colors[normalize(team)] || evolutionPalette[index];
+
+  function s2StatsEvolutionColorsHtml() {
+    return state.statsEvolution.teams.map((team,index) => `<label><span>${escapeHtml(team)}</span><input type="color" aria-label="Cor de ${escapeHtml(team)}" value="${evolutionColor(team,index)}" data-team="${escapeHtml(team)}" oninput="setFFWSGlobalEvolutionColor(this.dataset.team,this.value)"></label>`).join('')
+      || '<small>Selecione uma equipe para trocar a cor.</small>';
+  }
+
+  function s2StatsEvolutionDrops(events) {
+    return s2StatsEvolutionPeriods(events).flatMap(period => [...period.events].sort((a,b) =>
+      number(a.round)-number(b.round)||number(a.drop??a.number)-number(b.drop??b.number))
+      .map(event => ({...period,
+        drop:number(event.drop??event.number??event.roundDrop), roundDrop:number(event.roundDrop??event.drop??event.number), session:number(event.session),
+        events:[event]})));
+  }
+
+  function syncEvolutionDropFilters(events) {
+    const filter = state.statsEvolution;
+    const drops = s2StatsEvolutionDrops(events);
+    const inDay = period => period.stage+':'+period.day===filter.day;
+    if (filter.day && !drops.some(inDay)) filter.day = '';
+    if (filter.drop && !drops.some(period => (!filter.day || inDay(period)) && String(period.drop)===filter.drop)) filter.drop = '';
+  }
+
+  function s2StatsEvolutionFiltersHtml(events) {
+    const {view,metric,day,drop} = state.statsEvolution;
+    const select = (field,label,choices,active) => `<label class="ffws-global-filter"><span>${label}</span><select data-evolution-field="${field}" onchange="setFFWSGlobalEvolutionFilter('${field}',this.value)">${choices.map(([value,name]) =>
+      `<option value="${escapeHtml(value)}"${String(value)===active?' selected':''}>${escapeHtml(name)}</option>`).join('')}</select></label>`;
+    const drops = s2StatsEvolutionDrops(events);
+    const stagePrefix = state.statsFilters.stage === 'geral';
+    const dayLabel = p => (stagePrefix ? s2StatsStageShortLabel(p.stage)+' · ' : '')+'Dia '+p.day;
+    const days = new Map(drops.map(p => [p.stage+':'+p.day,dayLabel(p)]));
+    const numbers = new Map();
+    drops.filter(p => !day || day===p.stage+':'+p.day).forEach(p => {
+      if (p.drop) numbers.set(p.drop,day && p.session ? 'Rodada '+p.session+' · Queda '+p.roundDrop : 'Queda '+p.drop);
+    });
+    return select('view','Visualização',[['day','Por dia'],['drop','Por queda']],view)
+      + select('metric','Métrica',[['position',view==='drop'?'Colocação na queda':'Posição geral (acumulada)'],['points','Pontos'],['kills','Abates']],metric)
+      + (view==='drop' ? select('day','Dia',[['','Todos os dias'],...days],day)
+        + select('drop','Queda',[['','Todas as quedas'],...[...numbers].sort(([a],[b])=>a-b)],drop) : '');
+  }
+
+  function s2StatsEvolutionSeries(periods, teamName, metric, byDrop) {
     const target = normalize(teamName);
     const values = [];
     const cumulative = new Map();
     periods.forEach(period => {
+      if (byDrop && metric === 'position') {
+        const result = eventResults(period.events[0]).find(row => normalize(row.team||row.equipe)===target);
+        values.push(number(result?.position||result?.posicao)||null);
+        return;
+      }
       const daily = new Map();
       period.events.forEach(event => eventResults(event).forEach(result => {
         const team = result.team || result.equipe;
@@ -1713,39 +1767,89 @@
     return values;
   }
 
+  function s2StatsEvolutionValue(value, metric) {
+    return value + ({position:'º',points:' PTS',kills:' ABATES'}[metric]||'');
+  }
+
+  function s2StatsEvolutionLabels(metric) {
+    return {id:'cffTeamEvolutionValues', afterDatasetsDraw(chart) {
+      const {ctx,chartArea:area} = chart, taken=[];
+      ctx.save();
+      ctx.font='700 11px system-ui,sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      chart.data.datasets.forEach((dataset,i) => {
+        if (!chart.isDatasetVisible(i)) return;
+        chart.getDatasetMeta(i).data.forEach(({x,y,skip},index) => {
+          const value=dataset.data[index];
+          if (value==null || skip || !Number.isFinite(x+y)) return;
+          const label=s2StatsEvolutionValue(value,metric),width=ctx.measureText(label).width+8;
+          const center=Math.max(area.left+width/2,Math.min(area.right-width/2,x));
+          ctx.fillStyle=dataset.borderColor;
+          ctx.strokeStyle='#0a1220';
+          ctx.lineWidth=4;
+          for (const offset of [-14,14,-30,30,-46,46,-62,62]) {
+            const yy=y+offset, box={x:center-width/2,y:yy-7,width};
+            if (box.y<area.top-16 || box.y+14>area.bottom+8 || taken.some(b=>
+              box.x<b.x+b.width && box.x+width>b.x && Math.abs(b.y-box.y)<14)) continue;
+            taken.push(box);
+            ctx.strokeText(label,center,yy);
+            ctx.fillText(label,center,yy);
+            break;
+          }
+        });
+      });
+      ctx.restore();
+    }};
+  }
+
   function renderS2StatsEvolutionChart() {
     const canvas = document.getElementById('ffws-global-stats-evolution-chart');
     if (!canvas) return;
+    const version = ++s2StatsEvolutionDrawVersion;
+    if (s2StatsEvolutionObserver) { s2StatsEvolutionObserver.disconnect(); s2StatsEvolutionObserver = null; }
     const events = filteredStatsEvents();
-    const periods = s2StatsEvolutionPeriods(events);
-    const selected = (state.statsEvolution.teams || []).slice(0,5);
+    const {teams:selected,metric,view,day,drop,showValues} = state.statsEvolution;
+    const byDrop = view==='drop';
+    const periods = byDrop ? s2StatsEvolutionDrops(events).filter(period =>
+      (!day || day===period.stage+':'+period.day) && (!drop || drop===String(period.drop))) : s2StatsEvolutionPeriods(events);
     const empty = document.getElementById('ffws-global-stats-evolution-empty');
-    const metric = state.statsEvolution.metric || 'position';
-    const data = selected.map((team,index) => ({
-      team,values:s2StatsEvolutionSeries(events,team,metric),index
-    }));
+    const wrap = canvas.parentElement, scroll = wrap.parentElement;
+    const data = selected.map(team => ({team,values:s2StatsEvolutionSeries(periods,team,metric,byDrop)}));
     const hasData = periods.length && data.some(item => item.values.some(value => value !== null));
+    wrap.hidden = !hasData; canvas.hidden = !hasData; empty.hidden = !!hasData;
     if (!hasData) {
-      canvas.hidden = true; if (empty) empty.hidden = false;
       if(s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart=null; }
       return;
     }
-    canvas.hidden = false; if (empty) empty.hidden = true;
+    const spacing = showValues ? (metric==='kills'?86:67) : byDrop ? 48 : 0;
+    wrap.style.minWidth = (periods.length*spacing+(spacing?56:0))+'px';
+    scroll.tabIndex = wrap.offsetWidth > scroll.clientWidth ? 0 : -1;
     const draw = () => {
-      if (!window.Chart || !document.getElementById('ffws-global-stats-evolution-chart')) return;
+      if (!window.Chart || !canvas.isConnected || version!==s2StatsEvolutionDrawVersion) return;
       if (s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart = null; }
-      const labels = periods.map(period => `${s2StatsStageShortLabel(period.stage)} D${period.day}`);
-      const palette = ['#00c8ff','#ffd34d','#7fe29a','#ff7a90','#b68cff'];
+      const labels = periods.map(period => {
+        const dayLabel = (state.statsFilters.stage==='geral'?s2StatsStageShortLabel(period.stage)+' · ':'')+'Dia '+period.day;
+        if (!byDrop) return dayLabel;
+        const dropLabel = period.session ? 'R'+period.session+' · Q'+period.roundDrop : 'Queda '+period.drop;
+        return day ? dropLabel : [dayLabel,dropLabel];
+      });
       s2StatsEvolutionChart = new window.Chart(canvas.getContext('2d'), {
         type:'line',
-        data:{ labels, datasets:data.map(({team,values,index})=>({ label:abbreviation(team), data:values, borderColor:palette[index%palette.length], backgroundColor:palette[index%palette.length], tension:.2, borderWidth:2.25, pointRadius:3, pointHoverRadius:5, spanGaps:false })) },
-        options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'nearest',intersect:false}, plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}}}, scales:{x:{ticks:{color:'#7893b5',maxRotation:0,autoSkip:true},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
+        data:{ labels, datasets:data.map(({team,values},index)=>({ label:abbreviation(team), data:values, borderColor:evolutionColor(team,index), backgroundColor:evolutionColor(team,index), tension:.2, borderWidth:2.25, pointRadius:3, pointHoverRadius:5, spanGaps:false })) },
+        plugins:showValues?[s2StatsEvolutionLabels(metric)]:[],
+        options:{ responsive:true, maintainAspectRatio:false, devicePixelRatio:wrap.offsetWidth>1800?1:undefined, interaction:{mode:'nearest',intersect:false},
+          plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}},
+            tooltip:{callbacks:{label:item=>item.dataset.label+': '+s2StatsEvolutionValue(item.parsed.y,metric)}}},
+          layout:{padding:showValues?{top:10,right:10}:0},
+          scales:{x:{ticks:{color:'#7893b5',maxRotation:0,autoSkip:!showValues},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',grace:showValues?'12%':0,ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
       });
     };
     const loadAndDraw = () => (typeof window.cffLoadChartJS === 'function' ? window.cffLoadChartJS() : Promise.resolve(window.Chart)).then(draw).catch(()=>{});
     if ('IntersectionObserver' in window) {
       if (s2StatsEvolutionObserver) s2StatsEvolutionObserver.disconnect();
-      s2StatsEvolutionObserver = new IntersectionObserver(entries => { if (entries.some(entry=>entry.isIntersecting)) { s2StatsEvolutionObserver.disconnect(); s2StatsEvolutionObserver=null; loadAndDraw(); } }, { rootMargin:'180px' });
+      const observer = new IntersectionObserver(entries => { if (entries.some(entry=>entry.isIntersecting)) { observer.disconnect(); if (s2StatsEvolutionObserver===observer) s2StatsEvolutionObserver=null; loadAndDraw(); } }, { rootMargin:'180px' });
+      s2StatsEvolutionObserver = observer;
       s2StatsEvolutionObserver.observe(canvas);
     } else loadAndDraw();
   }
@@ -2646,7 +2750,34 @@
   window.setFFWSGlobalStatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; renderStats(); };
   window.ffwsS2StatsPageNav = (key, delta) => { const pages = s2StatsPageState(); pages[key] = delta === 'reset' ? 0 : number(pages[key]) + number(delta); renderStats(); };
   window.scrollFFWSGlobalStatsSection = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  window.setFFWSGlobalStatsEvolutionMetric = value => { state.statsEvolution.metric = ['position','points','kills'].includes(String(value)) ? String(value) : 'position'; renderS2StatsEvolutionChart(); };
+  window.setFFWSGlobalEvolutionFilter = (field,value) => {
+    const filter = state.statsEvolution;
+    const holder = document.getElementById('ffws-global-evolution-filters');
+    if (!holder || !['view','metric','day','drop'].includes(field)) return;
+    const control = holder.querySelector(`select[data-evolution-field="${field}"]`);
+    if (!control || ![...control.options].some(option => option.value===value)) return;
+    filter[field] = value;
+    if (field==='day') filter.drop = '';
+    const events = filteredStatsEvents();
+    syncEvolutionDropFilters(events);
+    holder.innerHTML = s2StatsEvolutionFiltersHtml(events);
+    holder.querySelector(`select[data-evolution-field="${field}"]`)?.focus({preventScroll:true});
+    renderS2StatsEvolutionChart();
+  };
+  window.setFFWSGlobalEvolutionValues = checked => {
+    state.statsEvolution.showValues = checked;
+    renderS2StatsEvolutionChart();
+  };
+  window.setFFWSGlobalEvolutionColor = (team,color) => {
+    const index = state.statsEvolution.teams.indexOf(team);
+    if (index<0 || !/^#[0-9a-f]{6}$/i.test(color)) return;
+    state.statsEvolution.colors[normalize(team)] = color;
+    const series = s2StatsEvolutionChart?.data.datasets[index];
+    if (!series || series.label!==abbreviation(team)) { renderS2StatsEvolutionChart(); return; }
+    series.borderColor = color;
+    series.backgroundColor = color;
+    s2StatsEvolutionChart.update('none');
+  };
   window.updateFFWSGlobalEvolutionTeamArrows = () => {
     const row = document.getElementById('ffws-global-evolution-team-buttons');
     if (!row) return;
@@ -2669,8 +2800,13 @@
     if (current) selected.delete(current); else if (selected.size < 5) selected.add(String(team));
     state.statsEvolution.teams = [...selected];
     document.querySelectorAll('.ffws-global-evolution-team-buttons button').forEach(button => {
-      const text = button.getAttribute('title') || ''; button.classList.toggle('active', state.statsEvolution.teams.some(item => normalize(item) === normalize(text)));
+      const text = button.getAttribute('title') || '';
+      const active = state.statsEvolution.teams.some(item => normalize(item) === normalize(text));
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
     });
+    const colors = document.getElementById('ffws-global-evolution-colors');
+    if (colors) colors.innerHTML = s2StatsEvolutionColorsHtml();
     renderS2StatsEvolutionChart();
   };
   window.setFFWSGlobalStatsEvolutionPlayerMetric = metric => {

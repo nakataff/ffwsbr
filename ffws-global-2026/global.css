@@ -762,6 +762,27 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 
 
 /* Mundial 2026 — full 24-team comparison + searchable 120-player evolution. */
+#anchor-s2-evolucao .ffws-global-panel-head{flex-direction:row;align-items:flex-start}
+.ffws-global-evolution-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.ffws-global-evolution-filters .ffws-global-filter{min-width:0}
+.ffws-global-evolution-settings{position:relative;z-index:5;flex:none}
+.ffws-global-evolution-settings summary{display:grid;place-items:center;list-style:none;width:42px;height:42px;border:1px solid #305170;border-radius:9px;background:#102238;color:#bce9ff;cursor:pointer}
+.ffws-global-evolution-settings summary::-webkit-details-marker{display:none}
+.ffws-global-evolution-settings summary:hover,.ffws-global-evolution-settings[open] summary{border-color:#00c8ff;color:#fff}
+.ffws-global-evolution-settings-panel{position:absolute;inset-inline-end:0;top:calc(100% + 7px);width:min(290px,calc(100vw - 66px));padding:12px;border:1px solid #305170;border-radius:11px;background:#0d1929;box-shadow:0 9px 24px #0008}
+.ffws-global-evolution-settings-panel strong{color:#fff;font-size:.83rem}
+#ffws-global-evolution-colors{display:grid;gap:5px;margin:8px 0 12px}
+#ffws-global-evolution-colors label,.ffws-global-evolution-values{display:flex;align-items:center;justify-content:space-between;gap:9px;color:#d4e8f9;font-size:.8rem}
+#ffws-global-evolution-colors input[type=color]{width:38px;height:32px;flex:none;cursor:pointer;background:#182a40;border:1px solid #305170;border-radius:5px;padding:2px}
+.ffws-global-evolution-values{justify-content:flex-start;border-top:1px solid #28435c;padding-top:10px;cursor:pointer}
+.ffws-global-evolution-values input{accent-color:#00c8ff}
+.ffws-global-evolution-scroll{overflow-x:auto;margin-top:11px;padding-bottom:4px}
+#anchor-s2-evolucao .ffws-global-evolution-canvas-wrap{height:400px}
+#ffws-global-stats-evolution-empty[hidden]{display:none}
+@media(max-width:650px){
+ .ffws-global-evolution-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #anchor-s2-evolucao .ffws-global-evolution-canvas-wrap{height:345px}
+}
 .ffws-global-stats-evolution .ffws-global-evolution-team-carousel{
  display:grid;grid-template-columns:36px minmax(0,1fr) 36px;align-items:center;gap:8px;
  min-width:0;max-width:100%;
