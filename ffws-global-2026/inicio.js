@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261115-fase1-final-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261116-punicao-gundynasty-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
@@ -100,7 +100,9 @@
     const label=stages.find(s=>s[0]===state.stage)[1];
     const options=days.length>1?`<label class="global-start-day">${reset?'Dia da disputa':'Recorte'}<select data-global-start-day>${reset?'':'<option value="">Geral da fase</option>'}${days.map(d=>`<option value="${d.day}" ${String(d.day)===state.day?'selected':''}>Dia ${d.day} · ${date(d.date)}</option>`).join('')}</select></label>`:'';
     const legend=state.stage==='classificatoria'?'1º–18º: Fase 2 · 19º–20º: Repescagem · 21º–24º: Eliminados':state.stage==='segundaFase'?'1º e 2º do dia: Grande Final · Pontuação zerada a cada dia':state.stage==='lastChance'?'1º–4º: Grande Final · Demais: Eliminados':'Champion Rush: ativação em 110 pontos; um Booyah elegível define o campeão';
-    return filters()+`<div class="ffws-global-panel-head"><h2>${label}</h2>${options}</div>${reset?'<p class="global-start-muted">Cada dia tem uma classificação independente. Os dois melhores avançam à final.</p>':''}${rows.length?`<div class="ffws-global-table-wrap"><table class="ffws-global-table global-start-table"><caption class="global-start-sr">Classificação · ${label}${state.day?' · Dia '+state.day:''}</caption><thead><tr><th scope="col">#</th><th scope="col" class="team-col">Equipe</th><th scope="col">PTS</th><th scope="col">K</th><th scope="col" class="hide-mobile">B!</th><th scope="col">Q</th></tr></thead><tbody>${rows.map(r=>{
+    const notice=(phase.penalties||[]).filter(p=>!state.day||String(p.day)===state.day).map(p=>
+      `<p class="ffws-global-penalty-note"><strong>Punição em ${esc(date(p.date))}.</strong> A ${esc(p.team)} perdeu ${Math.abs(p.points)} pontos por ${esc(p.reason)}.</p>`).join('');
+    return filters()+`<div class="ffws-global-panel-head"><h2>${label}</h2>${options}</div>${notice}${reset?'<p class="global-start-muted">Cada dia tem uma classificação independente. Os dois melhores avançam à final.</p>':''}${rows.length?`<div class="ffws-global-table-wrap"><table class="ffws-global-table global-start-table"><caption class="global-start-sr">Classificação · ${label}${state.day?' · Dia '+state.day:''}</caption><thead><tr><th scope="col">#</th><th scope="col" class="team-col">Equipe</th><th scope="col">PTS</th><th scope="col">K</th><th scope="col" class="hide-mobile">B!</th><th scope="col">Q</th></tr></thead><tbody>${rows.map(r=>{
       const p=num(r.position),zone=state.stage==='classificatoria'?(p<=18?'advance':p<=20?'world':'eliminated'):state.stage==='segundaFase'?(p<=2?'final':''):state.stage==='lastChance'?(p<=4?'final':'eliminated'):p===1?'champion':'';
       return `<tr class="ffws-global-row-${zone}"><td class="ffws-global-rank">${p}º</td><td class="team-col">${teamName(meta(r.team))}</td><td class="global-start-points">${fmt(r.points)}</td><td>${fmt(r.kills)}</td><td class="hide-mobile">${fmt(r.booyahs)}</td><td>${fmt(r.matches)}</td></tr>`;
     }).join('')}</tbody></table></div>`:empty('Aguardando resultados','A classificação deste recorte aparece após o cadastro das partidas.')}<p class="global-start-legend">${legend}</p><div class="global-start-under"><small>PTS: pontos · K: abates · B!: Booyahs · Q: quedas</small>${link(paths[state.stage],'Ver tabela completa')}</div>`;

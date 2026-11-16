@@ -234,6 +234,19 @@
   },
   "classificatoria": {
     "finished": true,
+    "penalties": [
+      {
+        "team": "GunDynasty",
+        "teamId": "gundynasty",
+        "points": -15,
+        "date": "2026-11-06",
+        "day": 1,
+        "round": 1,
+        "afterDrop": 6,
+        "reason": "se deixar eliminar de propósito fora da zona segura na 6ª queda",
+        "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/2026/Knockout_Stage/Phase_1"
+      }
+    ],
     "rounds": [
       {
         "day": 1,
@@ -8423,17 +8436,6 @@
         "placementPoints": 153
       },
       {
-        "team": "GunDynasty",
-        "points": 426,
-        "kills": 261,
-        "booyahs": 2,
-        "matches": 36,
-        "lastPlace": 2,
-        "lastPoints": 16,
-        "position": 12,
-        "placementPoints": 165
-      },
-      {
         "team": "xProjekt",
         "points": 419,
         "kills": 283,
@@ -8441,7 +8443,7 @@
         "matches": 36,
         "lastPlace": 6,
         "lastPoints": 30,
-        "position": 13,
+        "position": 12,
         "placementPoints": 136
       },
       {
@@ -8452,8 +8454,20 @@
         "matches": 36,
         "lastPlace": 1,
         "lastPoints": 30,
-        "position": 14,
+        "position": 13,
         "placementPoints": 146
+      },
+      {
+        "team": "GunDynasty",
+        "points": 411,
+        "kills": 261,
+        "booyahs": 2,
+        "matches": 36,
+        "lastPlace": 2,
+        "lastPoints": 16,
+        "penaltyPoints": -15,
+        "position": 14,
+        "placementPoints": 165
       },
       {
         "team": "Bigetron by Vitality",

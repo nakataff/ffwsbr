@@ -3,9 +3,9 @@
 
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
-    stagesUrl: 'ffws-global-2026/stages.json?v=20261115-fase1-final-v1',
+    stagesUrl: 'ffws-global-2026/stages.json?v=20261116-punicao-gundynasty-v1',
     playersUrl: 'ffws-global-2026/players.json?v=20261115-fase1-final-v1',
-    datesUrl: 'ffws-global-2026/dates.json?v=20261115-fase1-final-v1'
+    datesUrl: 'ffws-global-2026/dates.json?v=20261116-punicao-gundynasty-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
   const STAGE_MULTI_PAGES = {
@@ -357,7 +357,12 @@
     });
   }
 
-  function aggregateStageRows(stageKey, events, overall = isOverallStageFilter(stageKey)) {
+  function stagePenalties(stageKey, events) {
+    return (state.stages?.[stageKey]?.penalties || []).filter(penalty => events.some(event =>
+      event.round === penalty.round && event.roundDrop === penalty.afterDrop));
+  }
+
+  function aggregateStageRows(stageKey, events, overall = isOverallStageFilter(stageKey), includePenalties = true) {
     const payload = state.stages?.[stageKey] || {};
     const baseRows = Array.isArray(payload.rows) ? payload.rows : [];
     const map = new Map();
@@ -382,6 +387,10 @@
       if (stageKey === 'segundaFase') row.bonus = number(result.bonus ?? row.bonus);
       if (result.worldQualified) row.worldQualified = true;
     }));
+    if (includePenalties) for (const penalty of stagePenalties(stageKey, events)) {
+      const row = map.get(normalize(penalty.team));
+      if (row?.matches) row.points += penalty.points;
+    }
     const rows = [...map.values()];
     const hasEvents = events.some(event => eventResults(event).length);
     if (stageKey === 'segundaFase' && hasEvents && overall) rows.forEach(row => { row.points += number(row.bonus); });
@@ -414,6 +423,10 @@
       && !stageFilterValues(stageKey, 'drop').length;
   }
 
+  function isFullRoundFilter(stageKey) {
+    return !stageFilterValues(stageKey, 'map').length && !stageFilterValues(stageKey, 'drop').length;
+  }
+
   function filterStageRows(stageKey) {
     const payload = state.stages?.[stageKey] || {};
     const events = filteredStageEvents(stageKey);
@@ -421,7 +434,7 @@
     // Na final, preservar a classificação oficial cadastrada.
     // O provider já coloca o campeão oficial em 1º mesmo quando outra equipe somou mais pontos.
     if ((stageKey === 'final' || (stageKey==='classificatoria'&&payload.finished)) && isOverallStageFilter(stageKey) && rawRows.length) return rawRows.map(row => ({ ...row }));
-    if (stageEvents(stageKey).length) return aggregateStageRows(stageKey, events);
+    if (stageEvents(stageKey).length) return aggregateStageRows(stageKey, events, isOverallStageFilter(stageKey), isFullRoundFilter(stageKey));
     if (rawRows.length){if(stageKey==='segundaFase'&&stageFormat(stageKey).resetEachDay){const periods=stageFilterValues(stageKey,'period');if(periods.length)return rawRows.filter(row=>periods.includes(String(row.day||payload.day||''))).map(row=>({...row}));}return rawRows.map(row=>({...row}));}
     if (stageKey === 'classificatoria') {
       return state.teams.map(team => ({ team: team.name, position: null, points: 0, booyahs: 0, kills: 0, placementPoints: 0, matches: 0 }));
@@ -532,7 +545,12 @@
 
   function renderClassificatoria(rootId){
     const root=document.getElementById(rootId);if(!root)return;
-    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel ffws-global-classification-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação${state.stages?.classificatoria?.finished?" final":""}</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? (isOverallStageFilter('classificatoria') ? phaseOneLegend() : '') + stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
+    const events=filteredStageEvents('classificatoria');
+    const notice=isFullRoundFilter('classificatoria')?stagePenalties('classificatoria',events).map(penalty=>{
+      const date=penalty.date.slice(5).split('-').reverse().join('/');
+      return `<p class="ffws-global-penalty-note"><strong>Punição em ${escapeHtml(date)}.</strong> A ${escapeHtml(penalty.team)} perdeu ${Math.abs(penalty.points)} pontos por ${escapeHtml(penalty.reason)}.</p>`;
+    }).join(''):'';
+    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel ffws-global-classification-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação${state.stages?.classificatoria?.finished?" final":""}</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${events.length ? (isOverallStageFilter('classificatoria') ? phaseOneLegend() : '') + notice + stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
   }
 
   function renderStage(stageKey, rootId, title, subtitle) {

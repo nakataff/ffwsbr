@@ -102,7 +102,7 @@ test('fixture pages link the known teams and replace pending slots only when the
   let second=x.render('segunda-fase');
   const first=second.querySelector('[data-fixture="segundaFase-1"]');
   assert.equal(first.querySelector('h3').textContent,'Rodada 1');
-  const dayOne=['bru','los','fx','p-esports','team-flash','loud','gow','rrq','ag-al','onic','lyon','gundynasty'];
+  const dayOne=['bru','los','fx','p-esports','team-flash','loud','gow','rrq','ag-al','onic','lyon','xprojekt'];
   assert.deepEqual(ids(first),dayOne);
   assert.deepEqual([...second.querySelectorAll('.global-phase-fixture')].map(fixture=>ids(fixture).length),[12,2,2,2]);
   const last=()=>x.render('last-chance').querySelector('[data-fixture="lastChance-1"]');
@@ -119,12 +119,29 @@ test('fixture pages link the known teams and replace pending slots only when the
   const finalDrops=drops(4,dayFour);
   x.api.state.stages.segundaFase.rounds=[...drops(1,dayOne),...finalDrops.slice(0,5)];
   second=x.render('segunda-fase');
-  assert.deepEqual(ids(second.querySelector('[data-fixture="segundaFase-2"]')),['xprojekt','resurrection-esports',...dayOne.slice(2)]);
+  assert.deepEqual(ids(second.querySelector('[data-fixture="segundaFase-2"]')),['resurrection-esports','gundynasty',...dayOne.slice(2)]);
   assert.equal(last().querySelectorAll('.global-phase-fixture-tbd').length,10);
   x.api.state.stages.segundaFase.rounds.push(finalDrops.at(-1));
   const complete=last();
   assert.deepEqual(ids(complete),[...direct,...dayFour.slice(2)]);
   assert.equal(complete.querySelectorAll('.global-phase-fixture-tbd').length,0);
+ }finally{x.w.close()}
+});
+test('GunDynasty penalty updates the official and full-round standings while preserving drops',()=>{
+ const x=ui();try{
+  x.api.state.stages.classificatoria.rounds=structuredClone(stages.classificatoria.rounds);
+  const row=(root,name)=>[...root.querySelectorAll('tbody tr')].find(tr=>tr.textContent.includes(name));
+  const points=(root,name)=>Number(row(root,name).querySelector('.ffws-global-points-col').textContent);
+  let root=x.render('classificatoria');
+  assert.match(root.querySelector('.ffws-global-penalty-note').textContent,/06\/11.*GunDynasty perdeu 15 pontos.*6ª queda/);
+  assert.equal(points(root,'GunDynasty'),411);
+  assert.equal(Number(row(root,'GunDynasty').querySelector('.ffws-global-rank').textContent),14);
+  assert.equal(Number(row(root,'GunDynasty').querySelector('.ffws-global-placement-col').textContent),165);
+  x.w.setFFWSGlobalStageFilter('classificatoria','period','1');
+  assert.equal(points(root,'GunDynasty'),26);
+  x.w.setFFWSGlobalStageFilter('classificatoria','drop','6');
+  assert.equal(points(root,'GunDynasty'),14);
+  assert(!root.querySelector('.ffws-global-penalty-note'));
  }finally{x.w.close()}
 });
 test('groups load once from a static file and a failed or incomplete map cannot invent group membership or block the page',async()=>{

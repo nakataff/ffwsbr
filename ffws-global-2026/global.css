@@ -739,6 +739,7 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 .global-phase-fixture .global-phase-fixture-teams li:last-child .global-knockout-team{border-bottom:1px solid #263a53}
 .global-phase-fixture-tbd{display:grid;place-items:center;border-style:dashed;background:transparent;color:#a4b6ca;font-size:.8rem;font-weight:700}
 .global-phase-fixture-note{margin:0;padding:0 12px 12px;color:#a4b6ca;font-size:.79rem}
+.ffws-global-penalty-note{margin:0 0 12px;padding:8px 11px;border-left:2px solid #d6a45a;background:rgba(214,164,90,.08);color:#e7d4b3;font-size:.79rem;line-height:1.5}
 @media(max-width:960px){.global-phase-fixture:first-child .global-phase-fixture-teams{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:660px){.global-phase-fixtures{grid-template-columns:1fr}.global-phase-fixture .global-phase-fixture-teams,.global-phase-fixture:first-child .global-phase-fixture-teams{grid-template-columns:repeat(2,minmax(0,1fr))}.global-phase-fixture-teams .global-knockout-team{gap:7px;padding:8px;font-size:.82rem}.global-phase-fixture-teams .global-knockout-team img{width:26px;height:26px;flex-basis:26px}}
 @media(max-width:1150px){.global-knockout-group-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

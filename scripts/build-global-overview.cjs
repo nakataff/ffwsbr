@@ -16,7 +16,7 @@ function eventsFor(source, key) {
   });
 }
 const results = event => event.results || event.rows || [];
-function aggregate(events) {
+function aggregate(events, penalties = []) {
   const teams = new Map();
   for (const event of events) for (const r of results(event)) {
     const team = r.team || r.equipe;
@@ -30,6 +30,12 @@ function aggregate(events) {
     row.matches += num(r.matches) || 1;
     row.lastPlace = num(r.position ?? r.posicao) || 99;
     row.lastPoints = num(r.points ?? r.pontos);
+  }
+  for (const penalty of penalties) {
+    const row = teams.get(norm(penalty.team));
+    if (!row || !events.some(e => e.round === penalty.round && e.roundDrop === penalty.afterDrop)) continue;
+    row.points += penalty.points;
+    row.penaltyPoints = (row.penaltyPoints || 0) + penalty.points;
   }
   return [...teams.values()].sort((a,b) => b.points-a.points || b.booyahs-a.booyahs || b.kills-a.kills || a.lastPlace-b.lastPlace || b.lastPoints-a.lastPoints || a.team.localeCompare(b.team,'pt-BR')).map((r,i) => ({...r, position:i+1}));
 }
@@ -115,14 +121,14 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
     const byDay = Object.fromEntries(days.map(day => {
       const entries = events.filter(e=>num(e.day || e.round)===day);
       const fallback = (phase.rows||[]).filter(r=>num(r.day || phase.day)===day);
-      const rows=entries.some(e=>results(e).length)?aggregate(entries):fallback;
+      const rows=entries.some(e=>results(e).length)?aggregate(entries,phase.penalties):fallback;
       const date=schedule.find(r=>num(r.day)===day)?.date;
       if(date&&rows.length)teamDays.push({stage:key,date,teams:rows.map(r=>[idByName.get(norm(r.team)),r.points,r.kills,r.booyahs,r.matches,r.lastPlace||99]).filter(r=>r[0])});
       return [day,compactRows(rows)];
     }));
     // Phase 2 resets every day; never sum its four independent standings.
-    const rows = key==='segundaFase' ? [] : compactRows(phase.rows?.length ? phase.rows : aggregate(events));
-    tables[key] = {finished:!!phase.finished,rows,days:days.map(day=>({day,date:schedule.find(r=>num(r.day)===day)?.date,rows:byDay[day]}))};
+    const rows = key==='segundaFase' ? [] : compactRows(phase.rows?.length ? phase.rows : aggregate(events,phase.penalties));
+    tables[key] = {finished:!!phase.finished,rows,days:days.map(day=>({day,date:schedule.find(r=>num(r.day)===day)?.date,rows:byDay[day]})),...((phase.penalties||[]).length?{penalties:phase.penalties}:{})};
   }
   const roster=(players.players||[]).filter(p=>!p.left && norm(p.rosterStatus)!=='SAIU');
   const sameTeam=(value,t)=>[t.name,t.abbreviation,t.id,t.wikiName].some(alias=>norm(alias)===norm(value));
@@ -155,7 +161,7 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
     const members=roster.filter(p=>sameTeam(p.team,t));
     const statsByStage=Object.fromEntries(keys.map(key=>{
       const events=eventsFor(stages,key).map(e=>({...e,results:results(e).filter(r=>sameTeam(r.team||r.equipe,t))})).filter(e=>e.results.length);
-      const rows=aggregate(events),fallback=compactRows(stages[key]?.rows||[]).find(r=>sameTeam(r.team,t));
+      const rows=aggregate(events,stages[key]?.penalties),fallback=compactRows(stages[key]?.rows||[]).find(r=>sameTeam(r.team,t));
       // Phase 2 totals are descriptive statistics only, never a cumulative standing.
       return [key,rows.length?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,rows[0][k]])):fallback?Object.fromEntries(['points','kills','booyahs','matches'].map(k=>[k,fallback[k]])):null];
     }));

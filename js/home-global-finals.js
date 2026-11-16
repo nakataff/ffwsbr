@@ -173,7 +173,7 @@
   async function loadSchedule(){
     if(typeof fetch!=='function')return;
     try{
-      const paths=['/ffws-global-2026/dates.json?v=20261115-fase1-final-v1','/ffws-global-2026/teams.json?v=20261018-groups-v1','/ffws-global-2026/groups.json?v=20261018-groups-v1'];
+      const paths=['/ffws-global-2026/dates.json?v=20261116-punicao-gundynasty-v1','/ffws-global-2026/teams.json?v=20261018-groups-v1','/ffws-global-2026/groups.json?v=20261018-groups-v1'];
       const [calendar,teamData,groupData]=await Promise.all(paths.map(async path=>{
         const response=await fetch(path,{cache:'no-cache'});
         if(!response.ok)throw Error('Falha ao consultar o calendário do Mundial');

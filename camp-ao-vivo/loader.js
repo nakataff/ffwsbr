@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const PREFIX='cff_public_camp_v1:';
-  const VERSION='20261115-fase1-final-v1';
+  const VERSION='20261116-punicao-gundynasty-v1';
   const status=document.getElementById('cff-camp-load-status');
   const setStatus=text=>{if(status)status.textContent=text;};
   window.__CFF_CAMP_READY__=false;

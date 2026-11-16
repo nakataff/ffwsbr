@@ -221,6 +221,9 @@ correspondem às fontes. Atualize `VERSION` em `inicio.js` e as referências de
 `inicio.js`/`inicio.css` no shell, além da versão do shell em `index.html`.
 
 **Fase 2 tem classificações independentes por dia; não gerar uma tabela acumulada.**
+Ajustes disciplinares do Knockout ficam em `stages.classificatoria.penalties`.
+Os pontos por queda preservam o placar da partida. As tabelas de rodadas completas,
+o acumulado oficial e os pools da Fase 2 usam a pontuação com o desconto.
 A Final preserva a ordem oficial de `stages.final.rows`, pois Champion Rush pode
 ter um campeão com menos pontos que outra equipe. MVP soma por jogador **e equipe**,
 ordenando por abates, dano e assistências. O cronômetro só faz cálculos locais;

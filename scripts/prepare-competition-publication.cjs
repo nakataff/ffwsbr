@@ -61,10 +61,10 @@ function closePhaseOne({stages,dates,teams,groups,players}){
    }
   }
  }
- const standings=overview.aggregate(phase.rounds);
+ const standings=overview.aggregate(phase.rounds,phase.penalties);
  if(standings.length!==24||standings.some(row=>row.matches!==36))throw Error('Fase 1 precisa de 24 equipes com 36 quedas cada');
  phase.finished=true;
- phase.rows=standings.map(row=>({...row,placementPoints:row.points-row.kills}));
+ phase.rows=standings.map(row=>({...row,placementPoints:row.points-row.kills-(row.penaltyPoints||0)}));
  const seeds=standings.map(row=>ids.get(norm(row.team)));
  const pools={'segundaFase-1':seeds.slice(0,12),'segundaFase-2':seeds.slice(12,14),'segundaFase-3':seeds.slice(14,16),'segundaFase-4':seeds.slice(16,18),'lastChance-1':seeds.slice(18,20)};
  dates.rounds.forEach(round=>{if(pools[round.key])round.seededTeams=pools[round.key];});

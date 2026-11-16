@@ -61,6 +61,7 @@ function validate(rec,meta){
 }
 function champion(rec,cp=110){const totals={};for(const d of rec.drops||[]){const id=d.booyah||(rec.participants||[]).find(id=>number(d.placements?.[id])===1);if(id&&(totals[id]||0)>=cp)return id;for(const id of rec.participants||[])totals[id]=(totals[id]||0)+(number(d.points?.[id])||0)}return null}
 function rank(records,meta,final=false){const map=new Map();for(const rec of records)for(const id of rec.participants||[]){if(!map.has(id)){const t=meta.teams.find(t=>t.id===id);map.set(id,{id,name:t?.name||id,logo:t?.logo||'',points:0,kills:0,booyahs:0,matches:0,lastPlace:99,lastPoints:0})}const row=map.get(id);for(const d of rec.drops||[]){const value=number(d.points?.[id]);if(value===null)continue;row.points+=value;row.kills+=number(d.kills?.[id])||0;row.booyahs+=Number(number(d.placements?.[id])===1);row.matches++;row.lastPlace=number(d.placements?.[id])||99;row.lastPoints=value}}
+ for(const penalty of meta.penalties||[]){const row=map.get(penalty.teamId);if(row&&records.some(rec=>rec.key===penalty.roundKey&&rec.drops?.[penalty.afterDrop-1]?.points?.[penalty.teamId]!=null))row.points+=penalty.points;}
  const win=final?champion(records[0]||{},meta.championPoint):null;return [...map.values()].filter(r=>r.matches).sort((a,b)=>win&&(a.id===win||b.id===win)?(a.id===win?-1:1):b.points-a.points||b.booyahs-a.booyahs||b.kills-a.kills||a.lastPlace-b.lastPlace||a.name.localeCompare(b.name,'pt-BR'))}
 function entrants(key,records,meta){
  const round=meta.rounds.find(r=>r.key===key);if(!round)throw Error('Rodada inválida.');
