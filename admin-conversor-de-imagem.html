@@ -2073,6 +2073,7 @@
       }
 
       batchZipBtn.disabled = true;
+      outputFormat.disabled = true;
       const format=selectedOutputFormat();
       setBatchStatus('Gerando '+format.label+' em lote...', '');
       setBatchProgress(0, batchFiles.length);
@@ -2120,6 +2121,7 @@
         console.error(error);
         setBatchStatus(error.message || 'Erro ao gerar o lote.', 'error');
       } finally {
+        outputFormat.disabled = false;
         batchZipBtn.disabled = !batchFiles.length;
       }
     }
