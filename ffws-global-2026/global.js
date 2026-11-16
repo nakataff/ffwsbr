@@ -3,9 +3,9 @@
 
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
-    stagesUrl: 'ffws-global-2026/stages.json?v=20261114-week2-day2-v1',
-    playersUrl: 'ffws-global-2026/players.json?v=20261114-week2-day2-v1',
-    datesUrl: 'ffws-global-2026/dates.json?v=20261016-global-format-v1'
+    stagesUrl: 'ffws-global-2026/stages.json?v=20261115-fase1-final-v1',
+    playersUrl: 'ffws-global-2026/players.json?v=20261115-fase1-final-v1',
+    datesUrl: 'ffws-global-2026/dates.json?v=20261115-fase1-final-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
   const STAGE_MULTI_PAGES = {
@@ -17,7 +17,7 @@
     'ffws-global-2026-equipes', 'ffws-global-2026-datas', 'ffws-global-2026-selecoes',
     'ffws-global-2026-stats', 'ffws-global-2026-notas', 'ffws-global-2026-comparar', 'ffws-global-2026-formato'
   ]);
-  const LIVE_PAGES = new Set(['classificatoria', 'stats'].map(page => PAGE_PREFIX + page));
+  const LIVE_PAGES = new Set(['classificatoria', 'segunda-fase', 'stats'].map(page => PAGE_PREFIX + page));
   const LIVE_TTL = 90000;
   const state = {
     loading: null,
@@ -420,7 +420,7 @@
     const rawRows = Array.isArray(payload.rows) ? payload.rows : [];
     // Na final, preservar a classificação oficial cadastrada.
     // O provider já coloca o campeão oficial em 1º mesmo quando outra equipe somou mais pontos.
-    if (stageKey === 'final' && isOverallStageFilter(stageKey) && rawRows.length) return rawRows.map(row => ({ ...row }));
+    if ((stageKey === 'final' || (stageKey==='classificatoria'&&payload.finished)) && isOverallStageFilter(stageKey) && rawRows.length) return rawRows.map(row => ({ ...row }));
     if (stageEvents(stageKey).length) return aggregateStageRows(stageKey, events);
     if (rawRows.length){if(stageKey==='segundaFase'&&stageFormat(stageKey).resetEachDay){const periods=stageFilterValues(stageKey,'period');if(periods.length)return rawRows.filter(row=>periods.includes(String(row.day||payload.day||''))).map(row=>({...row}));}return rawRows.map(row=>({...row}));}
     if (stageKey === 'classificatoria') {
@@ -532,7 +532,7 @@
 
   function renderClassificatoria(rootId){
     const root=document.getElementById(rootId);if(!root)return;
-    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel ffws-global-classification-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? (isOverallStageFilter('classificatoria') ? phaseOneLegend() : '') + stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero('Knockout • Fase 1','FFWS Global Finals 2026')}${stageNavigation('classificatoria')}<section class="ffws-global-panel ffws-global-classification-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Classificação${state.stages?.classificatoria?.finished?" final":""}</h2><button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('classificatoria')">↻ Atualizar</button></div>${liveStatus()}${stageFilters('classificatoria')}${filteredStageEvents('classificatoria').length ? (isOverallStageFilter('classificatoria') ? phaseOneLegend() : '') + stageTable('classificatoria') : '<p class="ffws-global-format-intro">Nenhuma queda publicada para este recorte.</p>'}</div></section>${phaseOneGroups()}${formatPanel('classificatoria')}</div>`;
   }
 
   function renderStage(stageKey, rootId, title, subtitle) {
@@ -540,9 +540,10 @@
     const root = document.getElementById(rootId);
     if (!root) return;
     const rows = filterStageRows(stageKey);
-    root.innerHTML = `<div class="ffws-global-shell">${hero(title, subtitle)}${stageNavigation(stageKey)}${formatPanel(stageKey)}
+    root.innerHTML = `<div class="ffws-global-shell">${hero(title, subtitle)}${stageNavigation(stageKey)}${stageKey==='segundaFase'?phaseTwoPools():''}${formatPanel(stageKey)}
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner">
-        <div class="ffws-global-panel-head"><div><h2>Classificação</h2><p>Resultados atualizados por rodada, mapa e queda.</p></div><span class="ffws-global-badge">${rows.length} equipes</span></div>
+        <div class="ffws-global-panel-head"><div><h2>Classificação</h2><p>Resultados atualizados por rodada, mapa e queda.</p></div>${stageKey==='segundaFase'?'<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults(\'segunda-fase\')">↻ Atualizar</button>':`<span class="ffws-global-badge">${rows.length} equipes</span>`}</div>
+        ${stageKey==='segundaFase'?liveStatus():''}
         ${stageFilters(stageKey)}${stageTable(stageKey)}
       </div></section></div>`;
   }
@@ -2670,10 +2671,20 @@
     const complete=ids.length===24&&new Set(ids).size===24&&['A','B','C','D'].every(group=>groups[group]?.length===6)&&ids.every(id=>teamsById.has(id));
     return `<section class="ffws-global-panel global-knockout-groups"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Grupos da Fase 1</h2><p>24 equipes · 4 grupos de 6</p></div><a class="global-participants-link" href="/ffws-global-2026/equipes">Ver todos os elencos <span aria-hidden="true">↗</span></a></div><p class="global-knockout-help">Toque em uma equipe para ver seus jogadores e o desempenho no Mundial.</p>${complete?`<div class="global-knockout-group-grid">${['A','B','C','D'].map(group=>`<article class="global-knockout-group" aria-labelledby="global-knockout-group-${group}"><header><h3 id="global-knockout-group-${group}">Grupo ${group}</h3><span>6 equipes</span></header><ul>${groups[group].map(id=>{const team=teamsById.get(id);return `<li><a class="global-knockout-team" href="/ffws-global-2026/equipe?time=${encodeURIComponent(team.id)}"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" data-cff-global-team-logo="${escapeHtml(team.name)}" data-team-date="2026-11-06" width="34" height="34" alt="" onerror="this.onerror=null;this.src='/escudo.webp'"><span class="global-knockout-team-name">${escapeHtml(team.name)}</span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" focusable="false"><path d="M4 12 12 4M4 4h8v8"/></svg></a></li>`}).join('')}</ul></article>`).join('')}</div>`:'<p class="global-knockout-help">Não foi possível mostrar os grupos agora. A página de equipes continua disponível no botão acima.</p>'}</div></section>`;
   }
+  function phaseTwoPools() {
+    const rounds=(state.dates.rounds||[]).filter(round=>round.stage==='segundaFase'&&round.seededTeams?.length);
+    if(!rounds.length)return '';
+    const teams=new Map(state.teams.map(team=>[team.id,team]));
+    return `<section class="ffws-global-panel global-knockout-groups"><div class="ffws-global-panel-inner">
+      <div class="ffws-global-panel-head"><div><h2>Pools confirmados</h2><p>19 a 22/11 · 07h de Brasília · 2 vagas na final por dia</p></div></div>
+      <div class="global-knockout-group-grid">${rounds.map(round=>`<article class="global-knockout-group"><header><h3>Pool ${round.day} · Dia ${round.day}</h3><span>${escapeHtml(round.date.slice(5).split('-').reverse().join('/'))}</span></header><ul>
+        ${round.seededTeams.map(id=>teams.get(id)).filter(Boolean).map(team=>`<li><a class="global-knockout-team" href="/ffws-global-2026/equipe?time=${encodeURIComponent(team.id)}"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt=""><span class="global-knockout-team-name">${escapeHtml(team.name)}</span></a></li>`).join('')}
+        ${round.day>1?'<li class="global-knockout-team">+ 10 equipes do dia anterior</li>':''}</ul></article>`).join('')}</div></div></section>`;
+  }
   function globalEmptyStage(pageId){
     const section=pageId.slice(PAGE_PREFIX.length),key=section==='segunda-fase'?'segundaFase':section==='last-chance'?'lastChance':section,root=document.getElementById(pageId+'-content');if(!root)return;
     const title=stageLabel(key);
-    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${key==='classificatoria'?'<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults(\'classificatoria\')">↻ Atualizar resultados</button>':'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div>${key==='classificatoria'?liveStatus():''}</div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${key==='segundaFase'?phaseTwoPools():''}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${LIVE_PAGES.has(pageId)?`<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('${section}')">↻ Atualizar resultados</button>`:'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div>${LIVE_PAGES.has(pageId)?liveStatus():''}</div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
   }
   window.openFFWSGlobalTeam=function(name){const t=teamByName(name);const url=new URL(location.href);if(t)url.searchParams.set('time',t.id);else url.searchParams.delete('time');if(typeof window.navigate==='function'){history.replaceState(null,'',url);window.navigate(t?'ffws-global-2026-equipe':'ffws-global-2026-equipes');}else location.href=t?'/ffws-global-2026/equipe?time='+encodeURIComponent(t.id):'/ffws-global-2026/equipes';};
   window.openFFWSGlobalPlayer=function(name,team){const target=teamByName(team);const person=(state.players.players||[]).find(p=>normalize(p.name)===normalize(name)&&(target?teamByName(p.team)?.id===target.id:normalize(p.team)===normalize(team)));location.href=person?.id?'/ffws-global-2026/jogador?id='+encodeURIComponent(person.id):'/ffws-global-2026/jogadores?q='+encodeURIComponent(name);};

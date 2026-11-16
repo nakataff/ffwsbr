@@ -19,7 +19,8 @@ test('compact summaries derive from existing sources and retain all 24 teams and
   const summary=output['inicio-resumo.json'];assert.equal(summary.teams.length,24);assert.equal(summary.rounds.length,18);
   for(const team of summary.teams)assert(fs.existsSync(team.logo),team.logo);
   assert(summary.format.classificatoria.description.includes('36 quedas'));assert(summary.format.final.description.includes('110'));
-  assert(Buffer.byteLength(JSON.stringify(summary))<24000);
+  assert(require('node:zlib').gzipSync(JSON.stringify(summary)).length<5000);
+  assert.deepEqual(summary.rounds.filter(round=>round.seededTeams).map(round=>round.seededTeams.length),[12,2,2,2,2]);
   const home=output['home-resumo.json'];
   const latest=summary.tables[home.stage].days.filter(day=>day.rows.length).at(-1);
   assert.equal(home.date,latest.date);

@@ -142,13 +142,13 @@ test('during each round the homepage highlights the matchup and stream instead o
   assert.equal(x.requests.length,3);
  }finally{x.close();}
 });
-test('later phase shows scheduled dates but does not guess team identities; after final it shows results shortcut',async()=>{
+test('Last Chance shows its two known entrants; after final it shows results shortcut',async()=>{
  const x=await mount('2026-11-23T12:00:00-03:00');
  try{
   const d=x.w.document;
   assert.match(d.querySelector('.home-global-match-head').textContent,/LAST CHANCE/);
-  assert.equal(d.querySelectorAll('.home-global-match-team').length,0);
-  assert.match(d.querySelector('.home-global-future-teams').textContent,/definidos pelos resultados/);
+  assert.equal(d.querySelectorAll('.home-global-match-team').length,2);
+  assert.match(d.querySelector('.home-global-future-teams').textContent,/Dia 4 da Fase 2/);
   x.setNow('2026-11-29T12:00:00-03:00');x.tick();
   assert(d.querySelector('.home-global-finished'));
   assert.equal(d.querySelector('.home-global-countdown').hidden,true);

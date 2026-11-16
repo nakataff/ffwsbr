@@ -1,6 +1,6 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "updatedAt": "2026-10-16",
+  "updatedAt": "2026-11-15",
   "event": {
     "name": "FFWS Global Finals 2026",
     "organizer": "Garena",
@@ -328,7 +328,21 @@
       "matches": 6,
       "entrants": "As 12 equipes do Pool 1 (1º ao 12º da Fase 1).",
       "advance": "Top 2 → Grande Final",
-      "remaining": "Outras dez → Dia 2"
+      "remaining": "Outras dez → Dia 2",
+      "seededTeams": [
+        "bru",
+        "los",
+        "fx",
+        "p-esports",
+        "team-flash",
+        "loud",
+        "gow",
+        "rrq",
+        "ag-al",
+        "onic",
+        "lyon",
+        "gundynasty"
+      ]
     },
     {
       "key": "segundaFase-2",
@@ -344,7 +358,11 @@
       "matches": 6,
       "entrants": "Dez equipes do Dia 1 + Pool 2 (13º e 14º da Fase 1).",
       "advance": "Top 2 → Grande Final",
-      "remaining": "Outras dez → Dia 3"
+      "remaining": "Outras dez → Dia 3",
+      "seededTeams": [
+        "xprojekt",
+        "resurrection-esports"
+      ]
     },
     {
       "key": "segundaFase-3",
@@ -360,7 +378,11 @@
       "matches": 6,
       "entrants": "Dez equipes do Dia 2 + Pool 3 (15º e 16º da Fase 1).",
       "advance": "Top 2 → Grande Final",
-      "remaining": "Outras dez → Dia 4"
+      "remaining": "Outras dez → Dia 4",
+      "seededTeams": [
+        "btr",
+        "blue-cheese"
+      ]
     },
     {
       "key": "segundaFase-4",
@@ -376,7 +398,11 @@
       "matches": 6,
       "entrants": "Dez equipes do Dia 3 + Pool 4 (17º e 18º da Fase 1).",
       "advance": "Top 2 → Grande Final",
-      "remaining": "Outras dez → Repescagem"
+      "remaining": "Outras dez → Repescagem",
+      "seededTeams": [
+        "team-inf",
+        "tag"
+      ]
     },
     {
       "key": "lastChance-1",
@@ -390,7 +416,11 @@
       "time": "07h00",
       "teamCount": 12,
       "matches": 10,
-      "unlimitedMatches": false
+      "unlimitedMatches": false,
+      "seededTeams": [
+        "horaa-esports",
+        "stellar-esport"
+      ]
     },
     {
       "key": "final-1",

@@ -31,15 +31,56 @@ function verifyWorld(data,standings){
  if(actual)for(const t of standings.teams)if(actual.get(t.id)!==t.kills)throw Error('Abates não batem com o placar oficial: '+t.id+' / '+reference+' ('+actual.get(t.id)+' x '+t.kills+')');
  return [...played.entries()].map(([key,rows])=>({period:key,drops:rows.size}));
 }
-async function prepare(edition,exportFile){
+function closePhaseOne({stages,dates,teams,groups,players}){
+ const phase=stages.classificatoria;
+ const calendar=dates.rounds.filter(round=>round.stage==='classificatoria');
+ const ids=new Map(teams.teams.map(team=>[norm(team.name),team.id]));
+ const pointTable=[12,9,8,7,6,5,4,3,2,1,0,0];
+ const records=new Map();
+ for(const row of players.entries.filter(row=>row.stage==='classificatoria')){
+  const id=[row.round,row.drop,norm(row.team)].join(':');
+  const entry=records.get(id)||{players:new Set(),kills:0};
+  entry.players.add(row.playerId);
+  entry.kills+=row.kills;
+  records.set(id,entry);
+ }
+ if(phase.rounds.length!==calendar.reduce((total,round)=>total+round.matches,0))throw Error('Fase 1 incompleta');
+ for(const round of calendar){
+  const drops=phase.rounds.filter(drop=>drop.round===round.round&&drop.date===round.date&&drop.day===round.day);
+  const pool=new Set(round.groups.flatMap(group=>groups.groups[group]));
+  if(drops.length!==round.matches||new Set(drops.map(drop=>drop.roundDrop)).size!==round.matches)throw Error('Rodada incompleta: '+round.key);
+  for(const drop of drops){
+   if(drop.roundDrop<1||drop.roundDrop>round.matches||drop.results.length!==12||
+    new Set(drop.results.map(row=>ids.get(norm(row.team)))).size!==12||new Set(drop.results.map(row=>row.position)).size!==12)
+    throw Error('Resultados de equipes inválidos: '+round.key+' Q'+drop.roundDrop);
+   for(const row of drop.results){
+    const entry=records.get([round.round,drop.drop,norm(row.team)].join(':'));
+    if(!pool.has(ids.get(norm(row.team)))||pointTable[row.position-1]+row.kills!==row.points||
+     row.booyah!==Number(row.position===1)||entry?.players.size!==4||entry.kills!==row.kills)
+     throw Error('Placar incompatível: '+round.key+' Q'+drop.roundDrop+' / '+row.team);
+   }
+  }
+ }
+ const standings=overview.aggregate(phase.rounds);
+ if(standings.length!==24||standings.some(row=>row.matches!==36))throw Error('Fase 1 precisa de 24 equipes com 36 quedas cada');
+ phase.finished=true;
+ phase.rows=standings.map(row=>({...row,placementPoints:row.points-row.kills}));
+ const seeds=standings.map(row=>ids.get(norm(row.team)));
+ const pools={'segundaFase-1':seeds.slice(0,12),'segundaFase-2':seeds.slice(12,14),'segundaFase-3':seeds.slice(14,16),'segundaFase-4':seeds.slice(16,18),'lastChance-1':seeds.slice(18,20)};
+ dates.rounds.forEach(round=>{if(pools[round.key])round.seededTeams=pools[round.key];});
+ dates.updatedAt=calendar.at(-1).date;
+}
+async function prepare(edition,exportFile,close=false){
  if(edition==='global'){
   const base='ffws-global-2026/';
   const data=source(base,['stages','dates','teams','groups','players']),standingsDay1=read(base+'standings-day1.json');
   const coverage=verifyWorld(data,standingsDay1);
+  if(close)closePhaseOne(data);
   const views=overview.build({...data,standingsDay1,includeMvp:true});
   const individual=profiles.build({...data,identities:read(base+'player-identities.json'),routes:read('player-data/routes.json').routes});
   const model=camp.build({...data,playerSummary:individual[base+'jogadores-resumo.json']});
-  return {coverage,files:{...prefixed(base,views),...individual,[base+'camp-model.json']:model},generatedFolders:[base+'player-data',base+'player-details']};
+  const official=close?Object.fromEntries(['stages','dates'].map(key=>[base+key+'.json',JSON.stringify(data[key],null,2)+'\n'])):{};
+  return {coverage,files:{...official,...prefixed(base,views),...individual,[base+'camp-model.json']:model},generatedFolders:[base+'player-data',base+'player-details']};
  }
  if(edition==='s1'){
   const base='ffws-br-2026-s1/',data=s1.build({archive:read(base+'players.json'),meta:read(base+'player-meta.json'),teams:read(base+'teams.json')});
@@ -59,7 +100,7 @@ async function prepare(edition,exportFile){
 async function main(){
  const args=process.argv.slice(2),edition=args.find(a=>!a.startsWith('--')),check=args.includes('--check'),write=args.includes('--write');
  if(check&&write)throw Error('Use apenas --check ou --write.');
- const result=await prepare(edition,args.find(a=>a.startsWith('--live='))?.slice(7));
+ const result=await prepare(edition,args.find(a=>a.startsWith('--live='))?.slice(7),args.includes('--close-phase-one'));
  const artifacts=Object.entries(result.files).map(([name,body])=>{
   const content=typeof body==='string'?body:JSON.stringify(body)+'\n',file=path.join(ROOT,name);
   const old=fs.existsSync(file)?fs.readFileSync(file,'utf8'):null;

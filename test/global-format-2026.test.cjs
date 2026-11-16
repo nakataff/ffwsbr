@@ -10,6 +10,7 @@ test('period filters use 12 rounds, four daily qualifiers and one-day later stag
 test('phase one checkboxes accumulate rounds 3 and 4 and combine with map and drop filters',()=>{
  const x=ui('dangerously');
  try{
+  Object.assign(x.api.state.stages.classificatoria,{finished:false,rows:[]});
   x.api.state.stages.classificatoria.rounds=structuredClone(stages.classificatoria.rounds.filter(drop=>drop.round<=4));
   const root=x.render('classificatoria');
   const control=type=>root.querySelector(`[data-global-stage-multi="${type}"] > button`);
@@ -88,12 +89,13 @@ test('featured Mundial menu expands in both sidebars without navigating and high
  }finally{w.close();}
 });
 
-test('phase-one participants follow the official four groups, with readable native team-page links and no guessed later qualifiers',()=>{
+test('phase-one participants follow the official four groups, with readable native team-page links and confirmed second-phase pools',()=>{
  const x=ui();try{
   const root=x.render('classificatoria'),groups=JSON.parse(read('ffws-global-2026/groups.json')).groups;assert.equal(root.querySelectorAll('.global-knockout-group').length,4);assert.equal(root.querySelectorAll('.global-knockout-team').length,24);
   for(const group of root.querySelectorAll('.global-knockout-group')){const key=group.querySelector('h3').textContent.slice(-1);const links=[...group.querySelectorAll('.global-knockout-team')];assert.equal(links.length,6);assert.deepEqual(links.map(link=>new URL(link.href).searchParams.get('time')),groups[key]);for(const link of links){assert.equal(new URL(link.href).pathname,'/ffws-global-2026/equipe');assert(link.querySelector('img'));assert(!link.hasAttribute('onclick'));}}
   assert(root.textContent.includes('Toque em uma equipe'));assert(!root.querySelector('.global-participants-grid'));
-  for(const stage of ['segunda-fase','last-chance','final']){const later=x.render(stage);assert(!later.querySelector('.global-knockout-team'));assert(!later.textContent.includes('Ver os 24 participantes'));}
+  const second=x.render('segunda-fase');assert.match(second.textContent,/Pools confirmados/);assert.deepEqual([...second.querySelectorAll('.global-knockout-group')].map(pool=>pool.querySelectorAll('a').length),[12,2,2,2]);
+  for(const stage of ['last-chance','final']){const later=x.render(stage);assert(!later.querySelector('.global-knockout-team'));assert(!later.textContent.includes('Ver os 24 participantes'));}
  }finally{x.w.close()}
 });
 test('groups load once from a static file and a failed or incomplete map cannot invent group membership or block the page',async()=>{

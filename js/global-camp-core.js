@@ -11,7 +11,7 @@ function translateDrop(drop,convert){const out=clone(drop);for(const key of ['po
 function nativeDrop(drop,meta){return translateDrop(drop,id=>campCode(meta,id))}
 function record(data,key,meta){const canonical=value=>meta?(team(meta,value)?.id||value):value;return{key,participants:(data.selectedTeams||[]).map(canonical),drops:(data.drops||[]).map(d=>translateDrop(d,canonical)),players:clone(data.config?.cffGlobalPlayers||[]),complete:false}}
 function phases(meta){return[
- {id:'classificatoria',name:'Classificatória · Fase 1',teams:24,advance:18,days:6,firstDrops:6,laterDrops:6,unlimited:false,format:'classic',cp:110,lastDate:'2026-11-15',completed:false},
+ {id:'classificatoria',name:'Classificatória · Fase 1',teams:24,advance:18,days:6,firstDrops:6,laterDrops:6,unlimited:false,format:'classic',cp:110,lastDate:'2026-11-15',completed:meta.rounds.some(round=>round.key==='segundaFase-1'&&round.seededTeams?.length===12)},
  {id:'segundaFase',name:'Segunda fase · Pools',teams:18,advance:8,days:4,firstDrops:6,laterDrops:6,unlimited:false,format:'classic',cp:110,lastDate:'2026-11-22',completed:false},
  {id:'lastChance',name:'Repescagem',teams:12,advance:4,days:1,firstDrops:10,laterDrops:10,unlimited:false,format:'classic',cp:110,lastDate:'2026-11-27',completed:false},
  {id:'final',name:'Grande Final',teams:12,advance:0,days:1,firstDrops:1,laterDrops:1,unlimited:true,format:'champion',cp:meta.championPoint,lastDate:'2026-11-28',completed:false}
@@ -66,8 +66,10 @@ function entrants(key,records,meta){
  const round=meta.rounds.find(r=>r.key===key);if(!round)throw Error('Rodada inválida.');
  if(round.stage==='classificatoria')return round.groups.flatMap(g=>meta.groups[g]);
  const phase1=meta.rounds.filter(r=>r.stage==='classificatoria');
- if(phase1.some(r=>!records[r.key]?.complete))throw Error('Confirme as 12 rodadas completas da Fase 1 para calcular os pools.');
- const seeds=rank(phase1.map(r=>records[r.key]),meta).map(t=>t.id);
+ const official=meta.rounds.flatMap(r=>r.seededTeams||[]);
+ const completeSeeds=official.length===20&&new Set(official).size===20&&official.every(id=>meta.teams.some(t=>t.id===id));
+ if(!completeSeeds&&phase1.some(r=>!records[r.key]?.complete))throw Error('Confirme as 12 rodadas completas da Fase 1 para calcular os pools.');
+ const seeds=completeSeeds?official:rank(phase1.map(r=>records[r.key]),meta).map(t=>t.id);
  const pool=day=>day===1?seeds.slice(0,12):seeds.slice(10+day*2-2,10+day*2);
  const second=day=>{if(day===1)return pool(1);const prev=records['segundaFase-'+(day-1)];if(!prev?.complete)throw Error('Confirme o dia anterior da Fase 2 para calcular as vagas.');return [...rank([prev],meta).slice(2).map(t=>t.id),...pool(day)]};
  if(round.stage==='segundaFase')return second(round.day);

@@ -1,6 +1,6 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "updatedAt": "2026-11-14",
+  "updatedAt": "2026-11-15",
   "finished": false,
   "formatConfirmed": true,
   "format": {
@@ -233,7 +233,7 @@
     }
   },
   "classificatoria": {
-    "finished": false,
+    "finished": true,
     "rounds": [
       {
         "day": 1,
@@ -6954,9 +6954,1618 @@
             "booyah": 0
           }
         ]
+      },
+      {
+        "day": 6,
+        "round": 11,
+        "roundDrop": 1,
+        "drop": 1,
+        "date": "2026-11-15",
+        "session": 1,
+        "groups": [
+          "B",
+          "C"
+        ],
+        "time": "04h00",
+        "map": "Nova Terra",
+        "results": [
+          {
+            "team": "LOUD",
+            "position": 1,
+            "kills": 9,
+            "points": 21,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "LYON",
+            "position": 2,
+            "kills": 19,
+            "points": 28,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 3,
+            "kills": 14,
+            "points": 22,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 4,
+            "kills": 11,
+            "points": 18,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 5,
+            "kills": 3,
+            "points": 9,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Horaa Esports",
+            "position": 6,
+            "kills": 11,
+            "points": 16,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "PIRATE ESPORTS",
+            "position": 7,
+            "kills": 6,
+            "points": 10,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "P Esports",
+            "position": 8,
+            "kills": 12,
+            "points": 15,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 9,
+            "kills": 10,
+            "points": 12,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 10,
+            "kills": 4,
+            "points": 5,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 11,
+            "kills": 3,
+            "points": 3,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 12,
+            "kills": 4,
+            "points": 4,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 11,
+        "roundDrop": 2,
+        "drop": 2,
+        "date": "2026-11-15",
+        "session": 1,
+        "groups": [
+          "B",
+          "C"
+        ],
+        "time": "04h00",
+        "map": "Kalahari",
+        "results": [
+          {
+            "team": "RRQ",
+            "position": 1,
+            "kills": 12,
+            "points": 24,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "Horaa Esports",
+            "position": 2,
+            "kills": 7,
+            "points": 16,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 3,
+            "kills": 17,
+            "points": 25,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 4,
+            "kills": 5,
+            "points": 12,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 5,
+            "kills": 20,
+            "points": 26,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 6,
+            "kills": 12,
+            "points": 17,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 7,
+            "kills": 3,
+            "points": 7,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 8,
+            "kills": 18,
+            "points": 21,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "P Esports",
+            "position": 9,
+            "kills": 6,
+            "points": 8,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 10,
+            "kills": 8,
+            "points": 9,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 11,
+            "kills": 4,
+            "points": 4,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "PIRATE ESPORTS",
+            "position": 12,
+            "kills": 4,
+            "points": 4,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 11,
+        "roundDrop": 3,
+        "drop": 3,
+        "date": "2026-11-15",
+        "session": 1,
+        "groups": [
+          "B",
+          "C"
+        ],
+        "time": "04h00",
+        "map": "Purgatório",
+        "results": [
+          {
+            "team": "Blue Cheese",
+            "position": 1,
+            "kills": 9,
+            "points": 21,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "RRQ",
+            "position": 2,
+            "kills": 15,
+            "points": 24,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 3,
+            "kills": 6,
+            "points": 14,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 4,
+            "kills": 10,
+            "points": 17,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "P Esports",
+            "position": 5,
+            "kills": 13,
+            "points": 19,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 6,
+            "kills": 7,
+            "points": 12,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 7,
+            "kills": 14,
+            "points": 18,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 8,
+            "kills": 2,
+            "points": 5,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Horaa Esports",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "PIRATE ESPORTS",
+            "position": 10,
+            "kills": 6,
+            "points": 7,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 11,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 12,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 11,
+        "roundDrop": 4,
+        "drop": 4,
+        "date": "2026-11-15",
+        "session": 1,
+        "groups": [
+          "B",
+          "C"
+        ],
+        "time": "04h00",
+        "map": "Solara",
+        "results": [
+          {
+            "team": "P Esports",
+            "position": 1,
+            "kills": 15,
+            "points": 27,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "LYON",
+            "position": 2,
+            "kills": 11,
+            "points": 20,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 3,
+            "kills": 11,
+            "points": 19,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Horaa Esports",
+            "position": 4,
+            "kills": 5,
+            "points": 12,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 5,
+            "kills": 0,
+            "points": 6,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 6,
+            "kills": 5,
+            "points": 10,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 7,
+            "kills": 6,
+            "points": 10,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 8,
+            "kills": 18,
+            "points": 21,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 10,
+            "kills": 9,
+            "points": 10,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 11,
+            "kills": 4,
+            "points": 4,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "PIRATE ESPORTS",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 11,
+        "roundDrop": 5,
+        "drop": 5,
+        "date": "2026-11-15",
+        "session": 1,
+        "groups": [
+          "B",
+          "C"
+        ],
+        "time": "04h00",
+        "map": "Bermuda",
+        "results": [
+          {
+            "team": "GOW",
+            "position": 1,
+            "kills": 11,
+            "points": 23,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 2,
+            "kills": 16,
+            "points": 25,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 3,
+            "kills": 11,
+            "points": 19,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 4,
+            "kills": 8,
+            "points": 15,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "P Esports",
+            "position": 5,
+            "kills": 10,
+            "points": 16,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 6,
+            "kills": 7,
+            "points": 12,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 7,
+            "kills": 8,
+            "points": 12,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 8,
+            "kills": 18,
+            "points": 21,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "PIRATE ESPORTS",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 10,
+            "kills": 1,
+            "points": 2,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 11,
+            "kills": 1,
+            "points": 1,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Horaa Esports",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 11,
+        "roundDrop": 6,
+        "drop": 6,
+        "date": "2026-11-15",
+        "session": 1,
+        "groups": [
+          "B",
+          "C"
+        ],
+        "time": "04h00",
+        "map": "Nova Terra",
+        "results": [
+          {
+            "team": "Resurrection Esports",
+            "position": 1,
+            "kills": 18,
+            "points": 30,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "P Esports",
+            "position": 2,
+            "kills": 12,
+            "points": 21,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Horaa Esports",
+            "position": 3,
+            "kills": 7,
+            "points": 15,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 4,
+            "kills": 11,
+            "points": 18,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 5,
+            "kills": 17,
+            "points": 23,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 6,
+            "kills": 25,
+            "points": 30,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 7,
+            "kills": 7,
+            "points": 11,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 8,
+            "kills": 3,
+            "points": 6,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 9,
+            "kills": 2,
+            "points": 4,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 10,
+            "kills": 1,
+            "points": 2,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "PIRATE ESPORTS",
+            "position": 11,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 12,
+        "roundDrop": 1,
+        "drop": 7,
+        "date": "2026-11-15",
+        "session": 2,
+        "groups": [
+          "A",
+          "D"
+        ],
+        "time": "09h00",
+        "map": "Bermuda",
+        "results": [
+          {
+            "team": "GunDynasty",
+            "position": 1,
+            "kills": 14,
+            "points": 26,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "Team INF",
+            "position": 2,
+            "kills": 18,
+            "points": 27,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "TSG Pros",
+            "position": 3,
+            "kills": 5,
+            "points": 13,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 4,
+            "kills": 7,
+            "points": 14,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 5,
+            "kills": 15,
+            "points": 21,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "ParadoX Gaming",
+            "position": 6,
+            "kills": 3,
+            "points": 8,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "All Gamers Global",
+            "position": 7,
+            "kills": 4,
+            "points": 8,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 8,
+            "kills": 7,
+            "points": 10,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Stellar Esport",
+            "position": 9,
+            "kills": 5,
+            "points": 7,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 10,
+            "kills": 1,
+            "points": 2,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Total Winner Esports",
+            "position": 11,
+            "kills": 6,
+            "points": 6,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 12,
+        "roundDrop": 2,
+        "drop": 8,
+        "date": "2026-11-15",
+        "session": 2,
+        "groups": [
+          "A",
+          "D"
+        ],
+        "time": "09h00",
+        "map": "Kalahari",
+        "results": [
+          {
+            "team": "LOS",
+            "position": 1,
+            "kills": 19,
+            "points": 31,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "All Gamers Global",
+            "position": 2,
+            "kills": 20,
+            "points": 29,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Total Winner Esports",
+            "position": 3,
+            "kills": 5,
+            "points": 13,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 4,
+            "kills": 13,
+            "points": 20,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 5,
+            "kills": 10,
+            "points": 16,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "TSG Pros",
+            "position": 6,
+            "kills": 8,
+            "points": 13,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 7,
+            "kills": 9,
+            "points": 13,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Stellar Esport",
+            "position": 8,
+            "kills": 6,
+            "points": 9,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 10,
+            "kills": 2,
+            "points": 3,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "ParadoX Gaming",
+            "position": 11,
+            "kills": 1,
+            "points": 1,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 12,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 12,
+        "roundDrop": 3,
+        "drop": 9,
+        "date": "2026-11-15",
+        "session": 2,
+        "groups": [
+          "A",
+          "D"
+        ],
+        "time": "09h00",
+        "map": "Purgatório",
+        "results": [
+          {
+            "team": "All Gamers Global",
+            "position": 1,
+            "kills": 28,
+            "points": 40,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 2,
+            "kills": 10,
+            "points": 19,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 3,
+            "kills": 11,
+            "points": 19,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 4,
+            "kills": 7,
+            "points": 14,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "TSG Pros",
+            "position": 5,
+            "kills": 6,
+            "points": 12,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 6,
+            "kills": 12,
+            "points": 17,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Stellar Esport",
+            "position": 7,
+            "kills": 2,
+            "points": 6,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 8,
+            "kills": 13,
+            "points": 16,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 9,
+            "kills": 4,
+            "points": 6,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 10,
+            "kills": 5,
+            "points": 6,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Total Winner Esports",
+            "position": 11,
+            "kills": 4,
+            "points": 4,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "ParadoX Gaming",
+            "position": 12,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 12,
+        "roundDrop": 4,
+        "drop": 10,
+        "date": "2026-11-15",
+        "session": 2,
+        "groups": [
+          "A",
+          "D"
+        ],
+        "time": "09h00",
+        "map": "Nova Terra",
+        "results": [
+          {
+            "team": "ParadoX Gaming",
+            "position": 1,
+            "kills": 13,
+            "points": 25,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "LOS",
+            "position": 2,
+            "kills": 19,
+            "points": 28,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 3,
+            "kills": 16,
+            "points": 24,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Stellar Esport",
+            "position": 4,
+            "kills": 2,
+            "points": 9,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "TSG Pros",
+            "position": 5,
+            "kills": 5,
+            "points": 11,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 6,
+            "kills": 12,
+            "points": 17,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 7,
+            "kills": 5,
+            "points": 9,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 8,
+            "kills": 6,
+            "points": 9,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Total Winner Esports",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 10,
+            "kills": 11,
+            "points": 12,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 11,
+            "kills": 6,
+            "points": 6,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "All Gamers Global",
+            "position": 12,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 12,
+        "roundDrop": 5,
+        "drop": 11,
+        "date": "2026-11-15",
+        "session": 2,
+        "groups": [
+          "A",
+          "D"
+        ],
+        "time": "09h00",
+        "map": "Solara",
+        "results": [
+          {
+            "team": "Buriram United Esports",
+            "position": 1,
+            "kills": 16,
+            "points": 28,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "LOS",
+            "position": 2,
+            "kills": 16,
+            "points": 25,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 3,
+            "kills": 25,
+            "points": 33,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "ParadoX Gaming",
+            "position": 4,
+            "kills": 1,
+            "points": 8,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "TSG Pros",
+            "position": 5,
+            "kills": 6,
+            "points": 12,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Total Winner Esports",
+            "position": 6,
+            "kills": 11,
+            "points": 16,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 7,
+            "kills": 10,
+            "points": 14,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 8,
+            "kills": 12,
+            "points": 15,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 9,
+            "kills": 1,
+            "points": 3,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Stellar Esport",
+            "position": 10,
+            "kills": 0,
+            "points": 1,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "All Gamers Global",
+            "position": 11,
+            "kills": 3,
+            "points": 3,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "round": 12,
+        "roundDrop": 6,
+        "drop": 12,
+        "date": "2026-11-15",
+        "session": 2,
+        "groups": [
+          "A",
+          "D"
+        ],
+        "time": "09h00",
+        "map": "Kalahari",
+        "results": [
+          {
+            "team": "Stellar Esport",
+            "position": 1,
+            "kills": 7,
+            "points": 19,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "GunDynasty",
+            "position": 2,
+            "kills": 7,
+            "points": 16,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "TSG Pros",
+            "position": 3,
+            "kills": 2,
+            "points": 10,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 4,
+            "kills": 26,
+            "points": 33,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 5,
+            "kills": 13,
+            "points": 19,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 6,
+            "kills": 5,
+            "points": 10,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 7,
+            "kills": 2,
+            "points": 6,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Total Winner Esports",
+            "position": 8,
+            "kills": 5,
+            "points": 8,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 9,
+            "kills": 8,
+            "points": 10,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "All Gamers Global",
+            "position": 10,
+            "kills": 4,
+            "points": 5,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 11,
+            "kills": 4,
+            "points": 4,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "ParadoX Gaming",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
       }
     ],
-    "rows": []
+    "rows": [
+      {
+        "team": "Buriram United Esports",
+        "points": 647,
+        "kills": 396,
+        "booyahs": 11,
+        "matches": 36,
+        "lastPlace": 6,
+        "lastPoints": 10,
+        "position": 1,
+        "placementPoints": 251
+      },
+      {
+        "team": "LOS",
+        "points": 636,
+        "kills": 400,
+        "booyahs": 6,
+        "matches": 36,
+        "lastPlace": 9,
+        "lastPoints": 10,
+        "position": 2,
+        "placementPoints": 236
+      },
+      {
+        "team": "FLUXO W7M",
+        "points": 633,
+        "kills": 410,
+        "booyahs": 6,
+        "matches": 36,
+        "lastPlace": 10,
+        "lastPoints": 2,
+        "position": 3,
+        "placementPoints": 223
+      },
+      {
+        "team": "P Esports",
+        "points": 599,
+        "kills": 394,
+        "booyahs": 7,
+        "matches": 36,
+        "lastPlace": 2,
+        "lastPoints": 21,
+        "position": 4,
+        "placementPoints": 205
+      },
+      {
+        "team": "Team Flash",
+        "points": 574,
+        "kills": 386,
+        "booyahs": 2,
+        "matches": 36,
+        "lastPlace": 4,
+        "lastPoints": 33,
+        "position": 5,
+        "placementPoints": 188
+      },
+      {
+        "team": "LOUD",
+        "points": 564,
+        "kills": 331,
+        "booyahs": 6,
+        "matches": 36,
+        "lastPlace": 5,
+        "lastPoints": 23,
+        "position": 6,
+        "placementPoints": 233
+      },
+      {
+        "team": "GOW",
+        "points": 551,
+        "kills": 333,
+        "booyahs": 5,
+        "matches": 36,
+        "lastPlace": 4,
+        "lastPoints": 18,
+        "position": 7,
+        "placementPoints": 218
+      },
+      {
+        "team": "RRQ",
+        "points": 527,
+        "kills": 303,
+        "booyahs": 5,
+        "matches": 36,
+        "lastPlace": 9,
+        "lastPoints": 4,
+        "position": 8,
+        "placementPoints": 224
+      },
+      {
+        "team": "All Gamers Global",
+        "points": 501,
+        "kills": 310,
+        "booyahs": 5,
+        "matches": 36,
+        "lastPlace": 10,
+        "lastPoints": 5,
+        "position": 9,
+        "placementPoints": 191
+      },
+      {
+        "team": "ONIC",
+        "points": 488,
+        "kills": 309,
+        "booyahs": 2,
+        "matches": 36,
+        "lastPlace": 11,
+        "lastPoints": 4,
+        "position": 10,
+        "placementPoints": 179
+      },
+      {
+        "team": "LYON",
+        "points": 486,
+        "kills": 333,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 12,
+        "lastPoints": 0,
+        "position": 11,
+        "placementPoints": 153
+      },
+      {
+        "team": "GunDynasty",
+        "points": 426,
+        "kills": 261,
+        "booyahs": 2,
+        "matches": 36,
+        "lastPlace": 2,
+        "lastPoints": 16,
+        "position": 12,
+        "placementPoints": 165
+      },
+      {
+        "team": "xProjekt",
+        "points": 419,
+        "kills": 283,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 6,
+        "lastPoints": 30,
+        "position": 13,
+        "placementPoints": 136
+      },
+      {
+        "team": "Resurrection Esports",
+        "points": 411,
+        "kills": 265,
+        "booyahs": 3,
+        "matches": 36,
+        "lastPlace": 1,
+        "lastPoints": 30,
+        "position": 14,
+        "placementPoints": 146
+      },
+      {
+        "team": "Bigetron by Vitality",
+        "points": 368,
+        "kills": 203,
+        "booyahs": 0,
+        "matches": 36,
+        "lastPlace": 8,
+        "lastPoints": 6,
+        "position": 15,
+        "placementPoints": 165
+      },
+      {
+        "team": "Blue Cheese",
+        "points": 365,
+        "kills": 227,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 7,
+        "lastPoints": 11,
+        "position": 16,
+        "placementPoints": 138
+      },
+      {
+        "team": "Team INF",
+        "points": 362,
+        "kills": 213,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 5,
+        "lastPoints": 19,
+        "position": 17,
+        "placementPoints": 149
+      },
+      {
+        "team": "Team Apex Gaming",
+        "points": 360,
+        "kills": 227,
+        "booyahs": 2,
+        "matches": 36,
+        "lastPlace": 7,
+        "lastPoints": 6,
+        "position": 18,
+        "placementPoints": 133
+      },
+      {
+        "team": "Horaa Esports",
+        "points": 334,
+        "kills": 178,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 3,
+        "lastPoints": 15,
+        "position": 19,
+        "placementPoints": 156
+      },
+      {
+        "team": "Stellar Esport",
+        "points": 317,
+        "kills": 174,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 1,
+        "lastPoints": 19,
+        "position": 20,
+        "placementPoints": 143
+      },
+      {
+        "team": "TSG Pros",
+        "points": 315,
+        "kills": 172,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 3,
+        "lastPoints": 10,
+        "position": 21,
+        "placementPoints": 143
+      },
+      {
+        "team": "ParadoX Gaming",
+        "points": 277,
+        "kills": 153,
+        "booyahs": 2,
+        "matches": 36,
+        "lastPlace": 12,
+        "lastPoints": 0,
+        "position": 22,
+        "placementPoints": 124
+      },
+      {
+        "team": "Total Winner Esports",
+        "points": 275,
+        "kills": 157,
+        "booyahs": 1,
+        "matches": 36,
+        "lastPlace": 8,
+        "lastPoints": 8,
+        "position": 23,
+        "placementPoints": 118
+      },
+      {
+        "team": "PIRATE ESPORTS",
+        "points": 219,
+        "kills": 132,
+        "booyahs": 0,
+        "matches": 36,
+        "lastPlace": 11,
+        "lastPoints": 0,
+        "position": 24,
+        "placementPoints": 87
+      }
+    ]
   },
   "segundaFase": {
     "finished": false,

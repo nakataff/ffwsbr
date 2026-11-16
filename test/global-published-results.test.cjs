@@ -9,7 +9,7 @@ const makeRound=(key,kills)=>{
 };
 const fixture={'classificatoria-1':makeRound('classificatoria-1',7),'classificatoria-2':makeRound('classificatoria-2',2)};
 test('Classificatória and Stats share published scores, preserve session filters, and do not invent individual data',async()=>{
- const body=['classificatoria','stats'].map(page=>`<section class="page" id="ffws-global-2026-${page}"><div id="ffws-global-2026-${page}-content"></div></section>`).join('');
+ const body=['classificatoria','segunda-fase','stats'].map(page=>`<section class="page" id="ffws-global-2026-${page}"><div id="ffws-global-2026-${page}-content"></div></section>`).join('');
  const w=new JSDOM(body,{url:'https://centralfreefire.com.br/index.html',runScripts:'outside-only'}).window;
  let calls=0,fail=false,published=process.env.CFF_WORLD_LIVE_FIXTURE?JSON.parse(fs.readFileSync(process.env.CFF_WORLD_LIVE_FIXTURE)):fixture;
  try{
@@ -17,7 +17,7 @@ test('Classificatória and Stats share published scores, preserve session filter
   w.requestAnimationFrame=()=>0;
   w.fetch=async url=>{const path=String(url);if(path.includes('fixture.invalid')){calls++;assert.match(path,/\/ffwsLive\/global-2026\/rounds\.json$/);return {ok:!fail,json:async()=>published};}
    const name=path.split('/').at(-1).split('.')[0],data=json(name);
-   if(name==='stages')data.classificatoria.rounds=[];
+   if(name==='stages')Object.assign(data.classificatoria,{rounds:[],rows:[],finished:false});
    return {ok:true,json:async()=>data};
   };
   const source=fs.readFileSync('ffws-global-2026/global.js','utf8').replace("  if (document.readyState === 'loading')","  window.__resultTest={state,loadData,loadLiveResults,stageEvents,renderPage,aggregateStatsTeams,statsStageEvents,statsTeamStandings};\n  if (document.readyState === 'loading')");
@@ -91,7 +91,7 @@ test('Classificatória and Stats share published scores, preserve session filter
    // and a newer live-only round still extends the static archive.
    api.state.stages=json('stages');
    const standings=api.statsTeamStandings({stage:'classificatoria',days:['1'],maps:['Bermuda']});
-   assert.equal(standings.FLUXOW7M.position,2,'day and map filters do not change the official phase table');
+   assert.equal(standings.FLUXOW7M.position,3,'day and map filters do not change the official phase table');
    assert.equal(Object.keys(api.statsTeamStandings({stage:'geral',days:[]})).length,0);
    assert.equal(Object.keys(api.statsTeamStandings({stage:'segundaFase',days:['1','2']})).length,0);
    api.state.stages.final.rows=[{team:'LOUD',position:1,points:125},{team:'LOS',position:2,points:145}];
@@ -100,13 +100,14 @@ test('Classificatória and Stats share published scores, preserve session filter
    assert.equal(officialDrops,api.state.stages.classificatoria.rounds.length);
    const archived=api.stageEvents('classificatoria')[0];
    assert.equal(archived.results.find(row=>row.team==='LOUD').points,22);
-   const nextRound=Math.max(...api.state.stages.classificatoria.rounds.map(r=>r.round))+1;
-   const nextKey='classificatoria-'+nextRound;
+   const nextKey='segundaFase-1';
    published={...published,[nextKey]:makeRound(nextKey,7)};
    await api.loadLiveResults(true);
    const merged=api.stageEvents('classificatoria');
-   assert.equal(merged.length,officialDrops+1);
-   assert.equal(merged.at(-1).round,nextRound);
+   assert.equal(merged.length,officialDrops);
+   assert.equal(api.stageEvents('segundaFase').length,1);
+   api.renderPage('ffws-global-2026-segunda-fase');
+   assert.match(d.querySelector('#ffws-global-2026-segunda-fase-content').textContent,/Pools confirmados/);
    assert.equal(merged[0],archived);
   }
   fail=true;const count=api.stageEvents('classificatoria').length;

@@ -22,6 +22,7 @@ LOUD.BZP loud-bzp10
 LOUD.GUAXA loud-guaxa7
 LOUD.NICKZ loud-nickz7
 LYON.DELLA lyon-soydella
+LYON.HAAXSZ lyon-haax
 ONIC.PUTRA onic-putraxx
 PRT.FLAMEX77 pe-flamex
 RES.DAAFIQ20 resurrection-esports-daafiq

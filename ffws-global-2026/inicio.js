@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261114-week2-day2-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261115-fase1-final-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
@@ -69,6 +69,14 @@
       return `<details class="global-start-roster"><summary>${teamName(t)}<span aria-hidden="true">⌄</span></summary><div>${players.length?players.map(p=>`<p><strong>${playerFlag(p)}${p.id?`<a href="/ffws-global-2026/jogador?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>`:esc(p.name)}</strong><small>${esc(({RUSH:'Rush',SUP:'Suporte',GRAN:'Granadeiro','3':'3º homem'})[p.role]||p.role||'Jogador')}${p.captain?' · Capitão':''}</small></p>`).join(''):'<p class="global-start-muted">Elenco ainda não cadastrado para este Mundial.</p>'}<a class="global-start-link" href="${BASE}equipe?time=${esc(t.id)}">Ver equipe e estatísticas ↗</a></div></details>`;
     }).join('')}</div></article>`;
   }
+  function seededMatchup(round) {
+    if (!round.seededTeams?.length) return '<p class="global-start-muted">Os participantes serão definidos pelos resultados das etapas anteriores.</p>';
+    const teams=round.seededTeams.map(id=>summary.teams.find(team=>team.id===id)).filter(Boolean);
+    const card=(heading,items)=>`<article class="global-start-group"><h3>${esc(heading)}</h3><div>${items.map(t=>
+      `<a class="global-start-fixture-team" href="${BASE}equipe?time=${esc(t.id)}">${teamName(t)}</a>`).join('')}</div></article>`;
+    return teams.length===12?`<div class="global-start-matchup">${card('Pool 1 · 1º ao 6º',teams.slice(0,6))}${card('Pool 1 · 7º ao 12º',teams.slice(6))}</div>`:
+      `${card(round.stage==='segundaFase'?'Entram no Dia '+round.day:'Vagas da Fase 1',teams)}<p class="global-start-muted">${round.stage==='lastChance'?'As outras 10 equipes sairão do Dia 4 da Fase 2.':'As outras 10 equipes serão definidas no dia anterior da Fase 2.'}</p>`;
+  }
   function tick() {
     if (!summary || document.hidden || !document.getElementById('ffws-global-2026-inicio')?.classList.contains('active')) return;
     const now=Date.now(),i=summary.rounds.findIndex((r,index)=>now<endOf(r,index)),r=summary.rounds[i],started=r&&now>=startOf(r);
@@ -77,7 +85,7 @@
       fixtureKey=key;
       const el=query('#global-start-next');
       if (!r) {el.innerHTML=`<h2 id="global-start-next-title">Calendário encerrado</h2><p class="global-start-muted">Confira os resultados e a classificação nas abas abaixo.</p>${link('datas','Ver calendário')}`;return;}
-      el.innerHTML=`<div class="ffws-global-panel-head"><div><div class="ffws-global-kicker">${started?'No horário programado':'Próximos jogos'}</div><h2 id="global-start-next-title">${r.groups?'Grupo '+r.groups.join(' × Grupo '):stages.find(s=>s[0]===r.stage)?.[1]}</h2><p>${esc(r.label)} · ${date(r.date)} · ${esc(r.time24)} (Brasília)</p></div><span class="ffws-global-badge">${r.matches?r.matches+' quedas':'Champion Rush'}</span></div>${started?'<p class="global-start-muted">Rodada no horário previsto. A duração é estimada; confirme a transmissão no canal oficial.</p>':'<p class="global-start-countdown" role="timer" aria-label="Contagem para a próxima rodada"></p>'}${r.groups?`<div class="global-start-matchup">${r.groups.map(g=>groupCard(g,true)).join('')}</div>`:'<p class="global-start-muted">Os participantes serão definidos pelos resultados das etapas anteriores.</p>'}<div class="global-start-under"><a class="global-start-link global-start-watch" href="https://www.youtube.com/@ffesportsbr/live" target="_blank" rel="noopener noreferrer">▶ Assistir no FF Esports Brasil</a>${link('datas','Calendário e confrontos')}</div><div class="global-start-next-rounds">${summary.rounds.slice(i+1,i+4).map(next=>`<a href="${BASE}datas"><span>${next.groups?'Grupos '+next.groups.join(' × '):stages.find(s=>s[0]===next.stage)?.[1]}</span><small>${date(next.date)} · ${next.time24}</small></a>`).join('')}</div>`;
+      el.innerHTML=`<div class="ffws-global-panel-head"><div><div class="ffws-global-kicker">${started?'No horário programado':'Próximos jogos'}</div><h2 id="global-start-next-title">${r.groups?'Grupo '+r.groups.join(' × Grupo '):stages.find(s=>s[0]===r.stage)?.[1]}</h2><p>${esc(r.label)} · ${date(r.date)} · ${esc(r.time24)} (Brasília)</p></div><span class="ffws-global-badge">${r.matches?r.matches+' quedas':'Champion Rush'}</span></div>${started?'<p class="global-start-muted">Rodada no horário previsto. A duração é estimada; confirme a transmissão no canal oficial.</p>':'<p class="global-start-countdown" role="timer" aria-label="Contagem para a próxima rodada"></p>'}${r.groups?`<div class="global-start-matchup">${r.groups.map(g=>groupCard(g,true)).join('')}</div>`:seededMatchup(r)}<div class="global-start-under"><a class="global-start-link global-start-watch" href="https://www.youtube.com/@ffesportsbr/live" target="_blank" rel="noopener noreferrer">▶ Assistir no FF Esports Brasil</a>${link('datas','Calendário e confrontos')}</div><div class="global-start-next-rounds">${summary.rounds.slice(i+1,i+4).map(next=>`<a href="${BASE}datas"><span>${next.groups?'Grupos '+next.groups.join(' × '):stages.find(s=>s[0]===next.stage)?.[1]}</span><small>${date(next.date)} · ${next.time24}</small></a>`).join('')}</div>`;
     }
     if (r&&!started) {
       const total=Math.max(0,Math.floor((startOf(r)-now)/1000)),days=Math.floor(total/86400),hours=Math.floor(total%86400/3600),minutes=Math.floor(total%3600/60),seconds=total%60;

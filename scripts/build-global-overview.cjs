@@ -29,8 +29,9 @@ function aggregate(events) {
     row.booyahs += num(r.booyahs ?? r.booyah ?? (num(r.position ?? r.posicao) === 1 ? 1 : 0));
     row.matches += num(r.matches) || 1;
     row.lastPlace = num(r.position ?? r.posicao) || 99;
+    row.lastPoints = num(r.points ?? r.pontos);
   }
-  return [...teams.values()].sort((a,b) => b.points-a.points || b.booyahs-a.booyahs || b.kills-a.kills || a.lastPlace-b.lastPlace || a.team.localeCompare(b.team,'pt-BR')).map((r,i) => ({...r, position:i+1}));
+  return [...teams.values()].sort((a,b) => b.points-a.points || b.booyahs-a.booyahs || b.kills-a.kills || a.lastPlace-b.lastPlace || b.lastPoints-a.lastPoints || a.team.localeCompare(b.team,'pt-BR')).map((r,i) => ({...r, position:i+1}));
 }
 function compactRows(rows) {
   return rows.filter(r => !r.placeholder && num(r.matches) > 0).map((r,i) => ({team:r.team, position:num(r.position)||i+1, points:num(r.points), kills:num(r.kills), booyahs:num(r.booyahs), matches:num(r.matches)}));
@@ -167,7 +168,7 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
   return {
     ...(home?{'home-resumo.json':home}:{}),
     'equipes-resumo.json':{updatedAt,teams:teamProfiles},
-    'inicio-resumo.json':{tournament:stages.tournament,updatedAt,finished:!!stages.finished,format,teams:metadata,tables,rounds:dates.rounds.map(r=>({key:r.key,stage:r.stage,day:r.day,label:r.label,date:r.date,time24:r.time24,groups:r.groups,matches:r.matches}))},
+    'inicio-resumo.json':{tournament:stages.tournament,updatedAt,finished:!!stages.finished,format,teams:metadata,tables,rounds:dates.rounds.map(r=>({key:r.key,stage:r.stage,day:r.day,label:r.label,date:r.date,time24:r.time24,groups:r.groups,matches:r.matches,seededTeams:r.seededTeams}))},
     'inicio-mvp-top10.json':{updatedAt,top10},
     'inicio-elencos.json':{updatedAt,teams:squads},
     'selecoes-resumo.json':{...selectionSummary(roster,entries,metadata,dates.rounds,standingsDay1,stages),teamDays},
@@ -184,4 +185,4 @@ if (require.main === module) {
     console.log(name+': '+Buffer.byteLength(text)+' bytes');
   }
 }
-module.exports={build};
+module.exports={build,aggregate};

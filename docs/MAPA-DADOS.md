@@ -135,6 +135,10 @@ node scripts/prepare-competition-publication.cjs global --write
 
 O preparo gera também `ffws-global-2026/home-resumo.json`, com até seis equipes
 e seis jogadores por métrica. Publique os JSONs, mantendo o XLSX fora do site.
+No encerramento da Fase 1, rode a preparação com `global --close-phase-one --write`.
+O comando valida todas as quedas e confere os abates por equipe com os registros
+individuais. A partir da tabela final, grava os pools para a home, o calendário
+e o modelo do Camp ao Vivo.
 
 Para MVP e Seleções, as posições da planilha `RUSHER`, `RIFLER` e `SUPPORT`
 contam como Rush, `BOMBER` como Granadeiro e `SNIPER` como Suporte. Joker
