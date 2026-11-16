@@ -1,0 +1,46 @@
+name: Confere registros para recuperar interacoes
+on:
+  push:
+    branches:
+      - codex/diagnostico-interacoes-20261116
+permissions: {}
+jobs:
+  counts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Consultar somente totais do periodo afetado
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          cff_recovery_check=$(mktemp -d)
+          cd "$cff_recovery_check"
+          cat > wrangler.jsonc <<'CONF'
+          {"name":"cff-community-diag-20261116","main":"worker.js","compatibility_date":"2026-09-14","d1_databases":[{"binding":"DB","database_name":"cff-instagram-community","database_id":"48e14987-34f9-4591-874f-c45c513dcb39","remote":true}]}
+          CONF
+          cat > worker.js <<'NODE'
+          export default {async fetch(request,{DB}){
+            const start=Date.parse('2026-11-15T00:00:00-03:00'),resumed=Date.parse('2026-11-16T15:25:53-03:00');
+            const comments=await DB.prepare("WITH candidate AS (SELECT json_extract(payload,'$.commentId') comment_id,json_extract(payload,'$.mediaId') media_id,json_extract(payload,'$.eventAt') event_at,json_extract(payload,'$.username') username FROM raw_events WHERE id>(SELECT COALESCE(MAX(id),0)-7500 FROM raw_events) AND kind='comment_rejected_media_age' AND received_at>=? AND received_at<? AND json_valid(payload) AND COALESCE(json_extract(payload,'$.mediaPublishedAt'),0)=0) SELECT STRFTIME('%Y-%m-%d',event_at/1000,'unixepoch','-3 hours') day,COUNT(*) deliveries,COUNT(DISTINCT CASE WHEN LENGTH(comment_id)>0 AND LENGTH(media_id)>0 THEN comment_id END) distinct_with_ids,COUNT(DISTINCT CASE WHEN LENGTH(username)>0 AND LENGTH(media_id)>0 THEN LOWER(username)||':'||media_id END) commenter_post_pairs,COUNT(DISTINCT NULLIF(media_id,'')) posts FROM candidate GROUP BY 1 ORDER BY 1").bind(start,resumed).all();
+            const stories=await DB.prepare("SELECT week_key,status,COUNT(*) total FROM story_reviews WHERE status IN ('pending','approved','rejected') AND event_at>=? GROUP BY week_key,status ORDER BY week_key,status").bind(start).all();
+            return Response.json({comments:comments.results,stories:stories.results});
+          }};
+          NODE
+          npx --yes wrangler@4 dev --config wrangler.jsonc --ip 127.0.0.1 --port 8972 --show-interactive-dev-session=false > dev.log 2>&1 &
+          cff_recovery_pid=$!
+          trap 'kill "$cff_recovery_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --max-time 10 http://127.0.0.1:8972/ > result.json; then
+              node -e 'const r=JSON.parse(require("node:fs").readFileSync("result.json","utf8")); console.log("CFF_RECOVERY",JSON.stringify(r));'
+              exit 0
+            fi
+            if ! kill -0 "$cff_recovery_pid" 2>/dev/null; then break; fi
+            sleep 3
+          done
+          grep -Ei 'error|problem|denied|failed' dev.log | head -8 || true
+          exit 1
