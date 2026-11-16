@@ -10,6 +10,7 @@
   <script src="js/config.min.js?v=20261020-chat-layout-v1"></script>
   <style>
     .give-shell{width:min(1680px,calc(100% - 28px));max-width:1680px}.give-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;align-items:start}.give-form{display:grid;gap:13px}.give-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.give-actions{display:flex;gap:8px;flex-wrap:wrap}.give-status{display:inline-flex;width:max-content;padding:5px 8px;border-radius:999px;border:1px solid rgba(0,200,255,.25);background:rgba(0,200,255,.06);color:#b9efff;font-size:11px;font-weight:950;text-transform:uppercase}.give-status.closed{border-color:rgba(255,174,74,.3);background:rgba(255,174,74,.07);color:#ffd292}.give-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.give-stat{padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025)}.give-stat span{display:block;color:#748eaa;font-size:10px;font-weight:900;text-transform:uppercase}.give-stat strong{display:block;margin-top:5px;color:#fff;font-size:20px}.give-tools{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.give-tools select{min-width:170px}.give-winner-box{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end;margin:0 0 12px;padding:11px;border:1px solid rgba(255,195,49,.22);border-radius:12px;background:rgba(255,195,49,.05)}.give-winner-box label{display:grid;gap:5px;color:#8ca4bf;font-size:10px;font-weight:950;text-transform:uppercase}.give-winner-box select{width:100%;min-height:40px;border:1px solid rgba(255,255,255,.10);border-radius:9px;background:#080e18;color:#fff;padding:0 10px;font-weight:850}.give-winner-status{grid-column:1/-1;color:#d6b766;font-size:11px;font-weight:850}.give-admin-tabs{display:flex;gap:7px;margin:0 0 16px;padding:5px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:#080e18}.give-admin-tab{flex:1;min-height:43px;border:0;border-radius:8px;background:transparent;color:#7893b2;font-weight:1000;font-size:.74rem;letter-spacing:.55px;text-transform:uppercase;cursor:pointer}.give-admin-tab.is-active{background:rgba(0,200,255,.13);color:#e9fbff;box-shadow:inset 0 0 0 1px rgba(0,200,255,.28)}[data-give-admin-panel][hidden]{display:none!important}.private-grid{display:grid;grid-template-columns:minmax(350px,.72fr) minmax(0,1.28fr);gap:18px;align-items:start}.private-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.private-field-option{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(255,255,255,.025);color:#dbe8f5;font-size:.76rem;font-weight:850}.private-field-option input{width:17px;height:17px;accent-color:#00c8ff}.private-link-box{margin-top:10px;padding:10px;border:1px solid rgba(0,200,255,.18);border-radius:10px;background:rgba(0,200,255,.05)}.private-link-box code{display:block;word-break:break-all;color:#bcefff;font-size:.72rem}.private-history{display:grid;gap:8px;margin-bottom:10px}.private-history select{width:100%}.private-status{display:inline-flex;width:max-content;padding:5px 8px;border-radius:999px;border:1px solid rgba(104,224,165,.25);background:rgba(104,224,165,.06);color:#9ff0c5;font-size:.62rem;font-weight:1000;text-transform:uppercase}.private-status.closed{border-color:rgba(255,145,145,.22);background:rgba(255,100,100,.06);color:#ffb1b9}.give-table.private-entry-table{min-width:100%}.private-entry-table th,.private-entry-table td{overflow-wrap:anywhere;word-break:break-word}.private-entry-table td{vertical-align:top}.private-muted{color:#7890ab;font-size:.68rem}.private-actions{display:flex;gap:8px;flex-wrap:wrap}.private-password-box{display:grid;grid-template-columns:minmax(0,1fr) 42px 42px;gap:7px;align-items:center}.private-credentials-row{grid-template-columns:minmax(150px,.72fr) minmax(260px,1.28fr)}.private-password-box input{min-width:0}.private-password-tool{width:42px;height:42px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:#07101d;color:#c9d9ea;cursor:pointer;font-size:.9rem;font-weight:950}.private-password-tool:hover{border-color:var(--accent);color:#fff}.private-password-copy{width:42px;padding:0;font-size:1rem}.give-table-wrap{overflow:auto;border:1px solid rgba(255,255,255,.07);border-radius:12px}.give-table{width:100%;border-collapse:collapse;min-width:760px}.give-table th,.give-table td{padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:12px}.give-table th{color:#7893b0;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.give-user{color:#fff;font-weight:1000}.badge{display:inline-flex;padding:4px 6px;border-radius:999px;font-size:10px;font-weight:950}.badge.yes{background:rgba(89,220,158,.1);color:#83eabb}.badge.unknown{background:rgba(255,255,255,.05);color:#8095ad}.give-note{margin-top:10px;color:#7389a4;font-size:11px;line-height:1.5}.give-empty{padding:22px;text-align:center;color:#758da8;font-size:12px}.give-link{word-break:break-all}.admin-message.is-success{color:#73e0aa}.admin-message.is-error{color:#ff94a1}@media(min-width:851px){.private-entry-table th,.private-entry-table td{padding-left:8px;padding-right:8px;font-size:11px}.private-entry-table th{font-size:9px}.private-entry-table th:first-child,.private-entry-table td:first-child{width:34px}}@media(max-width:1100px){.give-shell{width:min(100% - 18px,1680px);max-width:100%}.private-grid{grid-template-columns:minmax(320px,.68fr) minmax(0,1.32fr)}}@media(max-width:850px){.give-grid{grid-template-columns:1fr}.private-grid{grid-template-columns:1fr}.give-table.private-entry-table{min-width:720px}.give-summary{grid-template-columns:1fr 1fr 1fr}}@media(max-width:540px){.give-admin-tabs{display:grid;grid-template-columns:1fr}.give-row,.private-credentials-row{grid-template-columns:1fr}.private-fields{grid-template-columns:1fr}.private-password-box{grid-template-columns:minmax(0,1fr) 42px 42px}.private-password-copy{grid-column:auto;width:42px;height:42px}.give-summary{grid-template-columns:1fr}.give-actions .admin-btn,.give-tools .admin-btn,.give-tools select,.private-actions .admin-btn{width:100%}.give-winner-box{grid-template-columns:1fr}.give-winner-box .admin-btn{width:100%}.give-winner-status{grid-column:1}}
+    .give-remove{white-space:nowrap;min-height:34px;padding:5px 10px}.give-entry-message{min-height:0;margin:0}.give-entry-message:not(:empty){margin-top:8px}
   </style>
 </head>
 <body>
@@ -54,7 +55,8 @@
           <button id="give-winner-clear" class="admin-btn admin-btn-ghost" type="button">Limpar</button>
           <div id="give-winner-status" class="give-winner-status">Nenhum vencedor definido.</div>
         </div>
-        <div class="give-table-wrap"><table class="give-table"><thead><tr><th>#</th><th>Instagram</th><th>Já comentou?</th><th>Comentários</th><th>Pontos ranking</th><th>Inscrição</th></tr></thead><tbody id="give-tbody"><tr><td colspan="6"><div class="give-empty">Nenhum participante ainda.</div></td></tr></tbody></table></div>
+        <div class="give-table-wrap"><table class="give-table"><thead><tr><th>#</th><th>Instagram</th><th>Já comentou?</th><th>Comentários</th><th>Pontos ranking</th><th>Inscrição</th><th scope="col">Ações</th></tr></thead><tbody id="give-tbody"><tr><td colspan="7"><div class="give-empty">Nenhum participante ainda.</div></td></tr></tbody></table></div>
+        <p id="give-entry-message" class="admin-message give-entry-message" role="status"></p>
         <div class="give-note">“Já comentou” usa o histórico disponível no ranking geral da comunidade. Em <strong>Copiar como planilha</strong>, a saída agora é somente <code>Nome 1,0</code>. Os bônus opcionais configurados abaixo são somados automaticamente.</div>
       </section>
     </div>
@@ -111,10 +113,11 @@
           </div>
           <div class="give-table-wrap">
             <table class="give-table private-entry-table">
-              <thead><tr><th>#</th><th>Nome</th><th>ID / UID</th><th>Instagram</th><th>Apelido / Nick</th><th>WhatsApp</th><th>Inscrição</th></tr></thead>
-              <tbody id="private-tbody"><tr><td colspan="7"><div class="give-empty">Nenhum sorteio privado selecionado.</div></td></tr></tbody>
+              <thead><tr><th>#</th><th>Nome</th><th>ID / UID</th><th>Instagram</th><th>Apelido / Nick</th><th>WhatsApp</th><th>Inscrição</th><th scope="col">Ações</th></tr></thead>
+              <tbody id="private-tbody"><tr><td colspan="8"><div class="give-empty">Nenhum sorteio privado selecionado.</div></td></tr></tbody>
             </table>
           </div>
+          <p id="private-entry-message" class="admin-message give-entry-message" role="status"></p>
         </section>
       </div>
     </section>
@@ -135,8 +138,12 @@
     const app=getApps().length?getApp():initializeApp(config),auth=getAuth(app),db=getDatabase(app);
     const $=s=>document.querySelector(s);const currentRef=ref(db,'communityGiveaways/current');
     let current=null,entries=[],history=new Map(),unsubscribeEntries=null;
+    const removing=new Set();
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-    const msg=(text,type='')=>{const el=$('#give-message');el.textContent=text||'';el.className=`admin-message${type?` is-${type}`:''}`};
+    const msg=(text,type='',selector='#give-message')=>{
+      const el=$(selector);
+      el.textContent=text;el.classList.toggle('is-success',type==='success');el.classList.toggle('is-error',type==='error');
+    };
     const fmt=ms=>ms?new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(ms)):'—';
     function toLocal(ms){if(!ms)return'';const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(ms));const o=Object.fromEntries(parts.map(p=>[p.type,p.value]));return`${o.year}-${o.month}-${o.day}T${o.hour}:${o.minute}`;}
     function parseBrt(value){return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(String(value||''))?Date.parse(`${value}:00-03:00`):0;}
@@ -149,20 +156,38 @@
     }
     async function saveGiveaway(e){e.preventDefault();const title=$('#give-title').value.trim(),description=$('#give-description').value.trim(),endsAt=parseBrt($('#give-end').value);if(title.length<3)return msg('Digite um título válido.','error');if(!endsAt||endsAt<=Date.now())return msg('O horário de encerramento precisa estar no futuro.','error');const id=$('#give-id').value.trim()||newId();const data={id,title,description,endsAt,active:true,createdAt:current?.id===id?Number(current.createdAt||Date.now()):Date.now(),updatedAt:Date.now()};try{await Promise.all([set(currentRef,data),set(ref(db,`communityGiveaways/history/${id}`),data)]);msg(`Sorteio aberto. Link público: ${PUBLIC_URL}`,'success');}catch(err){console.error(err);msg('Não foi possível salvar o sorteio.','error');}}
     async function closeNow(){if(!current?.id)return;const patch={active:false,endsAt:Math.min(Number(current.endsAt||Date.now()),Date.now()),updatedAt:Date.now()};try{await Promise.all([update(currentRef,patch),update(ref(db,`communityGiveaways/history/${current.id}`),patch)]);msg('Sorteio encerrado. A lista ficou salva para exportação.','success');}catch(err){console.error(err);msg('Não foi possível encerrar.','error');}}
-    function freshForm(){current=null;fill();$('#give-id').value='';const end=new Date(Date.now()+3*60*60*1000);$('#give-end').value=toLocal(end);msg('Preencha os dados e salve para abrir um novo sorteio.');}
-    function attachEntries(id){if(unsubscribeEntries){unsubscribeEntries();unsubscribeEntries=null;}entries=[];renderEntries();renderWinnerControl();if(!id)return;unsubscribeEntries=onValue(ref(db,`communityGiveaways/entries/${id}`),snap=>{const raw=snap.val()||{};entries=Object.values(raw).map(x=>({username:String(x?.username||'').replace(/^@+/,''),createdAt:Number(x?.createdAt||0)})).filter(x=>x.username).sort((a,b)=>a.createdAt-b.createdAt);renderEntries();renderWinnerControl();});}
+    function freshForm(){current=null;attachEntries('');fill();$('#give-id').value='';const end=new Date(Date.now()+3*60*60*1000);$('#give-end').value=toLocal(end);msg('Preencha os dados e salve para abrir um novo sorteio.');}
+    function attachEntries(id){
+      if(unsubscribeEntries){unsubscribeEntries();unsubscribeEntries=null;}
+      entries=[];renderEntries();renderWinnerControl();
+      if(!id)return;
+      unsubscribeEntries=onValue(ref(db,`communityGiveaways/entries/${id}`),snap=>{
+        if(current?.id!==id)return;
+        entries=Object.entries(snap.val()||{}).map(([entryKey,x])=>({
+          entryKey,username:String(x?.username||'').replace(/^@+/,''),createdAt:Number(x?.createdAt||0)
+        })).filter(x=>x.username).sort((a,b)=>a.createdAt-b.createdAt);
+        renderEntries();renderWinnerControl();
+      });
+    }
     function renderWinnerControl(){
       const select=$('#give-winner'),status=$('#give-winner-status');if(!select||!status)return;
       const selected=String(current?.winner||'').replace(/^@+/,'');
       const names=[...new Set(entries.map(x=>x.username).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR',{sensitivity:'base'}));
-      if(selected&&!names.some(x=>x.toLowerCase()===selected.toLowerCase()))names.unshift(selected);
-      select.innerHTML='<option value="">Selecione um participante</option>'+names.map(name=>`<option value="${esc(name)}"${name.toLowerCase()===selected.toLowerCase()?' selected':''}>@${esc(name)}</option>`).join('');
+      const listed=names.some(name=>name.toLowerCase()===selected.toLowerCase());
+      select.innerHTML='<option value="">Selecione um participante</option>'+names.map(name=>
+        `<option value="${esc(name)}"${name.toLowerCase()===selected.toLowerCase()?' selected':''}>@${esc(name)}</option>`
+      ).join('');
+      if(selected&&!listed){
+        const published=new Option(`@${selected} (vencedor publicado)`,'',false,true);
+        published.disabled=true;
+        select.add(published);
+      }
       status.textContent=selected?`Vencedor publicado: @${selected}`:'Nenhum vencedor definido.';
     }
     async function saveWinner(){
       if(!current?.id)return msg('Abra ou carregue um sorteio antes de definir o vencedor.','error');
       const winner=String($('#give-winner')?.value||'').replace(/^@+/,'').trim();
-      if(!winner)return msg('Selecione quem venceu o sorteio.','error');
+      if(!entries.some(entry=>entry.username===winner))return msg('Selecione um participante inscrito.','error');
       try{const patch={winner,winnerAt:Date.now(),updatedAt:Date.now()};await Promise.all([update(currentRef,patch),update(ref(db,`communityGiveaways/history/${current.id}`),patch)]);msg(`@${winner} definido como vencedor e publicado.`,'success');}
       catch(err){console.error(err);msg('Não foi possível salvar o vencedor.','error');}
     }
@@ -174,18 +199,44 @@
     async function loadHistory(){try{const r=await fetch(`${API}/api/ranking?period=all&_=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const raw=await r.json();history=new Map(Object.values(raw?.users||{}).map(x=>[String(x?.username||'').replace(/^@+/,'').toLowerCase(),x]));renderEntries();msg('Histórico de interação atualizado.','success');}catch(err){console.error(err);msg('Não consegui atualizar o histórico de interação agora. A lista de inscritos continua disponível.','error');}}
     function enriched(){const seen=new Set();return entries.filter(x=>{const k=x.username.toLowerCase();if(seen.has(k))return false;seen.add(k);return true;}).map(x=>{const h=history.get(x.username.toLowerCase())||null;return{...x,known:Boolean(h),comments:Number(h?.comments||0),points:Number(h?.points||0),stories:Number(h?.storyMentions||0)}});}
     function filtered(){const mode=$('#give-filter')?.value||'all';return enriched().filter(x=>mode==='commented'?x.comments>0:mode==='unknown'?!x.known:true);}
-    function renderEntries(){const all=enriched(),rows=filtered();$('#give-total').textContent=String(all.length);$('#give-commented').textContent=String(all.filter(x=>x.comments>0).length);$('#give-visible').textContent=String(rows.length);const body=$('#give-tbody');if(!rows.length){body.innerHTML='<tr><td colspan="6"><div class="give-empty">Nenhum participante neste filtro.</div></td></tr>';return;}body.innerHTML=rows.map((x,i)=>`<tr><td>${i+1}</td><td class="give-user">@${esc(x.username)}</td><td>${x.comments>0?'<span class="badge yes">SIM</span>':x.known?'<span class="badge unknown">NÃO REGISTRADO</span>':'<span class="badge unknown">NÃO IDENTIFICADO</span>'}</td><td>${x.comments}</td><td>${x.points}</td><td>${esc(fmt(x.createdAt))}</td></tr>`).join('');}
+    function renderEntries(){const all=enriched(),rows=filtered();$('#give-total').textContent=String(all.length);$('#give-commented').textContent=String(all.filter(x=>x.comments>0).length);$('#give-visible').textContent=String(rows.length);const body=$('#give-tbody');if(!rows.length){body.innerHTML='<tr><td colspan="7"><div class="give-empty">Nenhum participante neste filtro.</div></td></tr>';return;}body.innerHTML=rows.map((x,i)=>`<tr><td>${i+1}</td><td class="give-user">@${esc(x.username)}</td><td>${x.comments>0?'<span class="badge yes">SIM</span>':x.known?'<span class="badge unknown">NÃO REGISTRADO</span>':'<span class="badge unknown">NÃO IDENTIFICADO</span>'}</td><td>${x.comments}</td><td>${x.points}</td><td>${esc(fmt(x.createdAt))}</td><td><button class="admin-btn admin-btn-danger give-remove" type="button" data-give-remove="${esc(x.entryKey)}" aria-label="Remover @${esc(x.username)}"${removing.has(current?.id+'/'+x.username.toLowerCase())?' disabled':''}>Remover</button></td></tr>`).join('');}
+    async function removeEntry(event){
+      const button=event.target.closest('button[data-give-remove]');
+      const id=current?.id,entry=entries.find(x=>x.entryKey===button?.dataset.giveRemove);
+      if(!id||!entry)return;
+      const username=entry.username.toLowerCase(),requestKey=id+'/'+username;
+      if(removing.has(requestKey))return;
+      const published=String(current.winner||'').replace(/^@+/,'').toLowerCase()===username;
+      const prompt=`Remover @${entry.username} da lista de participantes?`+
+        (published?' Para retirar o anúncio de vencedor, use “Limpar” na seção Vencedor.':'');
+      if(!window.confirm(prompt))return;
+      const updates=Object.fromEntries(entries.filter(x=>x.username.toLowerCase()===username).map(x=>[x.entryKey,null]));
+      removing.add(requestKey);
+      button.disabled=true;
+      msg('','', '#give-entry-message');
+      try{
+        await update(ref(db,`communityGiveaways/entries/${id}`),updates);
+        if(current?.id===id)msg(`@${entry.username} removido da lista.`,'success','#give-entry-message');
+      }catch(err){
+        console.error(err);
+        if(current?.id===id)msg('Não foi possível remover. Tente novamente.','error','#give-entry-message');
+      }finally{
+        removing.delete(requestKey);
+        if(current?.id===id)renderEntries();
+      }
+    }
     async function copyText(text,success){try{await navigator.clipboard.writeText(text);}catch{const a=document.createElement('textarea');a.value=text;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();}msg(success,'success');}
     function copyNames(){const rows=filtered();if(!rows.length)return msg('Não há participantes neste filtro.','error');copyText(rows.map(x=>`@${x.username}`).join('\n'),`${rows.length} @ copiados para colar no sorteador.`);}
     function copySheet(){const rows=filtered();if(!rows.length)return msg('Não há participantes neste filtro.','error');if(window.CFFGiveawayPriority?.copySimple)return window.CFFGiveawayPriority.copySimple(rows);copyText(rows.map(x=>`${x.username} 1,0`).join('\n'),`${rows.length} participantes copiados no formato Nome 1,0.`);}
     function csv(){const rows=filtered();if(!rows.length)return msg('Não há participantes neste filtro.','error');const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;const text=['Instagram,Ja comentou,Comentarios,Stories,Pontos ranking,Inscricao',...rows.map(x=>[q(`@${x.username}`),q(x.comments>0?'SIM':x.known?'NAO REGISTRADO':'NAO IDENTIFICADO'),x.comments,x.stories,x.points,q(fmt(x.createdAt))].join(','))].join('\r\n');const blob=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`sorteio-${current?.id||'comunidade'}.csv`;a.click();URL.revokeObjectURL(url);}
 
+    $('#give-tbody').addEventListener('click',removeEntry);
     $('#give-form').addEventListener('submit',saveGiveaway);$('#give-close').addEventListener('click',closeNow);$('#give-new').addEventListener('click',freshForm);$('#give-refresh').addEventListener('click',loadHistory);$('#give-filter').addEventListener('change',renderEntries);$('#give-copy-names').addEventListener('click',copyNames);$('#give-copy-sheet').addEventListener('click',copySheet);$('#give-csv').addEventListener('click',csv);$('#give-winner-save').addEventListener('click',saveWinner);$('#give-winner-clear').addEventListener('click',clearWinner);
-    onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){location.replace('admin.html');return;}$('#give-auth').hidden=true;$('#give-app').hidden=false;onValue(currentRef,snap=>{current=snap.val()||null;fill();attachEntries(current?.id||'');if(current?.id)set(ref(db,`communityGiveaways/history/${current.id}`),current).catch(()=>{});});loadHistory();});
+    onAuthStateChanged(auth,user=>{if(!user||String(user.email||'').toLowerCase()!==ADMIN){location.replace('admin.html');return;}$('#give-auth').hidden=true;$('#give-app').hidden=false;onValue(currentRef,snap=>{const next=snap.val()||null;if(current?.id!==next?.id)msg('','','#give-entry-message');current=next;fill();attachEntries(current?.id||'');if(current?.id)set(ref(db,`communityGiveaways/history/${current.id}`),current).catch(()=>{});});loadHistory();});
   </script>
 
 <script data-cff-giveaway-priority src="js/admin-giveaway-priority.js?v=20260929-giveaway-priority-v4"></script>
-<script src="js/admin-private-giveaway.js?v=20260929-private-giveaway-v6"></script>
+<script src="js/admin-private-giveaway.js?v=20261116-remover-participante-v1"></script>
 <script src="js/admin-giveaway-shortcuts.js?v=20260930-admin-sorter-v2"></script>
 </body>
 </html>

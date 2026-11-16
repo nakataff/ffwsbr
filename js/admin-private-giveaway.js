@@ -19,10 +19,11 @@
   let db=null,refFn=null,onValueFn=null,setFn=null;
   let items=new Map(),currentId='',entries=[],stopEntries=null,stopPrivate=null;
   const knownPasswords=new Map();
+  const removing=new Set();
 
-  function message(text,type=''){
-    const el=$('#private-message');if(!el)return;
-    el.textContent=text||'';el.className=`admin-message${type?` is-${type}`:''}`;
+  function message(text,type='',selector='#private-message'){
+    const el=$(selector);if(!el)return;
+    el.textContent=text;el.classList.toggle('is-success',type==='success');el.classList.toggle('is-error',type==='error');
   }
 
   function randomBytes(size){
@@ -165,8 +166,10 @@
   function watchEntries(id){
     stopEntriesWatch();entries=[];renderEntries();if(!id||!db)return;
     stopEntries=onValueFn(refFn(db,`communityGiveaways/privateEntries/${id}`),snap=>{
+      if(currentId!==id)return;
       const raw=snap.val()||{};
-      entries=Object.values(raw).map(x=>({
+      entries=Object.entries(raw).map(([entryKey,x])=>({
+        entryKey,
         name:String(x?.name||''),
         id:String(x?.id||''),
         instagram:String(x?.instagram||'').replace(/^@+/,''),
@@ -178,12 +181,37 @@
     });
   }
 
+  function entryLabel(entry){
+    return entry.instagram?'@'+entry.instagram:(entry.name||entry.nickname||entry.id||entry.whatsapp||'participante');
+  }
+
   function renderEntries(){
     const body=$('#private-tbody');if(!body)return;
     if($('#private-total'))$('#private-total').textContent=String(entries.length);
-    if(!currentId){body.innerHTML='<tr><td colspan="7"><div class="give-empty">Nenhum sorteio privado selecionado.</div></td></tr>';return;}
-    if(!entries.length){body.innerHTML='<tr><td colspan="7"><div class="give-empty">Ainda não há participantes neste sorteio.</div></td></tr>';return;}
-    body.innerHTML=entries.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name||'—')}</td><td>${esc(x.id||'—')}</td><td>${x.instagram?'@'+esc(x.instagram):'—'}</td><td>${esc(x.nickname||'—')}</td><td>${esc(x.whatsapp||'—')}</td><td><span class="private-muted">${esc(fmt(x.createdAt))}</span></td></tr>`).join('');
+    if(!currentId){body.innerHTML='<tr><td colspan="8"><div class="give-empty">Nenhum sorteio privado selecionado.</div></td></tr>';return;}
+    if(!entries.length){body.innerHTML='<tr><td colspan="8"><div class="give-empty">Ainda não há participantes neste sorteio.</div></td></tr>';return;}
+    body.innerHTML=entries.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name||'—')}</td><td>${esc(x.id||'—')}</td><td>${x.instagram?'@'+esc(x.instagram):'—'}</td><td>${esc(x.nickname||'—')}</td><td>${esc(x.whatsapp||'—')}</td><td><span class="private-muted">${esc(fmt(x.createdAt))}</span></td><td><button class="admin-btn admin-btn-danger give-remove" type="button" data-private-remove="${esc(x.entryKey)}" aria-label="Remover ${esc(entryLabel(x))}"${removing.has(currentId+'/'+x.entryKey)?' disabled':''}>Remover</button></td></tr>`).join('');
+  }
+
+  async function removeEntry(event){
+    const button=event.target.closest('button[data-private-remove]');
+    const id=currentId,entry=entries.find(x=>x.entryKey===button?.dataset.privateRemove);
+    if(!db||!id||!entry)return;
+    const requestKey=id+'/'+entry.entryKey;
+    if(removing.has(requestKey)||!window.confirm(`Remover ${entryLabel(entry)} da lista de participantes?`))return;
+    removing.add(requestKey);
+    button.disabled=true;
+    message('','','#private-entry-message');
+    try{
+      await setFn(refFn(db,`communityGiveaways/privateEntries/${requestKey}`),null);
+      if(currentId===id)message('Participante removido da lista.','success','#private-entry-message');
+    }catch(err){
+      console.error(err);
+      if(currentId===id)message('Não foi possível remover. Tente novamente.','error','#private-entry-message');
+    }finally{
+      removing.delete(requestKey);
+      if(currentId===id)renderEntries();
+    }
   }
 
   async function savePrivate(event){
@@ -287,6 +315,7 @@
     $('#private-close')?.addEventListener('click',closePrivate);
     $('#private-copy-link')?.addEventListener('click',copyLink);
     $('#private-copy-entries')?.addEventListener('click',copyEntries);
+    $('#private-tbody')?.addEventListener('click',removeEntry);
     $('#private-password-toggle')?.addEventListener('click',togglePassword);
     $('#private-password-copy')?.addEventListener('click',copyPassword);
     $('#private-select')?.addEventListener('change',e=>{
