@@ -134,6 +134,11 @@ test('GunDynasty penalty updates the official and full-round standings while pre
   const points=(root,name)=>Number(row(root,name).querySelector('.ffws-global-points-col').textContent);
   let root=x.render('classificatoria');
   assert.match(root.querySelector('.ffws-global-penalty-note').textContent,/06\/11.*GunDynasty perdeu 15 pontos.*6ª queda/);
+  const leader=root.querySelector('tbody .ffws-global-team-link');
+  assert.equal(new URL(leader.href).pathname,'/ffws-global-2026/equipe');
+  assert.equal(new URL(leader.href).searchParams.get('time'),'bru');
+  assert.equal(leader.getAttribute('aria-label'),'Ver equipe Buriram United Esports');
+  assert(leader.querySelector('img'));
   assert.equal(points(root,'GunDynasty'),411);
   assert.equal(Number(row(root,'GunDynasty').querySelector('.ffws-global-rank').textContent),14);
   assert.equal(Number(row(root,'GunDynasty').querySelector('.ffws-global-placement-col').textContent),165);

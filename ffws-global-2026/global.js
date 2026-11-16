@@ -286,10 +286,10 @@
     const team = teamByName(teamName);
     const full = team?.name || teamName || 'A definir';
     const short = team?.abbreviation || full;
-    return `<td class="team-col"><div class="ffws-global-team-cell">
-      <img loading="lazy" decoding="async" src="${escapeHtml(logo(full))}" data-cff-global-team-logo="${escapeHtml(full)}" alt="${escapeHtml(full)}" onerror="this.onerror=null;this.src='escudo.webp'">
+    const content = `<img loading="lazy" decoding="async" src="${escapeHtml(logo(full))}" data-cff-global-team-logo="${escapeHtml(full)}" alt="" onerror="this.onerror=null;this.src='escudo.webp'">
       <span class="ffws-global-team-name"><strong><span class="ffws-global-desktop">${escapeHtml(full)}</span><span class="ffws-global-mobile">${escapeHtml(short)}</span></strong>${subtitle ? `<small>${escapeHtml(subtitle)}</small>` : ''}</span>
-    </div></td>`;
+    `;
+    return `<td class="team-col">${team ? `<a class="ffws-global-team-cell ffws-global-team-link" href="/ffws-global-2026/equipe?time=${encodeURIComponent(team.id)}" aria-label="Ver equipe ${escapeHtml(full)}">${content}</a>` : `<div class="ffws-global-team-cell">${content}</div>`}</td>`;
   }
 
   function formatPanel(stageKey, hideTitle=false) {
@@ -1814,57 +1814,93 @@
     ctx.restore();
   }
 
+  function evolutionLabelTop(point,height,area,occupied,beside) {
+    const gap=4, above=point.y-point.radius-6-height, below=point.y+point.radius+6;
+    const min=area.top+2, max=area.bottom-2-height;
+    const candidates=[...(beside?[point.y-height/2]:[above,below]),min,max,...occupied.flatMap(box=>[box.top-gap-height,box.bottom+gap])];
+    const distance=top=>Math.max(top-point.y,point.y-top-height,0)+Math.abs(top+height/2-point.y)*.01;
+    return candidates.filter(top=>top>=min&&top<=max&&occupied.every(box=>top+height+gap<=box.top||top>=box.bottom+gap))
+      .sort((a,b)=>distance(a)-distance(b))[0];
+  }
+
   function s2StatsEvolutionLabels(metric,showValues,mode,images) {
     return {id:'cffTeamEvolutionValues', afterDatasetsDraw(chart) {
-      const {ctx,chartArea:area} = chart, taken=[];
-      const points=[], byIndex=new Map();
+      const {ctx,chartArea:area} = chart;
+      const columns=new Map();
       chart.data.datasets.forEach((dataset,i) => {
         if (!chart.isDatasetVisible(i)) return;
         chart.getDatasetMeta(i).data.forEach(({x,y,skip},index) => {
           const value=dataset.data[index];
           if (value==null || skip || !Number.isFinite(x+y)) return;
           const image=images[i];
-          const point={x,y,value,index,color:dataset.borderColor,crest:image?.complete&&image.naturalWidth>0?image:null};
-          points.push(point);
-          if (!byIndex.has(index)) byIndex.set(index,[]);
-          byIndex.get(index).push(point);
+          if (!columns.has(index)) columns.set(index,[]);
+          columns.get(index).push({x,y,value,color:dataset.borderColor,crest:image?.complete&&image.naturalWidth>0?image:null});
         });
       });
       ctx.save();
-      if (mode==='crest') points.forEach(point => {
-        const {crest,x,y,color,index}=point;
-        if (crest && byIndex.get(index).every(other=>other===point||Math.abs(other.y-y)>=19)) {
-          drawEvolutionCrest(ctx,crest,x,y,18,color);
-          taken.push({x:x-10,y:y-10,width:20,bottom:y+10});
-        }
-      });
-      if (!showValues) { ctx.restore(); return; }
       ctx.font='700 11px system-ui,sans-serif';
       ctx.textAlign='center';
       ctx.textBaseline='middle';
-      const offsets=mode==='crest'?[-19,19,-35,35,-51,51,-67,67]:[-14,14,-30,30,-46,46,-62,62];
-      const crestSize=24, crestLift=21;
-      points.forEach(({x,y,value,color,crest}) => {
-        const label=s2StatsEvolutionValue(value,metric),width=Math.max(mode==='above'?crestSize+4:20,ctx.measureText(label).width+8);
-        const center=Math.max(area.left+width/2,Math.min(area.right-width/2,x));
-        const place = icon => {
-          for (const offset of offsets) {
-            const yy=y+offset+(icon&&offset>0?crestLift+crestSize/2-5:0);
-            const box={x:center-width/2,y:yy-(icon?crestLift+crestSize/2+2:7),width,bottom:yy+7};
-            if (box.y<area.top-(icon?30:16) || box.bottom>area.bottom+8 || taken.some(b=>
-              box.x<b.x+b.width && box.x+width>b.x && box.y<b.bottom && box.bottom>b.y)) continue;
-            taken.push(box);
-            if (icon) drawEvolutionCrest(ctx,icon,center,yy-crestLift,crestSize);
-            ctx.fillStyle=color;
-            ctx.strokeStyle='#0a1220';
-            ctx.lineWidth=4;
-            ctx.strokeText(label,center,yy);
-            ctx.fillText(label,center,yy);
-            return true;
-          }
-          return false;
-        };
-        if (!(mode==='above'&&crest&&place(crest))) place(null);
+      const groups=[...columns].sort(([a],[b])=>a-b).map(([,points])=>points);
+      groups.forEach((points,index)=>{
+        const columnX=points[0].x, previous=groups[index-1]?.[0].x, next=groups[index+1]?.[0].x;
+        const left=previous===undefined?area.left:(previous+columnX)/2;
+        const right=next===undefined?area.right:(next+columnX)/2;
+        const occupied=points.map(point=>{
+          point.close=points.some(other=>other!==point&&Math.abs(other.y-point.y)<24);
+          point.crestOnPoint=mode==='crest'&&point.crest&&!point.close;
+          point.radius=point.crestOnPoint?10:5;
+          return {left:point.x-point.radius,right:point.x+point.radius,top:point.y-point.radius,bottom:point.y+point.radius};
+        });
+        const labels=[];
+        for (const point of points.sort((a,b)=>a.y-b.y)) {
+          const icon=mode==='above'||mode==='crest'&&point.close?point.crest:null;
+          const iconSize=icon?(mode==='above'?24:18):0;
+          const text=showValues?s2StatsEvolutionValue(point.value,metric):'';
+          if (!text&&!icon) continue;
+          const height=iconSize+(text?14:0)+(icon&&text?4:0)+2;
+          const halfWidth=Math.max(iconSize,text?ctx.measureText(text).width:0)/2+4;
+          const center=Math.max(left+halfWidth,Math.min(right-halfWidth,point.x));
+          const shift=point.radius+8+halfWidth;
+          const centers=point.close?[center,point.x-shift,point.x+shift]:[center];
+          const options=centers.flatMap(x=>{
+            const x0=x-halfWidth,x1=x+halfWidth;
+            if(x0<left-0.01||x1>right+0.01)return [];
+            const beside=x!==center;
+            const blockers=occupied.filter(box=>x0<box.right+2&&x1>box.left-2);
+            const top=evolutionLabelTop(point,height,area,blockers,beside);
+            if(top===undefined)return [];
+            const bottom=top+height;
+            const toX=Math.max(x0,Math.min(x1,point.x));
+            const toY=Math.max(top,Math.min(bottom,point.y));
+            return [{x,top,bottom,left:x0,right:x1,toX,toY,distance:Math.hypot(toX-point.x,toY-point.y)}];
+          }).sort((a,b)=>a.distance-b.distance);
+          const box=options[0];
+          if(!box)continue;
+          occupied.push(box);
+          labels.push({point,icon,iconSize,text,...box});
+        }
+        for (const {point,toX,toY,distance} of labels) {
+          if (!point.close&&distance<=point.radius+10) continue;
+          ctx.globalAlpha=.55;
+          ctx.strokeStyle=point.color;
+          ctx.lineWidth=1;
+          ctx.beginPath();
+          ctx.moveTo(point.x,point.y);
+          ctx.lineTo(toX,toY);
+          ctx.stroke();
+        }
+        ctx.globalAlpha=1;
+        for (const point of points) if (point.crestOnPoint) drawEvolutionCrest(ctx,point.crest,point.x,point.y,18,point.color);
+        for (const {point,icon,iconSize,text,x,top,bottom} of labels) {
+          if (icon) drawEvolutionCrest(ctx,icon,x,top+1+iconSize/2,iconSize,mode==='crest'?point.color:null);
+          if (!text) continue;
+          ctx.fillStyle=point.color;
+          ctx.strokeStyle='#0a1220';
+          ctx.lineWidth=4;
+          ctx.strokeText(text,x,bottom-8);
+          ctx.fillText(text,x,bottom-8);
+        }
       });
       ctx.restore();
     }};
@@ -1890,8 +1926,9 @@
       if(s2StatsEvolutionChart) { try { s2StatsEvolutionChart.destroy(); } catch (_) {} s2StatsEvolutionChart=null; }
       return;
     }
-    const spacing = showValues ? (metric==='kills'?86:67) : byDrop||markers==='crest' ? 48 : 0;
-    wrap.style.minWidth = (periods.length*spacing+(spacing?56:0))+'px';
+    const annotated = showValues || markers==='crest';
+    const spacing = showValues ? (metric==='kills'?98:78) : byDrop||markers==='crest' ? 48 : 0;
+    wrap.style.minWidth = (periods.length*spacing+(spacing?76:0))+'px';
     scroll.tabIndex = wrap.offsetWidth > scroll.clientWidth ? 0 : -1;
     const draw = () => {
       if (!window.Chart || !canvas.isConnected || version!==s2StatsEvolutionDrawVersion) return;
@@ -1906,13 +1943,16 @@
       const images = markers==='dot'?[]:selected.map(team => [...teamButtons].find(button=>button.title===team)?.querySelector('img'));
       s2StatsEvolutionChart = new window.Chart(canvas.getContext('2d'), {
         type:'line',
-        data:{ labels, datasets:data.map(({team,values},index)=>({ label:abbreviation(team), data:values, borderColor:evolutionColor(team,index), backgroundColor:evolutionColor(team,index), tension:.2, borderWidth:2.25, pointRadius:3, pointHoverRadius:5, spanGaps:false })) },
-        plugins:showValues||markers!=='dot'?[s2StatsEvolutionLabels(metric,showValues,markers,images)]:[],
-        options:{ responsive:true, maintainAspectRatio:false, devicePixelRatio:wrap.offsetWidth>1800?1:undefined, interaction:{mode:'nearest',intersect:false},
+        data:{ labels, datasets:data.map(({team,values},index)=>{
+          const color=evolutionColor(team,index);
+          return {label:abbreviation(team),data:values,borderColor:color,backgroundColor:color,pointBackgroundColor:color,pointBorderColor:color,tension:.2,borderWidth:2.25,pointRadius:3,pointHoverRadius:5,spanGaps:false};
+        }) },
+        plugins:annotated?[s2StatsEvolutionLabels(metric,showValues,markers,images)]:[],
+        options:{ responsive:true, maintainAspectRatio:false, devicePixelRatio:wrap.offsetWidth>1800?1:undefined, interaction:{mode:'index',intersect:false,axis:'x'},
           plugins:{legend:{labels:{color:'#dcecff',boxWidth:14,boxHeight:3}},
             tooltip:{callbacks:{label:item=>item.dataset.label+': '+s2StatsEvolutionValue(item.parsed.y,metric)}}},
-          layout:{padding:markers==='above'?{top:30,right:12}:showValues||markers==='crest'?{top:10,right:12}:0},
-          scales:{x:{offset:periods.length===1,ticks:{color:'#7893b5',maxRotation:0,autoSkip:!showValues},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',grace:showValues?'12%':0,ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
+          layout:{padding:annotated?{top:10,right:12}:0},
+          scales:{x:{offset:annotated||periods.length===1,ticks:{color:'#7893b5',maxRotation:0,autoSkip:!showValues},grid:{color:'rgba(120,147,181,.10)'}},y:{reverse:metric==='position',beginAtZero:metric!=='position',grace:showValues?'12%':0,ticks:{color:'#7893b5',precision:0,stepSize:metric==='position'?1:undefined,callback:value=>metric==='position'?`${value}º`:value},grid:{color:'rgba(120,147,181,.10)'}}} }
       });
       for (const image of images) if (image&&!image.complete) image.addEventListener('load',()=>{
         if (version===s2StatsEvolutionDrawVersion&&canvas.isConnected) s2StatsEvolutionChart?.draw();

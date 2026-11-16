@@ -164,6 +164,7 @@ test('team chart filters real drops, formats labels, and applies the chosen team
   await settle();
   const chart=draws.at(-1);
   assert.equal(chart.data.datasets[0].borderColor,'#ff6600');
+  assert.equal(chart.options.interaction.mode,'index','a tooltip lists all teams for a day or drop');
   assert.equal(chart.options.scales.x.offset,true,'a single drop is centered');
   const painted=[];
   chart.plugins[0].afterDatasetsDraw({
@@ -210,5 +211,43 @@ test('team chart filters real drops, formats labels, and applies the chosen team
   assert.equal(field('drop').value,'');
   await settle();
   assert.equal(draws.at(-1).data.labels.length,60);
+ }finally{w.close();}
+});
+
+test('close and tied team results keep every crest and label tied to its true data point',()=>{
+ const w=new JSDOM('',{url:'https://centralfreefire.com.br/ffws-global-2026/stats/',runScripts:'outside-only'}).window;
+ try{
+  w.eval(fs.readFileSync('ffws-global-2026/global.js','utf8').replace("  if (document.readyState === 'loading')",
+   "  window.evolutionLabels=s2StatsEvolutionLabels;\n  if (document.readyState === 'loading')"));
+  const colors=['#ff9900','#ad34b1','#00ff57','#09f','#f9d'];
+  const datasets=colors.map((borderColor,i)=>({borderColor,data:[72+Math.floor(i/2),81+Math.floor(i/2)]}));
+  const images=colors.map(color=>({color,complete:true,naturalWidth:24,naturalHeight:24}));
+  for(const width of [195,720]) for(const mode of ['above','crest']){
+   const marks=[],guides=[],circles=[];
+   const chartArea={left:10,right:10+width,top:45,bottom:330};
+   const coord=i=>[{x:10+width/4,y:49+i*2},{x:10+width*3/4,y:326-i*2}];
+   const ctx={save(){},restore(){},beginPath(){},arc:(...coords)=>circles.push(coords),fill(){},stroke(){},strokeText(){},
+    moveTo:(x,y)=>guides.push({x,y}),lineTo(){},measureText:()=>({width:62}),
+    drawImage:(image,x,y,w,h)=>marks.push({image,x,y,w,h}),
+    fillText(text,x,y){marks.push({text,color:this.fillStyle,x,y});}};
+   w.evolutionLabels('kills',mode==='above',mode,images).afterDatasetsDraw({ctx,chartArea,data:{datasets},
+    isDatasetVisible:()=>true,getDatasetMeta:i=>({data:coord(i)})});
+   assert.equal(marks.filter(item=>item.image).length,10);
+   assert.equal(guides.length,10);
+   for(let i=0;i<colors.length;i++)for(const point of coord(i))assert(guides.some(g=>g.x===point.x&&g.y===point.y));
+   if(mode==='crest'){assert.equal(circles.length,10);continue;}
+   assert.equal(circles.length,0);
+   assert.equal(marks.length,20);
+   const boxes=[];
+   for(let i=0;i<marks.length;i+=2){
+    const [icon,label]=marks.slice(i,i+2);
+    assert.equal(icon.image.color,label.color);
+    assert(icon.y+icon.h<label.y-7);
+    const box={left:label.x-31,right:label.x+31,top:icon.y,bottom:label.y+7};
+    assert(box.top>=chartArea.top&&box.bottom<=chartArea.bottom);
+    assert(!boxes.some(b=>box.left<b.right&&box.right>b.left&&box.top<b.bottom&&box.bottom>b.top));
+    boxes.push(box);
+   }
+  }
  }finally{w.close();}
 });
