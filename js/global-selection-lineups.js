@@ -192,14 +192,20 @@ function rankScore(p,slot){
  (p.assists*4.2+p.damage/210+p.kills*4)/n;
 }
 function selectLineup(selection,compact=false){
- const entries=bucketEntries(selection),ranked=playerRankings(entries),used=new Set(),lineup=[];
+ const standings=standingsForSelection(selection,compact);
+ const teamDrops=new Map(standings.map(team=>[team.id,team.matches]));
+ const ranked=playerRankings(bucketEntries(selection)).filter(player=>{
+  const drops=teamDrops.get(player.teamId);
+  return drops>0&&player.matches>=Math.ceil(drops/2);
+ });
+ const used=new Set(),lineup=[];
  const slots=[['RUSH','rush'],['RUSH','rush'],['GRAN','gran'],['SUP','support']];
  for(const [label,type] of slots){
   const pool=ranked.filter(p=>p.roleType===type&&!used.has(p.id)).sort((a,b)=>rankScore(b,type)-rankScore(a,type)||b.kills-a.kills||b.damage-a.damage);
   const p=pool[0];
-  if(p){used.add(p.id);lineup.push({...p,slot:label})}else lineup.push({slot:label,missing:true});
+  if(p){used.add(p.id);lineup.push({...p,slot:label})}else lineup.push({slot:label,missing:true,reason:'Sem jogador elegível pelo mínimo de quedas'});
  }
- const best=standingsForSelection(selection,compact)[0];
+ const best=standings[0];
  if(best){
   const name=COACHES[best.id]||'Técnico não cadastrado';
   lineup.push({...best,slot:'COACH',name,coach:true,missingCoach:!COACHES[best.id],
@@ -271,6 +277,7 @@ function renderPage(root,players,teams,stages){
  if(players&&!setData(players,teams))return false;
  if(!DATA)return false;
  const ui=state.page,tab=TABS.find(t=>t.key===ui.tab)||TABS[0],selection=getPageSelection();
+ const daily=selection.type==='date',cardConfig=daily?{...tab,short:'DIA'}:tab;
  const entries=bucketEntries(selection),hasEntries=entries.length>0;
  const progress=ui.tab!=='semanal'&&ui.tab!=='torneio'?phaseProgress(ui.tab):null;
  const available=new Set(DATA.entries.map(e=>String(e.stage||'classificatoria')));
@@ -292,15 +299,15 @@ function renderPage(root,players,teams,stages){
  const status=progress&&progress.count?
    '<span class="cff-global-phase-status '+(progress.completed?'is-complete':'is-running')+'" role="status">'+
    (progress.completed?'ENCERRADA':'EM ANDAMENTO')+'</span>':'';
- const cards=hasEntries?selectLineup(selection).map(p=>selectionCard(p,tab)).join(''):
+ const cards=hasEntries?selectLineup(selection).map(p=>selectionCard(p,cardConfig)).join(''):
   '<div class="season-selection-empty" style="--selection-color:'+tab.color+'"><p>Esta seleção ainda não tem resultados individuais publicados.</p></div>';
  root.innerHTML='<div class="ffws-global-selection-page cff-global-selections-page">'+
  '<div class="season-selection-hero"><div class="season-selection-kicker">FFWS GLOBAL FINALS 2026</div><h1>SELEÇÕES DA SEASON</h1></div>'+
  tabs+'<section class="season-selection-panel season-selection-panel-'+tab.panel+'">'+
- '<div class="season-selection-section-head"><div><span class="season-selection-tag">'+html(tab.title)+'</span><h2>'+html(ui.tab==='semanal'?'TIMES DA SEMANA':tab.name.toUpperCase())+'</h2>'+
+ '<div class="season-selection-section-head"><div><span class="season-selection-tag">'+html(tab.title)+'</span><h2>'+html(daily?'SELEÇÃO DO DIA':tab.name.toUpperCase())+'</h2>'+
  '<p class="cff-global-period-caption">'+html(subtitle||'')+'</p></div>'+status+'</div>'+controls+
  '<div class="selection-grid season-selection-grid cff-global-selection-grid">'+cards+'</div>'+
- '<p class="cff-global-selection-note">2 Rush · 1 Granadeiro · 1 Suporte/Sniper · 1 Coach. A escolha do técnico considera o time com mais pontos oficiais no período; desempate por Booyahs e abates. Se os pontos ainda não estiverem publicados, o coach fica pendente.</p>'+
+ '<p class="cff-global-selection-note">Para entrar na seleção, o jogador precisa disputar pelo menos metade das quedas da sua equipe no período. A nota considera abates, dano e assistências por queda. O técnico é o da equipe com mais pontos oficiais, com desempate por Booyahs e abates.</p>'+
  '</section></div>';
  if(!root.dataset.cffGlobalSelectionBound){
   root.dataset.cffGlobalSelectionBound='1';
@@ -353,7 +360,7 @@ function renderSmall(host,context){
   const label=d.ui.mode==='week'?choice.title+' · '+STAGE_NAMES[choice.stage]:shortDate(choice.date)+' · '+STAGE_NAMES[choice.stage]+' · Dia '+choice.day;
   return '<option value="'+choice.key+'"'+(d.selected?.key===choice.key?' selected':'')+(has?'':' disabled')+'>'+html(label)+'</option>';
  }).join('');
- host.innerHTML='<div class="cff-gsel-compact-head"><div><b>SELEÇÃO DO '+(d.ui.mode==='week'?'SEMANA':'DIA')+'</b><small>FFWS GLOBAL FINALS 2026</small></div>'+
+ host.innerHTML='<div class="cff-gsel-compact-head"><div><b>SELEÇÃO '+(d.ui.mode==='week'?'DA SEMANA':'DO DIA')+'</b><small>FFWS GLOBAL FINALS 2026</small></div>'+
  '<a href="/ffws-global-2026/selecoes">Ver todas ↗</a></div>'+
  '<div class="cff-gsel-compact-filters"><div class="cff-gsel-compact-toggle"><button data-cff-mode="day" aria-pressed="'+(d.ui.mode==='day')+'">DIÁRIO</button><button data-cff-mode="week" aria-pressed="'+(d.ui.mode==='week')+'">SEMANAL</button></div>'+
  '<select data-cff-period aria-label="Selecionar dia ou semana">'+options+'</select></div>'+

@@ -30,6 +30,33 @@ test('home waits for its route and uses two static summaries without Firebase',a
  }finally{w.close();}
 });
 
+test('Mundial selections require half of the team drops in each period',async()=>{
+ const w=new JSDOM('<main></main>',{runScripts:'outside-only',url:'https://centralfreefire.com.br/'}).window;
+ const root=w.document.querySelector('main');
+ w.fetch=async url=>response(read(file(url)));
+ try{
+  w.eval(code('js/global-selection-lineups.js'));
+  const {bootPage,selectLineup}=w.CFFGlobalSelections;
+  await bootPage(root);
+  root.querySelector('[data-global-day="classificatoria|2026-11-14"]').click();
+  assert.equal(root.querySelector('.cff-global-card-tag').textContent,'DIA');
+  assert.match(root.textContent,/LBEHJA/);
+  assert.doesNotMatch(root.textContent,/TEAMSR/);
+  root.querySelector('[data-global-mode="week"]').click();
+  root.querySelector('[data-global-week="classificatoria|2"]').click();
+  assert.equal(root.querySelector('.cff-global-card-tag').textContent,'SEMANA');
+  assert.match(root.textContent,/Gamezking/);
+  assert.doesNotMatch(root.textContent,/TEAMSR/);
+  root.querySelector('[data-global-tab="classificatoria"]').click();
+  const phaseSelection={type:'stage',stage:'classificatoria'};
+  for(const compact of [false,true]){
+   const rush=selectLineup(phaseSelection,compact).filter(player=>player.slot==='RUSH');
+   assert.deepEqual(Array.from(rush,p=>[p.name,p.matches]),[['WASSANA',18],['BuTziN',36]]);
+  }
+  assert.match(root.textContent,/pelo menos metade das quedas/);
+ }finally{w.close();}
+});
+
 const editions={s1:'ffws-br-2026-s1',s2:'ffws-br-2026-s2',global:'ffws-global-2026'};
 for(const [key,base] of Object.entries(editions)){
  test(key+' shares the ranking UI and requests only one compact data file',async()=>{
