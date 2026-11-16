@@ -188,7 +188,7 @@
     $('project-status-filter').addEventListener('change',e=>{status=e.target.value;render();});$('project-platform-filter').addEventListener('change',e=>{platform=e.target.value;render();});
     $('project-company-select').addEventListener('change',e=>{companyId=e.target.value;renderContent();renderNavigation();});
     root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-      if(b.dataset.nfaNewDay)startNfaDay();
+      if(b.hasAttribute('data-nfa-new-day')){startNfaDay();return;}
       if(b.dataset.quickComplete)quickComplete(b.dataset.quickComplete);
       if(b.dataset.pendingStatus){status=status===b.dataset.pendingStatus?'':b.dataset.pendingStatus;$('project-status-filter').value=status;render();}
       if(b.dataset.company){companyId=b.dataset.company;render();}
