@@ -89,13 +89,42 @@ test('featured Mundial menu expands in both sidebars without navigating and high
  }finally{w.close();}
 });
 
-test('phase-one participants follow the official four groups, with readable native team-page links and confirmed second-phase pools',()=>{
+test('phase-one participants follow the official four groups with native team-page links',()=>{
  const x=ui();try{
   const root=x.render('classificatoria'),groups=JSON.parse(read('ffws-global-2026/groups.json')).groups;assert.equal(root.querySelectorAll('.global-knockout-group').length,4);assert.equal(root.querySelectorAll('.global-knockout-team').length,24);
   for(const group of root.querySelectorAll('.global-knockout-group')){const key=group.querySelector('h3').textContent.slice(-1);const links=[...group.querySelectorAll('.global-knockout-team')];assert.equal(links.length,6);assert.deepEqual(links.map(link=>new URL(link.href).searchParams.get('time')),groups[key]);for(const link of links){assert.equal(new URL(link.href).pathname,'/ffws-global-2026/equipe');assert(link.querySelector('img'));assert(!link.hasAttribute('onclick'));}}
   assert(root.textContent.includes('Toque em uma equipe'));assert(!root.querySelector('.global-participants-grid'));
-  const second=x.render('segunda-fase');assert.match(second.textContent,/Pools confirmados/);assert.deepEqual([...second.querySelectorAll('.global-knockout-group')].map(pool=>pool.querySelectorAll('a').length),[12,2,2,2]);
-  for(const stage of ['last-chance','final']){const later=x.render(stage);assert(!later.querySelector('.global-knockout-team'));assert(!later.textContent.includes('Ver os 24 participantes'));}
+ }finally{x.w.close()}
+});
+test('fixture pages link the known teams and replace pending slots only when the qualifiers are known',()=>{
+ const x=ui();try{
+  const ids=fixture=>[...fixture.querySelectorAll('a.global-knockout-team')].map(a=>new URL(a.href).searchParams.get('time'));
+  let second=x.render('segunda-fase');
+  const first=second.querySelector('[data-fixture="segundaFase-1"]');
+  assert.equal(first.querySelector('h3').textContent,'Rodada 1');
+  const dayOne=['bru','los','fx','p-esports','team-flash','loud','gow','rrq','ag-al','onic','lyon','gundynasty'];
+  assert.deepEqual(ids(first),dayOne);
+  assert.deepEqual([...second.querySelectorAll('.global-phase-fixture')].map(fixture=>ids(fixture).length),[12,2,2,2]);
+  const last=()=>x.render('last-chance').querySelector('[data-fixture="lastChance-1"]');
+  const direct=['horaa-esports','stellar-esport'];
+  const lastFixture=last();
+  assert.deepEqual(ids(lastFixture),direct);
+  assert.deepEqual([...lastFixture.querySelectorAll('.global-phase-fixture-tbd')].map(slot=>slot.textContent),Array(10).fill('TBD'));
+  assert.match(lastFixture.textContent,/Dia 4 da Fase 2/);
+  assert(!x.render('final').querySelector('.global-phase-fixture'));
+
+  const byId=new Map(x.api.state.teams.map(team=>[team.id,team.name]));
+  const drops=(day,teams)=>Array.from({length:6},(_,index)=>({day,round:day,drop:index+1,results:teams.map((id,i)=>({team:byId.get(id),points:12-i,kills:0,position:i+1,booyah:Number(i===0)}))}));
+  const dayFour=['team-inf','tag',...dayOne.slice(2)];
+  const finalDrops=drops(4,dayFour);
+  x.api.state.stages.segundaFase.rounds=[...drops(1,dayOne),...finalDrops.slice(0,5)];
+  second=x.render('segunda-fase');
+  assert.deepEqual(ids(second.querySelector('[data-fixture="segundaFase-2"]')),['xprojekt','resurrection-esports',...dayOne.slice(2)]);
+  assert.equal(last().querySelectorAll('.global-phase-fixture-tbd').length,10);
+  x.api.state.stages.segundaFase.rounds.push(finalDrops.at(-1));
+  const complete=last();
+  assert.deepEqual(ids(complete),[...direct,...dayFour.slice(2)]);
+  assert.equal(complete.querySelectorAll('.global-phase-fixture-tbd').length,0);
  }finally{x.w.close()}
 });
 test('groups load once from a static file and a failed or incomplete map cannot invent group membership or block the page',async()=>{

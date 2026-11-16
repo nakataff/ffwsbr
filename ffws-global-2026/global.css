@@ -730,6 +730,17 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
 .global-knockout-team svg{flex:0 0 13px;fill:none;stroke:#81b9df;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .global-knockout-team:hover{background:rgba(0,200,255,.075);color:#fff}
 .global-knockout-groups :is(a,summary):focus-visible{outline:2px solid #00c8ff;outline-offset:-3px;border-radius:5px}
+.global-phase-fixtures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.global-phase-fixture:first-child{grid-column:1/-1}
+.global-phase-fixture .global-phase-fixture-teams{display:grid;gap:8px;padding:10px}
+.global-phase-fixture:first-child .global-phase-fixture-teams{grid-template-columns:repeat(4,minmax(0,1fr))}
+.global-phase-fixture-teams .global-knockout-team,.global-phase-fixture-tbd{height:100%;min-height:54px;border-radius:8px;border:1px solid #263a53;background:#0e1a2c}
+.global-phase-fixture .global-knockout-team:hover{background:#142a40}
+.global-phase-fixture .global-phase-fixture-teams li:last-child .global-knockout-team{border-bottom:1px solid #263a53}
+.global-phase-fixture-tbd{display:grid;place-items:center;border-style:dashed;background:transparent;color:#a4b6ca;font-size:.8rem;font-weight:700}
+.global-phase-fixture-note{margin:0;padding:0 12px 12px;color:#a4b6ca;font-size:.79rem}
+@media(max-width:960px){.global-phase-fixture:first-child .global-phase-fixture-teams{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:660px){.global-phase-fixtures{grid-template-columns:1fr}.global-phase-fixture .global-phase-fixture-teams,.global-phase-fixture:first-child .global-phase-fixture-teams{grid-template-columns:repeat(2,minmax(0,1fr))}.global-phase-fixture-teams .global-knockout-team{gap:7px;padding:8px;font-size:.82rem}.global-phase-fixture-teams .global-knockout-team img{width:26px;height:26px;flex-basis:26px}}
 @media(max-width:1150px){.global-knockout-group-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.global-knockout-group-grid{grid-template-columns:1fr;gap:12px}.global-knockout-groups .ffws-global-panel-head{align-items:flex-start}.global-knockout-groups .global-participants-link{min-height:44px;display:inline-flex;align-items:center;gap:8px}.global-knockout-team{font-size:.86rem;min-height:58px}.global-knockout-help{font-size:.78rem}}
 

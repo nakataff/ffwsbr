@@ -17,7 +17,7 @@
     'ffws-global-2026-equipes', 'ffws-global-2026-datas', 'ffws-global-2026-selecoes',
     'ffws-global-2026-stats', 'ffws-global-2026-notas', 'ffws-global-2026-comparar', 'ffws-global-2026-formato'
   ]);
-  const LIVE_PAGES = new Set(['classificatoria', 'segunda-fase', 'stats'].map(page => PAGE_PREFIX + page));
+  const LIVE_PAGES = new Set(['classificatoria', 'segunda-fase', 'last-chance', 'stats'].map(page => PAGE_PREFIX + page));
   const LIVE_TTL = 90000;
   const state = {
     loading: null,
@@ -540,10 +540,12 @@
     const root = document.getElementById(rootId);
     if (!root) return;
     const rows = filterStageRows(stageKey);
-    root.innerHTML = `<div class="ffws-global-shell">${hero(title, subtitle)}${stageNavigation(stageKey)}${stageKey==='segundaFase'?phaseTwoPools():''}${formatPanel(stageKey)}
+    const pageId = rootId.replace(/-content$/, '');
+    const live = LIVE_PAGES.has(pageId);
+    root.innerHTML = `<div class="ffws-global-shell">${hero(title, subtitle)}${stageNavigation(stageKey)}${stageParticipants(stageKey)}${formatPanel(stageKey)}
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner">
-        <div class="ffws-global-panel-head"><div><h2>Classificação</h2><p>Resultados atualizados por rodada, mapa e queda.</p></div>${stageKey==='segundaFase'?'<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults(\'segunda-fase\')">↻ Atualizar</button>':`<span class="ffws-global-badge">${rows.length} equipes</span>`}</div>
-        ${stageKey==='segundaFase'?liveStatus():''}
+        <div class="ffws-global-panel-head"><div><h2>Classificação</h2><p>Resultados atualizados por rodada, mapa e queda.</p></div>${live?`<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('${pageId.slice(PAGE_PREFIX.length)}')">↻ Atualizar</button>`:`<span class="ffws-global-badge">${rows.length} equipes</span>`}</div>
+        ${live?liveStatus():''}
         ${stageFilters(stageKey)}${stageTable(stageKey)}
       </div></section></div>`;
   }
@@ -2671,20 +2673,56 @@
     const complete=ids.length===24&&new Set(ids).size===24&&['A','B','C','D'].every(group=>groups[group]?.length===6)&&ids.every(id=>teamsById.has(id));
     return `<section class="ffws-global-panel global-knockout-groups"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Grupos da Fase 1</h2><p>24 equipes · 4 grupos de 6</p></div><a class="global-participants-link" href="/ffws-global-2026/equipes">Ver todos os elencos <span aria-hidden="true">↗</span></a></div><p class="global-knockout-help">Toque em uma equipe para ver seus jogadores e o desempenho no Mundial.</p>${complete?`<div class="global-knockout-group-grid">${['A','B','C','D'].map(group=>`<article class="global-knockout-group" aria-labelledby="global-knockout-group-${group}"><header><h3 id="global-knockout-group-${group}">Grupo ${group}</h3><span>6 equipes</span></header><ul>${groups[group].map(id=>{const team=teamsById.get(id);return `<li><a class="global-knockout-team" href="/ffws-global-2026/equipe?time=${encodeURIComponent(team.id)}"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" data-cff-global-team-logo="${escapeHtml(team.name)}" data-team-date="2026-11-06" width="34" height="34" alt="" onerror="this.onerror=null;this.src='/escudo.webp'"><span class="global-knockout-team-name">${escapeHtml(team.name)}</span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" focusable="false"><path d="M4 12 12 4M4 4h8v8"/></svg></a></li>`}).join('')}</ul></article>`).join('')}</div>`:'<p class="global-knockout-help">Não foi possível mostrar os grupos agora. A página de equipes continua disponível no botão acima.</p>'}</div></section>`;
   }
-  function phaseTwoPools() {
-    const rounds=(state.dates.rounds||[]).filter(round=>round.stage==='segundaFase'&&round.seededTeams?.length);
+  function fixtureTeamIds(rows) {
+    return [...new Set(rows.map(row=>teamByName(row.team||row.equipe)?.id).filter(Boolean))];
+  }
+
+  function stageParticipants(stageKey) {
+    if (stageKey!=='segundaFase'&&stageKey!=='lastChance') return '';
+    const calendar=state.dates.rounds||[];
+    const rounds=calendar.filter(round=>round.stage===stageKey&&round.seededTeams?.length);
     if(!rounds.length)return '';
+    const lastChance=stageKey==='lastChance';
     const teams=new Map(state.teams.map(team=>[team.id,team]));
+    const phaseTwo=calendar.filter(round=>round.stage==='segundaFase');
+    const phaseTwoEvents=stageEvents('segundaFase');
+    const currentEvents=lastChance?stageEvents('lastChance'):phaseTwoEvents;
+    const fromDay=(events,day)=>events.filter(event=>number(event.day||event.round)===day);
+    const rosterForRound=round=>{
+      const seeds=round.seededTeams.filter(id=>teams.has(id));
+      if(seeds.length===round.teamCount)return seeds;
+      const confirmed=fromDay(currentEvents,round.day).map(drop=>fixtureTeamIds(eventResults(drop)))
+        .find(ids=>ids.length===round.teamCount&&seeds.every(id=>ids.includes(id)));
+      if(confirmed)return [...new Set([...seeds,...confirmed])];
+      const previous=lastChance?phaseTwo.at(-1):phaseTwo.find(item=>item.day===round.day-1);
+      if(!previous)return seeds;
+      const drops=fromDay(phaseTwoEvents,previous.day);
+      if(drops.length!==previous.matches)return seeds;
+      const standings=aggregateStageRows('segundaFase',drops,false);
+      if(standings.length!==previous.teamCount||standings.some(row=>row.matches!==previous.matches))return seeds;
+      const next=[...new Set([...seeds,...fixtureTeamIds(standings.slice(stageFormat('segundaFase').advancePerDay))])];
+      return next.length===round.teamCount?next:seeds;
+    };
     return `<section class="ffws-global-panel global-knockout-groups"><div class="ffws-global-panel-inner">
-      <div class="ffws-global-panel-head"><div><h2>Pools confirmados</h2><p>19 a 22/11 · 07h de Brasília · 2 vagas na final por dia</p></div></div>
-      <div class="global-knockout-group-grid">${rounds.map(round=>`<article class="global-knockout-group"><header><h3>Pool ${round.day} · Dia ${round.day}</h3><span>${escapeHtml(round.date.slice(5).split('-').reverse().join('/'))}</span></header><ul>
-        ${round.seededTeams.map(id=>teams.get(id)).filter(Boolean).map(team=>`<li><a class="global-knockout-team" href="/ffws-global-2026/equipe?time=${encodeURIComponent(team.id)}"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt=""><span class="global-knockout-team-name">${escapeHtml(team.name)}</span></a></li>`).join('')}
-        ${round.day>1?'<li class="global-knockout-team">+ 10 equipes do dia anterior</li>':''}</ul></article>`).join('')}</div></div></section>`;
+      <div class="ffws-global-panel-head"><div><h2>${lastChance?'Equipes da Repescagem':'Equipes por rodada'}</h2><p>${lastChance?'4 vagas na Grande Final':'2 vagas na Grande Final por rodada'}</p></div></div>
+      <div class="global-phase-fixtures">${rounds.map(round=>{
+        const ids=rosterForRound(round),pending=round.teamCount-ids.length;
+        const date=round.date.slice(5).split('-').reverse().join('/');
+        const pendingInfo=pending>0?(lastChance?`${pending} vagas serão definidas no Dia ${phaseTwo.at(-1)?.day||4} da Fase 2.`:`${pending} equipes vêm da Rodada ${round.day-1}.`):'';
+        return `<article class="global-knockout-group global-phase-fixture" data-fixture="${escapeHtml(round.key)}"><header><h3>${lastChance?`${ids.length} de ${round.teamCount} confirmadas`:`Rodada ${round.round}`}</h3><span>${escapeHtml(date)} · ${escapeHtml(round.time24)} BRT</span></header>
+          <ul class="global-phase-fixture-teams" aria-label="Equipes participantes">
+            ${ids.map(id=>{
+              const team=teams.get(id);
+              return `<li><a class="global-knockout-team" href="/ffws-global-2026/equipe?time=${encodeURIComponent(id)}"><img loading="lazy" decoding="async" src="${escapeHtml(logo(team.name))}" alt="" onerror="this.onerror=null;this.src='/escudo.webp'"><span class="global-knockout-team-name">${escapeHtml(team.name)}</span></a></li>`;
+            }).join('')}
+            ${lastChance?Array.from({length:pending},(_,index)=>`<li class="global-phase-fixture-tbd" aria-label="Vaga ${ids.length+index+1} a definir">TBD</li>`).join(''):''}
+          </ul>${pendingInfo?`<p class="global-phase-fixture-note">${escapeHtml(pendingInfo)}</p>`:''}</article>`;
+      }).join('')}</div></div></section>`;
   }
   function globalEmptyStage(pageId){
     const section=pageId.slice(PAGE_PREFIX.length),key=section==='segunda-fase'?'segundaFase':section==='last-chance'?'lastChance':section,root=document.getElementById(pageId+'-content');if(!root)return;
     const title=stageLabel(key);
-    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${key==='segundaFase'?phaseTwoPools():''}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${LIVE_PAGES.has(pageId)?`<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('${section}')">↻ Atualizar resultados</button>`:'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div>${LIVE_PAGES.has(pageId)?liveStatus():''}</div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero(title,'FFWS Global Finals 2026')}${stageNavigation(key)}${stageParticipants(key)}${formatPanel(key)}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando resultados</strong><p>As pontuações desta fase aparecerão aqui conforme as partidas forem cadastradas.</p>${LIVE_PAGES.has(pageId)?`<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('${section}')">↻ Atualizar resultados</button>`:'<a class="global-participants-link" href="/ffws-global-2026/equipes">Conhecer as equipes do Mundial →</a>'}</div>${LIVE_PAGES.has(pageId)?liveStatus():''}</div></section>${key==='classificatoria'?phaseOneGroups():''}</div>`;
   }
   window.openFFWSGlobalTeam=function(name){const t=teamByName(name);const url=new URL(location.href);if(t)url.searchParams.set('time',t.id);else url.searchParams.delete('time');if(typeof window.navigate==='function'){history.replaceState(null,'',url);window.navigate(t?'ffws-global-2026-equipe':'ffws-global-2026-equipes');}else location.href=t?'/ffws-global-2026/equipe?time='+encodeURIComponent(t.id):'/ffws-global-2026/equipes';};
   window.openFFWSGlobalPlayer=function(name,team){const target=teamByName(team);const person=(state.players.players||[]).find(p=>normalize(p.name)===normalize(name)&&(target?teamByName(p.team)?.id===target.id:normalize(p.team)===normalize(team)));location.href=person?.id?'/ffws-global-2026/jogador?id='+encodeURIComponent(person.id):'/ffws-global-2026/jogadores?q='+encodeURIComponent(name);};
@@ -2731,7 +2769,11 @@
     const needsPhotos = new Set(['ffws-global-2026-equipes', 'ffws-global-2026-selecoes']).has(pageId);
     loadData()
       .then(() => pageId === 'ffws-global-2026-classificatoria' ? loadGroupsData() : null)
-      .then(() => Promise.all([LIVE_PAGES.has(pageId) ? loadLiveResults() : null, needsPlayers ? loadPlayersData().catch(error => { if (!LIVE_PAGES.has(pageId)) throw error; }) : null]))
+      .then(() => {
+        const hasRelevantLiveResults=pageId!==PAGE_PREFIX+'last-chance'||(state.dates.rounds||[])
+          .some(round=>round.key==='segundaFase-4'&&Date.now()>=scheduleStart(round));
+        return Promise.all([LIVE_PAGES.has(pageId)&&hasRelevantLiveResults ? loadLiveResults() : null, needsPlayers ? loadPlayersData().catch(error => { if (!LIVE_PAGES.has(pageId)) throw error; }) : null]);
+      })
       .then(() => needsPhotos && typeof window.cffLoadPlayerPhotoMap === 'function' ? window.cffLoadPlayerPhotoMap().catch(() => null) : null)
       .then(() => renderPage(pageId))
       .catch(error => {

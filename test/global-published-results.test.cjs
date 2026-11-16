@@ -107,7 +107,7 @@ test('Classificatória and Stats share published scores, preserve session filter
    assert.equal(merged.length,officialDrops);
    assert.equal(api.stageEvents('segundaFase').length,1);
    api.renderPage('ffws-global-2026-segunda-fase');
-   assert.match(d.querySelector('#ffws-global-2026-segunda-fase-content').textContent,/Pools confirmados/);
+   assert.match(d.querySelector('#ffws-global-2026-segunda-fase-content').textContent,/Equipes por rodada/);
    assert.equal(merged[0],archived);
   }
   fail=true;const count=api.stageEvents('classificatoria').length;
