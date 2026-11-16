@@ -1,0 +1,33 @@
+name: Diagnostico D1 de interacoes
+on:
+  push:
+    branches:
+      - codex/diagnostico-interacoes-20261116
+permissions: {}
+jobs:
+  counts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Ler apenas contagens agregadas
+        env:
+          CFF_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CFF_CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'NODE'
+          const start=Date.parse('2026-11-15T00:00:00-03:00');
+          const week=Date.parse('2026-11-16T00:00:00-03:00');
+          const address='https://api.cloudflare.com/client/v4/accounts/'+process.env.CFF_CF_ACCOUNT+'/d1/database/48e14987-34f9-4591-874f-c45c513dcb39/query';
+          const read=async (name,sql,params=[])=>{
+            try {
+              const response=await fetch(address,{method:'POST',headers:{Authorization:'Bearer '+process.env.CFF_CF_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({sql,params}),signal:AbortSignal.timeout(15000)});
+              const result=await response.json();
+              if (!response.ok || !result.success) {console.log(name,'HTTP',response.status,'codes',JSON.stringify(result.errors?.map(e=>e.code)||[]));process.exitCode=1;return;}
+              console.log(name,JSON.stringify(result.result.flatMap(r=>r.results||[])));
+            } catch(error) {console.log(name,'failed',error.name);process.exitCode=1;}
+          };
+          await read('Awards by day/type', "SELECT day_key,type,count(*) total,max(created_at) last_at FROM awards WHERE day_key BETWEEN '2026-11-15' AND '2026-11-22' GROUP BY day_key,type ORDER BY day_key,type");
+          await read('Story reviews', "SELECT week_key,status,count(*) total,max(event_at) last_at FROM story_reviews WHERE status IN ('pending','approved','rejected') AND event_at>=? GROUP BY week_key,status",[start]);
+          await read('Raw deliveries', "SELECT CASE WHEN received_at>=? THEN 'current' ELSE 'previous' END period,CASE WHEN kind IN ('comment_rejected_media_age','unrecognized_change','unrecognized_message','unrecognized_entry','checkin_meta_diagnostic') THEN kind ELSE 'other' END kind,count(*) total,max(received_at) last_at,SUM(CASE WHEN kind='comment_rejected_media_age' AND json_valid(payload) AND COALESCE(json_extract(payload,'$.mediaPublishedAt'),0)=0 THEN 1 ELSE 0 END) missing_media_time FROM raw_events WHERE id>(SELECT coalesce(max(id),0)-5000 FROM raw_events) AND received_at>=? GROUP BY 1,2",[week,start]);
+          await read('Recognized shape categories', "SELECT CASE WHEN kind='unrecognized_change' AND json_extract(payload,'$.field')='mentions' THEN 'mentions' WHEN kind='unrecognized_message' AND json_extract(payload,'$.hasReferral') THEN 'message_referral' WHEN kind='unrecognized_message' AND json_array_length(json_extract(payload,'$.attachmentTypes'))>0 THEN 'message_attachment' ELSE kind END category,count(*) total FROM raw_events WHERE id>(SELECT coalesce(max(id),0)-5000 FROM raw_events) AND received_at>=? AND kind IN ('unrecognized_change','unrecognized_message','unrecognized_entry') AND json_valid(payload) GROUP BY 1",[week]);
+          NODE
