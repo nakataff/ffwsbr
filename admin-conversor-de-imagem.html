@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Conversor de Imagens | Central Free Fire</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/webp" href="/central%20free%20fire.webp">
+<style>
+    :root {
+      --bg: #0f1117;
+      --panel: #171a23;
+      --panel-2: #202431;
+      --text: #f4f5f7;
+      --muted: #aeb4c2;
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #009fd8;
+      --accent-2: #8ae2ff;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #20263a 0, var(--bg) 42%);
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .page-shell{width:min(1780px,100%)}
+    .tool-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+    .tool-nav a{color:#aaecff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel);text-decoration:none;font-size:14px;font-weight:800}
+    .tool-nav a:hover{border-color:var(--accent);color:white}
+    .tool-nav span{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.04em}
+    .app {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(520px, 610px);
+      gap: 20px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .preview-card {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: sticky;
+      top: 18px;
+      align-self: start;
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-copy {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .top-download {
+      flex: 0 0 auto;
+      min-width: 220px;
+      align-self: flex-start;
+      box-shadow: 0 10px 26px rgba(139, 92, 246, 0.28);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .canvas-wrap {
+      width: 100%;
+      min-height: min(820px, calc(100vh - 135px));
+      background:
+        linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%);
+      background-size: 26px 26px;
+      background-position: 0 0, 0 13px, 13px -13px, -13px 0px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      touch-action: none;
+      padding: 18px;
+    }
+
+    .stage {
+      width: 700px;
+      height: 700px;
+      position: relative;
+      flex: 0 0 auto;
+      transition: width .18s ease, height .18s ease;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: transparent;
+      border-radius: 12px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.18), 0 14px 32px rgba(0,0,0,0.35);
+      cursor: grab;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    canvas.is-erasing,
+    canvas.is-erasing:active {
+      cursor: none;
+    }
+
+    .eraser-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(255, 255, 255, 0.96);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.65), 0 0 14px rgba(139, 92, 246, 0.5);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      display: none;
+      z-index: 4;
+    }
+
+    .eraser-cursor.is-visible {
+      display: block;
+    }
+
+    .circle-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      border-radius: 12px;
+    }
+
+    .circle-overlay.is-visible {
+      display: block;
+    }
+
+    .circle-overlay::before {
+      content: "";
+      position: absolute;
+      inset: 5%;
+      border: 3px solid rgba(255, 255, 255, 0.92);
+      border-radius: 50%;
+      box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.28), 0 0 28px rgba(139, 92, 246, 0.55);
+    }
+
+    .circle-overlay::after {
+      content: "Área circular do site";
+      position: absolute;
+      left: 50%;
+      bottom: 7%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 13px;
+      font-weight: 900;
+      background: rgba(0, 0, 0, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 7px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .drop-hint {
+      position: absolute;
+      inset: 20px;
+      border: 2px dashed rgba(255,255,255,0.22);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      padding: 24px;
+      pointer-events: none;
+      background: rgba(15, 17, 23, 0.62);
+      backdrop-filter: blur(4px);
+    }
+
+    .drop-hint strong {
+      color: var(--text);
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .side {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-self: start;
+    }
+
+    .upload-box {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .file-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      border: 0;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .small-text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .group {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .group-title {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      font-weight: 900;
+    }
+
+    .control {
+      display: grid;
+      gap: 7px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .value {
+      color: var(--muted);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    select{cursor:pointer;color-scheme:dark}
+    input[type="color"]{width:100%;height:44px;padding:5px;background:var(--panel-2);border:1px solid var(--border);border-radius:12px;cursor:pointer}
+    .control[hidden]{display:none}
+    .format-note{color:var(--muted);font-size:12px;line-height:1.5}
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .toggle-btn {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+    }
+
+    .toggle-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkline input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-weight: 900;
+      cursor: pointer;
+      color: var(--text);
+      background: var(--panel-2);
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      font-size: 15px;
+      padding: 15px 16px;
+    }
+
+    .success {
+      background: var(--success);
+      color: #05130a;
+    }
+
+    .danger {
+      background: rgba(239, 68, 68, 0.18);
+      color: #fecaca;
+    }
+
+    .status {
+      min-height: 20px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .status.ok {
+      color: #86efac;
+    }
+
+    .status.error {
+      color: #fca5a5;
+    }
+
+    .batch-list {
+      display: grid;
+      gap: 8px;
+      max-height: 180px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .batch-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.035);
+      border-radius: 12px;
+      padding: 9px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .batch-item strong {
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .batch-progress {
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .batch-progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+
+
+    .mode-note {
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      background: rgba(139, 92, 246, 0.12);
+      color: #ddd6fe;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .mode-note strong {
+      color: #fff;
+    }
+
+    .stats-box {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.035);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .stat-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .stat-line strong {
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .mini-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .eraser-toggle.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: rgba(255,255,255,0.28);
+    }
+
+
+    .source-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.035);
+      border-radius: 14px;
+      padding: 11px 12px;
+    }
+
+    .source-summary-copy {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .source-summary-copy span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .source-summary-copy strong {
+      color: var(--text);
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .compact-btn {
+      padding: 10px 11px;
+      border-radius: 11px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dimension-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr);
+      gap: 8px;
+      align-items: end;
+    }
+
+    .ratio-lock-btn {
+      width: 46px;
+      height: 44px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      font-size: 18px;
+      border-radius: 12px;
+    }
+
+    .ratio-lock-btn.active {
+      background: rgba(139, 92, 246, .22);
+      border-color: rgba(167, 139, 250, .75);
+      box-shadow: inset 0 0 0 1px rgba(139, 92, 246, .2);
+    }
+
+    .ratio-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: -4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .ratio-meta strong {
+      color: var(--accent-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .resize-scale {
+      display: grid;
+      gap: 6px;
+      padding: 2px 0 1px;
+    }
+
+    .range-markers {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      padding: 0 2px;
+    }
+
+    .range-markers span:nth-child(2) {
+      color: var(--accent-2);
+      font-weight: 800;
+    }
+
+    .preset-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .preset-row button {
+      min-width: 0;
+      padding: 9px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      line-height: 1.15;
+    }
+
+    .output-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .section-content > .small-text:last-child {
+      margin-top: -2px;
+    }
+
+
+
+    .collapsible-section {
+      padding: 0;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .section-toggle {
+      width: 100%;
+      border-radius: 0;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .section-toggle:hover {
+      transform: none;
+      background: rgba(255,255,255,0.045);
+    }
+
+    .section-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -3px;
+    }
+
+    .section-chevron {
+      width: 11px;
+      height: 11px;
+      flex: 0 0 auto;
+      border-right: 2px solid var(--accent-2);
+      border-bottom: 2px solid var(--accent-2);
+      transform: rotate(45deg) translate(-2px, -2px);
+      transition: transform .18s ease;
+    }
+
+    .collapsible-section.is-collapsed .section-chevron {
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+
+    .section-content {
+      display: grid;
+      gap: 14px;
+      padding: 0 16px 16px;
+      border-top: 1px solid rgba(255,255,255,0.055);
+    }
+
+    .upload-box .section-content {
+      gap: 12px;
+    }
+
+    .collapsible-section.is-collapsed .section-content {
+      display: none;
+    }
+
+    .batch-source-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .batch-source-grid .file-label {
+      min-width: 0;
+      padding-inline: 10px;
+    }
+
+    .zip-file-label {
+      background: linear-gradient(135deg, var(--accent), #6d28d9);
+    }
+
+    .batch-item strong {
+      direction: ltr;
+      text-align: left;
+    }
+
+    @media (max-width: 520px) {
+      .batch-source-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .source-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .source-summary .compact-btn {
+        width: 100%;
+      }
+
+      .preset-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 980px) {
+      body {
+        padding: 14px;
+        align-items: flex-start;
+      }
+
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+      }
+
+      .top-download {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .preview-card {
+        position: static;
+      }
+
+      .canvas-wrap {
+        min-height: clamp(340px, 68vh, 650px);
+        aspect-ratio: auto;
+        padding: 12px;
+      }
+
+      .stage {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page-shell">
+<nav class="tool-nav" aria-label="Navegação do painel"><a href="admin.html">← Voltar ao painel</a><span>Central Free Fire · Ferramentas de imagem</span></nav>
+<main class="app">
+<section class="card preview-card">
+<div class="header">
+<div class="header-copy">
+<h1>Conversor de Imagens</h1>
+<p class="subtitle">Converta para WebP, PNG, JPG e AVIF. Cole com Ctrl+V, arraste, selecione pastas ou abra ZIPs. Mantenha a resolução original ou ajuste recorte e borracha. O processamento acontece no seu navegador; nenhuma imagem é enviada ao servidor.</p>
+</div>
+<button class="primary top-download" disabled="" id="downloadBtn" type="button">Baixar WebP original</button>
+</div>
+<div class="canvas-wrap" id="dropArea">
+<div class="stage">
+<canvas height="1000" id="canvas" width="1000"></canvas>
+<div class="circle-overlay" id="circleOverlay"></div>
+<div aria-hidden="true" class="eraser-cursor" id="eraserCursor"></div>
+</div>
+<div class="drop-hint" id="dropHint">
+<div>
+<strong>Cole, arraste ou envie uma imagem</strong>
+            O tamanho original é detectado automaticamente
+          </div>
+</div>
+</div>
+</section>
+<aside class="card side"><div class="upload-box collapsible-section" data-section="section-input"><button aria-controls="section-input" aria-expanded="true" class="section-toggle" type="button"><span class="group-title">Entrada</span><span aria-hidden="true" class="section-chevron"></span></button><div class="section-content" id="section-input">
+<label class="file-label" for="fileInput">Selecionar imagem</label>
+<input accept="image/png,image/jpeg,image/webp,image/*" id="fileInput" type="file"/>
+<p class="small-text">Também funciona arrastando a imagem para a área de preview ou copiando a imagem e apertando Ctrl+V.</p>
+</div></div><div class="group collapsible-section" data-section="section-output"><button aria-controls="section-output" aria-expanded="true" class="section-toggle" type="button"><span class="group-title">Saída</span><span aria-hidden="true" class="section-chevron"></span></button><div class="section-content" id="section-output">
+<div class="control"><label class="control-row" for="outputFormat">Formato de saída</label><select id="outputFormat"><option value="webp">WebP (.webp)</option><option value="png">PNG (.png) — transparência</option><option value="jpeg">JPG (.jpg)</option><option value="avif">AVIF (.avif) — quando disponível</option></select><span id="formatHelp" class="format-note">WebP: arquivos menores com boa qualidade.</span></div>
+<div class="control" id="jpegBackgroundWrap" hidden><label class="control-row" for="jpegBackground">Fundo para JPG (sem transparência)</label><input id="jpegBackground" type="color" value="#ffffff"><span class="format-note">As áreas transparentes ganham essa cor.</span></div>
+
+<div class="source-summary">
+<div class="source-summary-copy">
+<span>Imagem detectada</span>
+<strong id="sourceResolution">—</strong>
+</div>
+<button class="compact-btn" disabled id="useOriginalSizeBtn" type="button">Usar original</button>
+</div>
+<div class="dimension-grid">
+<div class="control">
+<label class="control-row" for="outWidth">Largura</label>
+<input id="outWidth" max="16384" min="1" type="number" value="1000"/>
+</div>
+<button aria-label="Manter proporção" aria-pressed="true" class="ratio-lock-btn active" id="ratioLockBtn" title="Manter proporção entre largura e altura" type="button">🧲</button>
+<div class="control">
+<label class="control-row" for="outHeight">Altura</label>
+<input id="outHeight" max="16384" min="1" type="number" value="1000"/>
+</div>
+</div>
+<div class="ratio-meta"><span>Ímã de proporção: <strong id="ratioLockStatus">ligado</strong></span><span id="ratioValue">1:1</span></div>
+<div class="control resize-scale">
+<div class="control-row">
+<label for="resizeRange">Tamanho pelo original</label>
+<span class="value" id="resizeValue">50%</span>
+</div>
+<input id="resizeRange" max="100" min="1" step="1" type="range" value="50"/>
+<div class="range-markers"><span>1%</span><span>50%</span><span>100%</span></div>
+</div>
+<div class="preset-row">
+<button data-size-preset="original" disabled id="originalPresetBtn" type="button">Original</button>
+<button data-size-preset="1000x1000" type="button">1000×1000</button>
+<button data-size-preset="1200x630" type="button">1200×630</button>
+<button data-size-preset="1218x1291" type="button">1218×1291</button>
+</div>
+<div class="output-toolbar">
+<button id="swapDimensionsBtn" type="button">↔ Inverter medidas</button>
+<button id="copyDimensionsBtn" type="button">Copiar resolução</button>
+</div>
+<div class="control">
+<div class="control-row">
+<label for="qualityRange" id="qualityLabel">Qualidade WebP</label>
+<span class="value" id="qualityValue">82%</span>
+</div>
+<input id="qualityRange" max="100" min="1" type="range" value="82"/>
+</div>
+<label class="checkline" for="fastModeToggle">
+<input checked="" id="fastModeToggle" type="checkbox"/>
+          Modo rápido: converter mantendo o tamanho original
+        </label>
+<div class="mode-note" id="modeNote">
+<strong>Modo rápido ligado:</strong> a imagem NÃO vira 1000x1000. Ela mantém a largura e altura original; você só regula a qualidade.
+        </div>
+<div aria-live="polite" class="stats-box">
+<div class="stat-line"><span>Resolução original</span><strong id="originalDimensions">—</strong></div>
+<div class="stat-line"><span>Arquivo original</span><strong id="originalSize">—</strong></div>
+<div class="stat-line"><span>Saída estimada</span><strong id="outputSize">—</strong></div>
+<div class="stat-line"><span>Redução</span><strong id="savingSize">—</strong></div>
+</div>
+<div class="mini-actions">
+<button disabled="" id="estimateBtn" type="button">Ver KB</button>
+<button disabled="" id="copyInfoBtn" type="button">Copiar info</button>
+</div>
+<div class="control">
+<label class="control-row" for="fileName">Nome do arquivo</label>
+<input id="fileName" type="text" value="imagem-convertida"/>
+</div>
+<div class="status" id="status">Nenhuma imagem carregada.</div>
+</div></div><div class="group collapsible-section" data-section="section-batch"><button aria-controls="section-batch" aria-expanded="true" class="section-toggle" type="button"><span class="group-title">Lote / ZIP</span><span aria-hidden="true" class="section-chevron"></span></button><div class="section-content" id="section-batch">
+
+<div class="batch-source-grid">
+<label class="file-label" for="batchInput">Selecionar várias imagens</label>
+<label class="file-label" for="folderInput">Selecionar pasta inteira</label>
+</div>
+<input accept="image/png,image/jpeg,image/webp,image/*" id="batchInput" multiple="" type="file"/>
+<input accept="image/*" directory="" id="folderInput" multiple="" type="file" webkitdirectory=""/>
+<label class="file-label zip-file-label" for="zipInput">Abrir um ou vários ZIPs</label>
+<input accept=".zip,application/zip,application/x-zip-compressed" id="zipInput" multiple="" type="file"/>
+<p class="small-text">Você pode selecionar imagens soltas, uma pasta completa ou vários ZIPs de uma vez. Em múltiplos ZIPs, cada arquivo vira uma pasta-raiz com o nome do ZIP e a estrutura interna é preservada: <strong>logos.zip → logos/brasil/time.webp</strong>. Arquivos que não são imagens são ignorados.</p>
+<p class="small-text">No modo rápido, cada imagem mantém o tamanho original. No modo recorte, todas usam a largura, altura, zoom e posição configurados no preview. O formato escolhido é aplicado ao lote inteiro.</p>
+<div aria-hidden="true" class="batch-progress">
+<div class="batch-progress-bar" id="batchProgressBar"></div>
+</div>
+<div class="batch-list" id="batchList">
+<div class="batch-item"><strong>Nenhum arquivo em lote.</strong><span>—</span></div>
+</div>
+<button class="success" disabled="" id="batchZipBtn" type="button">Exportar tudo em ZIP</button>
+<div class="status" id="batchStatus">Selecione imagens, uma pasta inteira ou um ou vários ZIPs para converter mantendo as pastas.</div>
+</div></div><div class="group collapsible-section" data-section="section-adjust"><button aria-controls="section-adjust" aria-expanded="true" class="section-toggle" type="button"><span class="group-title">Ajuste da imagem</span><span aria-hidden="true" class="section-chevron"></span></button><div class="section-content" id="section-adjust">
+
+<div class="control">
+<div class="control-row">
+<label for="zoomRange">Tamanho / Zoom</label>
+<span class="value" id="zoomValue">100%</span>
+</div>
+<input id="zoomRange" max="300" min="10" type="range" value="100"/>
+</div>
+<div class="grid-2">
+<div class="control">
+<label class="control-row" for="posX">Posição X</label>
+<input id="posX" step="1" type="number" value="0"/>
+</div>
+<div class="control">
+<label class="control-row" for="posY">Posição Y</label>
+<input id="posY" step="1" type="number" value="0"/>
+</div>
+</div>
+<div class="control">
+<div class="control-row">
+<span>Travar movimento</span>
+<span class="value" id="lockValue">Livre</span>
+</div>
+<div class="grid-3">
+<button class="toggle-btn active" id="lockFreeBtn" type="button">Livre</button>
+<button class="toggle-btn" id="lockXBtn" type="button">Só X</button>
+<button class="toggle-btn" id="lockYBtn" type="button">Só Y</button>
+</div>
+</div>
+<label class="checkline" for="circleToggle">
+<input id="circleToggle" type="checkbox"/>
+          Mostrar overlay circular
+        </label>
+<div class="grid-2">
+<button id="fitBtn" type="button">Encaixar</button>
+<button id="fillBtn" type="button">Preencher</button>
+</div>
+<div class="grid-2">
+<button id="centerBtn" type="button">Centralizar</button>
+<button class="danger" id="resetBtn" type="button">Resetar</button>
+</div>
+<p class="small-text">Dica: arraste a imagem no preview para mover. Use a rodinha do mouse para zoom. O círculo é só guia visual e não sai no arquivo final.</p>
+</div></div><div class="group collapsible-section" data-section="section-eraser"><button aria-controls="section-eraser" aria-expanded="true" class="section-toggle" type="button"><span class="group-title">Borracha</span><span aria-hidden="true" class="section-chevron"></span></button><div class="section-content" id="section-eraser">
+
+<button class="toggle-btn eraser-toggle" disabled="" id="eraserToggle" type="button">Ativar borracha</button>
+<div class="control">
+<div class="control-row">
+<label for="eraserSizeRange">Tamanho</label>
+<span class="value" id="eraserSizeValue">60 px</span>
+</div>
+<input disabled="" id="eraserSizeRange" max="300" min="5" type="range" value="60"/>
+</div>
+<div class="control">
+<div class="control-row">
+<label for="eraserHardnessRange">Dureza</label>
+<span class="value" id="eraserHardnessValue">80%</span>
+</div>
+<input disabled="" id="eraserHardnessRange" max="100" min="0" type="range" value="80"/>
+</div>
+<button class="danger" disabled="" id="clearEraserBtn" type="button">Restaurar áreas apagadas</button>
+<p class="small-text">Disponível no modo recorte. Arraste sobre a imagem para apagar. A edição vale somente para a imagem atual, não para o lote.</p>
+</div></div></aside>
+</main>
+</div>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const fileInput = document.getElementById('fileInput');
+    const batchInput = document.getElementById('batchInput');
+    const folderInput = document.getElementById('folderInput');
+    const zipInput = document.getElementById('zipInput');
+    const batchZipBtn = document.getElementById('batchZipBtn');
+    const batchList = document.getElementById('batchList');
+    const batchStatus = document.getElementById('batchStatus');
+    const batchProgressBar = document.getElementById('batchProgressBar');
+
+    const dropArea = document.getElementById('dropArea');
+    const dropHint = document.getElementById('dropHint');
+    const circleOverlay = document.getElementById('circleOverlay');
+    const circleToggle = document.getElementById('circleToggle');
+    const eraserCursor = document.getElementById('eraserCursor');
+    const eraserToggle = document.getElementById('eraserToggle');
+    const eraserSizeRange = document.getElementById('eraserSizeRange');
+    const eraserSizeValue = document.getElementById('eraserSizeValue');
+    const eraserHardnessRange = document.getElementById('eraserHardnessRange');
+    const eraserHardnessValue = document.getElementById('eraserHardnessValue');
+    const clearEraserBtn = document.getElementById('clearEraserBtn');
+    const zoomRange = document.getElementById('zoomRange');
+    const zoomValue = document.getElementById('zoomValue');
+    const qualityRange = document.getElementById('qualityRange');
+    const outputFormat = document.getElementById('outputFormat');
+    const formatHelp = document.getElementById('formatHelp');
+    const qualityLabel = document.getElementById('qualityLabel');
+    const jpegBackground = document.getElementById('jpegBackground');
+    const jpegBackgroundWrap = document.getElementById('jpegBackgroundWrap');
+    const qualityValue = document.getElementById('qualityValue');
+    const fastModeToggle = document.getElementById('fastModeToggle');
+    const modeNote = document.getElementById('modeNote');
+    const originalSize = document.getElementById('originalSize');
+    const outputSize = document.getElementById('outputSize');
+    const savingSize = document.getElementById('savingSize');
+    const estimateBtn = document.getElementById('estimateBtn');
+    const copyInfoBtn = document.getElementById('copyInfoBtn');
+    const outWidth = document.getElementById('outWidth');
+    const outHeight = document.getElementById('outHeight');
+    const stage = document.querySelector('.stage');
+    const sourceResolution = document.getElementById('sourceResolution');
+    const originalDimensions = document.getElementById('originalDimensions');
+    const useOriginalSizeBtn = document.getElementById('useOriginalSizeBtn');
+    const originalPresetBtn = document.getElementById('originalPresetBtn');
+    const ratioLockBtn = document.getElementById('ratioLockBtn');
+    const ratioLockStatus = document.getElementById('ratioLockStatus');
+    const ratioValue = document.getElementById('ratioValue');
+    const resizeRange = document.getElementById('resizeRange');
+    const resizeValue = document.getElementById('resizeValue');
+    const swapDimensionsBtn = document.getElementById('swapDimensionsBtn');
+    const copyDimensionsBtn = document.getElementById('copyDimensionsBtn');
+    const fileName = document.getElementById('fileName');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const fitBtn = document.getElementById('fitBtn');
+    const fillBtn = document.getElementById('fillBtn');
+    const centerBtn = document.getElementById('centerBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const posXInput = document.getElementById('posX');
+    const posYInput = document.getElementById('posY');
+    const lockFreeBtn = document.getElementById('lockFreeBtn');
+    const lockXBtn = document.getElementById('lockXBtn');
+    const lockYBtn = document.getElementById('lockYBtn');
+    const lockValue = document.getElementById('lockValue');
+    const statusEl = document.getElementById('status');
+
+    const OUTPUT_FORMATS=Object.freeze({
+      webp:{mime:'image/webp',ext:'webp',label:'WebP',lossy:true},
+      png:{mime:'image/png',ext:'png',label:'PNG',lossy:false},
+      jpeg:{mime:'image/jpeg',ext:'jpg',label:'JPG',lossy:true},
+      avif:{mime:'image/avif',ext:'avif',label:'AVIF',lossy:true}
+    });
+    const selectedOutputFormat=()=>OUTPUT_FORMATS[outputFormat.value]||OUTPUT_FORMATS.webp;
+    let image = null;
+    let sourceFile = null;
+    let convertedBlob = null;
+    let estimateTimer = null;
+    let imageName = 'imagem-convertida';
+    let baseScale = 1;
+    let zoom = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    let movementLock = 'free';
+    let aspectLockEnabled = true;
+    let lockedAspectRatio = 1;
+    let syncingDimensions = false;
+    let sourceImageWidth = 0;
+    let sourceImageHeight = 0;
+    let resizeSliderTouched = false;
+    let batchFiles = [];
+    let batchFilePaths = new Map();
+    let batchSourceDescription = '';
+
+    const eraseMaskCanvas = document.createElement('canvas');
+    const eraseMaskCtx = eraseMaskCanvas.getContext('2d');
+    let eraserEnabled = false;
+    let eraserHasChanges = false;
+    let isErasing = false;
+    let lastErasePoint = null;
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let startOffsetX = 0;
+    let startOffsetY = 0;
+
+    function setStatus(message, type = '') {
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`.trim();
+    }
+
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes) || bytes <= 0) return '—';
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
+
+    function resetOutputInfo() {
+      convertedBlob = null;
+      outputSize.textContent = '—';
+      savingSize.textContent = '—';
+      copyInfoBtn.disabled = true;
+    }
+
+    function updateSavingInfo(blobSize) {
+      outputSize.textContent = formatBytes(blobSize);
+      if (sourceFile?.size) {
+        const percent = Math.max(-999, Math.min(100, (1 - (blobSize / sourceFile.size)) * 100));
+        savingSize.textContent = `${percent.toFixed(1)}%`;
+      } else {
+        savingSize.textContent = '—';
+      }
+      copyInfoBtn.disabled = false;
+    }
+
+    function sanitizeFileName(name) {
+      return (name || 'imagem-convertida')
+        .replace(/\.[^/.]+$/, '')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-zA-Z0-9-_]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '') || 'imagem-convertida';
+    }
+
+    const supportedImageExtensions = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'avif']);
+
+    function normalizeArchivePath(path) {
+      const raw = String(path || '').replace(/\\/g, '/').replace(/^\/+/, '');
+      const safeParts = [];
+      for (const rawPart of raw.split('/')) {
+        const part = rawPart.replace(/\0/g, '').trim();
+        if (!part || part === '.') continue;
+        if (part === '..') {
+          if (safeParts.length) safeParts.pop();
+          continue;
+        }
+        safeParts.push(part);
+      }
+      return safeParts.join('/');
+    }
+
+    function getFileExtension(name) {
+      const clean = String(name || '').split('?')[0].split('#')[0];
+      const match = clean.match(/\.([^.\\/]+)$/);
+      return match ? match[1].toLowerCase() : '';
+    }
+
+    function isSupportedImageFile(file) {
+      if (!file) return false;
+      if (String(file.type || '').toLowerCase().startsWith('image/')) return true;
+      return supportedImageExtensions.has(getFileExtension(file.name));
+    }
+
+    function isSupportedImagePath(path) {
+      return supportedImageExtensions.has(getFileExtension(path));
+    }
+
+    function imageMimeFromPath(path) {
+      const ext = getFileExtension(path);
+      if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
+      if (ext === 'png') return 'image/png';
+      if (ext === 'webp') return 'image/webp';
+      if (ext === 'gif') return 'image/gif';
+      if (ext === 'bmp') return 'image/bmp';
+      if (ext === 'avif') return 'image/avif';
+      return 'application/octet-stream';
+    }
+
+    function getBaseNameFromPath(path) {
+      const normalized = normalizeArchivePath(path);
+      return normalized.split('/').pop() || 'imagem';
+    }
+
+    function getBatchRelativePath(file) {
+      return normalizeArchivePath(
+        batchFilePaths.get(file) || file?.webkitRelativePath || file?.name || 'imagem'
+      );
+    }
+
+    function replacePathExtensionForOutput(path, fallbackIndex = 1) {
+      const normalized = normalizeArchivePath(path) || `imagem-${fallbackIndex}`;
+      const slashIndex = normalized.lastIndexOf('/');
+      const directory = slashIndex >= 0 ? normalized.slice(0, slashIndex + 1) : '';
+      const name = slashIndex >= 0 ? normalized.slice(slashIndex + 1) : normalized;
+      const base = name.replace(/\.[^.]+$/, '') || `imagem-${fallbackIndex}`;
+      return `${directory}${base}.${selectedOutputFormat().ext}`;
+    }
+
+    function makeUniqueArchivePath(path, usedPaths) {
+      const normalized = normalizeArchivePath(path);
+      const key = normalized.toLowerCase();
+      const count = usedPaths.get(key) || 0;
+      usedPaths.set(key, count + 1);
+      if (!count) return normalized;
+
+      const slashIndex = normalized.lastIndexOf('/');
+      const directory = slashIndex >= 0 ? normalized.slice(0, slashIndex + 1) : '';
+      const name = slashIndex >= 0 ? normalized.slice(slashIndex + 1) : normalized;
+      const extension=selectedOutputFormat().ext;
+      const base=name.replace(new RegExp('\\.'+extension+'$','i'),'');
+      return `${directory}${base}-${count+1}.${extension}`;
+    }
+
+    function setBatchSelection(files, pathGetter, sourceDescription = '') {
+      batchFiles = Array.from(files || []).filter(isSupportedImageFile);
+      batchFilePaths = new Map();
+      batchSourceDescription = sourceDescription;
+
+      batchFiles.forEach((file, index) => {
+        const proposedPath = pathGetter ? pathGetter(file, index) : (file.webkitRelativePath || file.name);
+        batchFilePaths.set(file, normalizeArchivePath(proposedPath) || file.name || `imagem-${index + 1}`);
+      });
+
+      renderBatchList();
+      if (batchFiles[0]) loadImageFromFile(batchFiles[0]);
+    }
+
+    function syncBatchArchiveName(name) {
+      const clean = sanitizeFileName(name || 'imagens-'+selectedOutputFormat().ext);
+      fileName.value = clean || 'imagens-'+selectedOutputFormat().ext;
+    }
+
+    function syncPositionInputs() {
+      posXInput.value = Math.round(offsetX);
+      posYInput.value = Math.round(offsetY);
+    }
+
+
+    function gcd(a, b) {
+      a = Math.abs(Math.round(a));
+      b = Math.abs(Math.round(b));
+      while (b) [a, b] = [b, a % b];
+      return a || 1;
+    }
+
+    function formatAspectRatio(width, height) {
+      const w = Math.max(1, Math.round(Number(width) || 1));
+      const h = Math.max(1, Math.round(Number(height) || 1));
+      const divisor = gcd(w, h);
+      const rw = w / divisor;
+      const rh = h / divisor;
+      if (rw <= 40 && rh <= 40) return `${rw}:${rh}`;
+      return `${(w / h).toFixed(3)}:1`;
+    }
+
+    function refreshRatioUI() {
+      ratioLockBtn.classList.toggle('active', aspectLockEnabled);
+      ratioLockBtn.setAttribute('aria-pressed', String(aspectLockEnabled));
+      ratioLockStatus.textContent = aspectLockEnabled ? 'ligado' : 'desligado';
+      ratioValue.textContent = formatAspectRatio(outWidth.value, outHeight.value);
+    }
+
+    function setAspectLock(enabled, captureCurrentRatio = true) {
+      aspectLockEnabled = Boolean(enabled);
+      if (aspectLockEnabled && captureCurrentRatio) {
+        const w = Math.max(1, Number(outWidth.value) || 1);
+        const h = Math.max(1, Number(outHeight.value) || 1);
+        lockedAspectRatio = w / h;
+      }
+      refreshRatioUI();
+    }
+
+    const MIN_OUTPUT_DIMENSION = 1;
+    const MAX_OUTPUT_DIMENSION = 16384;
+
+    function clampOutputDimension(value, fallback = 1000) {
+      const numeric = Number(value);
+      const safe = Number.isFinite(numeric) && numeric > 0 ? numeric : fallback;
+      return Math.max(MIN_OUTPUT_DIMENSION, Math.min(MAX_OUTPUT_DIMENSION, Math.round(safe)));
+    }
+
+    function readDimensionInput(input, fallback) {
+      const raw = String(input.value ?? '').trim();
+      if (!raw) return null;
+      const numeric = Number(raw);
+      if (!Number.isFinite(numeric) || numeric <= 0) return null;
+      return clampOutputDimension(numeric, fallback);
+    }
+
+    function setOutputDimensions(width, height, options = {}) {
+      const { updateLockRatio = true, refit = false, estimate = true } = options;
+      syncingDimensions = true;
+      outWidth.value = clampOutputDimension(width, sourceImageWidth || 1000);
+      outHeight.value = clampOutputDimension(height, sourceImageHeight || 1000);
+      syncingDimensions = false;
+
+      if (aspectLockEnabled && updateLockRatio) {
+        lockedAspectRatio = Number(outWidth.value) / Number(outHeight.value);
+      }
+
+      updateCanvasSize();
+      if (refit && image && !fastModeToggle.checked) fitImage('fill');
+      refreshRatioUI();
+      if (estimate) scheduleEstimate();
+    }
+
+    function handleDimensionChange(changedAxis) {
+      if (syncingDimensions) return;
+
+      const currentWidth = readDimensionInput(outWidth, sourceImageWidth || 1000);
+      const currentHeight = readDimensionInput(outHeight, sourceImageHeight || 1000);
+      if (changedAxis === 'width' && currentWidth === null) return;
+      if (changedAxis === 'height' && currentHeight === null) return;
+
+      let width = currentWidth ?? clampOutputDimension(outWidth.value, sourceImageWidth || 1000);
+      let height = currentHeight ?? clampOutputDimension(outHeight.value, sourceImageHeight || 1000);
+
+      if (aspectLockEnabled && Number.isFinite(lockedAspectRatio) && lockedAspectRatio > 0) {
+        syncingDimensions = true;
+        if (changedAxis === 'width') {
+          height = clampOutputDimension(width / lockedAspectRatio, 1);
+          outHeight.value = height;
+        } else {
+          width = clampOutputDimension(height * lockedAspectRatio, 1);
+          outWidth.value = width;
+        }
+        syncingDimensions = false;
+      }
+
+      // Não reescreve o campo que o usuário está digitando. Isso evita o antigo
+      // problema em que "1" virava "100" antes de terminar de digitar "1200".
+      updateCanvasSize({ preserveEditingAxis: changedAxis });
+      refreshRatioUI();
+      scheduleEstimate();
+    }
+
+    function commitDimensionChange(changedAxis) {
+      if (syncingDimensions) return;
+      const fallbackW = sourceImageWidth || 1000;
+      const fallbackH = sourceImageHeight || 1000;
+      let width = readDimensionInput(outWidth, fallbackW) ?? fallbackW;
+      let height = readDimensionInput(outHeight, fallbackH) ?? fallbackH;
+
+      if (aspectLockEnabled && Number.isFinite(lockedAspectRatio) && lockedAspectRatio > 0) {
+        if (changedAxis === 'width') height = clampOutputDimension(width / lockedAspectRatio, fallbackH);
+        else width = clampOutputDimension(height * lockedAspectRatio, fallbackW);
+      }
+      setOutputDimensions(width, height, { updateLockRatio: false, refit: false });
+    }
+
+    function updateStageSize() {
+      if (!stage || !dropArea) return;
+      const width = Math.max(1, canvas.width || 1000);
+      const height = Math.max(1, canvas.height || 1000);
+      const ratio = width / height;
+      const wrapWidth = Math.max(220, dropArea.clientWidth - (window.innerWidth <= 980 ? 24 : 36));
+      const maxWidth = Math.min(820, wrapWidth);
+      const maxHeight = window.innerWidth <= 980
+        ? Math.min(620, Math.max(300, window.innerHeight * 0.58))
+        : Math.min(760, Math.max(420, window.innerHeight - 190));
+
+      let displayWidth = maxWidth;
+      let displayHeight = displayWidth / ratio;
+      if (displayHeight > maxHeight) {
+        displayHeight = maxHeight;
+        displayWidth = displayHeight * ratio;
+      }
+
+      stage.style.width = `${Math.max(1, Math.round(displayWidth))}px`;
+      stage.style.height = `${Math.max(1, Math.round(displayHeight))}px`;
+    }
+
+    function useOriginalDimensions() {
+      if (!sourceImageWidth || !sourceImageHeight) return;
+      resizeSliderTouched = true;
+      resizeRange.value = 100;
+      resizeValue.textContent = '100%';
+      setOutputDimensions(sourceImageWidth, sourceImageHeight, { updateLockRatio: true, refit: true });
+      const appliedWidth = Number(outWidth.value);
+      const appliedHeight = Number(outHeight.value);
+      const clamped = appliedWidth !== sourceImageWidth || appliedHeight !== sourceImageHeight;
+      setStatus(clamped
+        ? `A imagem original é ${sourceImageWidth}×${sourceImageHeight}px; a área de recorte foi limitada a ${appliedWidth}×${appliedHeight}px.`
+        : `Saída ajustada para o tamanho original: ${appliedWidth}×${appliedHeight}px.`, 'ok');
+    }
+
+    function setFastPreviewCanvasSize() {
+      if (!image || !sourceImageWidth || !sourceImageHeight) return;
+      const ratio = sourceImageWidth / sourceImageHeight;
+      const previewBase = 1200;
+      if (ratio >= 1) {
+        canvas.width = previewBase;
+        canvas.height = Math.max(1, Math.round(previewBase / ratio));
+      } else {
+        canvas.height = previewBase;
+        canvas.width = Math.max(1, Math.round(previewBase * ratio));
+      }
+
+      baseScale = Math.min(canvas.width / sourceImageWidth, canvas.height / sourceImageHeight);
+      zoom = 1;
+      zoomRange.value = 100;
+      zoomValue.textContent = '100%';
+      offsetX = 0;
+      offsetY = 0;
+      syncPositionInputs();
+      updateStageSize();
+      draw();
+    }
+
+
+    function updateCanvasSize(options = {}) {
+      const { preserveEditingAxis = '' } = options;
+      const fallbackW = sourceImageWidth || 1000;
+      const fallbackH = sourceImageHeight || 1000;
+      const w = clampOutputDimension(outWidth.value, fallbackW);
+      const h = clampOutputDimension(outHeight.value, fallbackH);
+      if (preserveEditingAxis !== 'width') outWidth.value = w;
+      if (preserveEditingAxis !== 'height') outHeight.value = h;
+      canvas.width = w;
+      canvas.height = h;
+      updateStageSize();
+      draw();
+    }
+
+    function drawImageWithMask(targetCtx, img, x, y, drawW, drawH, applyMask = true) {
+      targetCtx.drawImage(img, x, y, drawW, drawH);
+
+      if (applyMask && eraserHasChanges && eraseMaskCanvas.width && eraseMaskCanvas.height) {
+        targetCtx.save();
+        targetCtx.globalCompositeOperation = 'destination-out';
+        targetCtx.drawImage(eraseMaskCanvas, x, y, drawW, drawH);
+        targetCtx.restore();
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      if (!image) return;
+
+      const scale = baseScale * zoom;
+      const drawW = image.width * scale;
+      const drawH = image.height * scale;
+      const x = (canvas.width - drawW) / 2 + offsetX;
+      const y = (canvas.height - drawH) / 2 + offsetY;
+
+      drawImageWithMask(ctx, image, x, y, drawW, drawH, !fastModeToggle.checked);
+    }
+
+    function setZoomValue(percent) {
+      const value = Math.max(10, Math.min(300, Number(percent)));
+      zoomRange.value = value;
+      zoom = value / 100;
+      zoomValue.textContent = `${Math.round(value)}%`;
+      draw();
+    }
+
+    function fitImage(mode = 'fill') {
+      if (!image) return;
+      const scaleX = canvas.width / image.width;
+      const scaleY = canvas.height / image.height;
+      baseScale = mode === 'fit' ? Math.min(scaleX, scaleY) : Math.max(scaleX, scaleY);
+      offsetX = 0;
+      offsetY = 0;
+      syncPositionInputs();
+      setZoomValue(100);
+    }
+
+    function resetEraseMask() {
+      const width = image ? (image.naturalWidth || image.width) : 1;
+      const height = image ? (image.naturalHeight || image.height) : 1;
+      eraseMaskCanvas.width = Math.max(1, width);
+      eraseMaskCanvas.height = Math.max(1, height);
+      eraseMaskCtx.clearRect(0, 0, eraseMaskCanvas.width, eraseMaskCanvas.height);
+      eraserHasChanges = false;
+      clearEraserBtn.disabled = true;
+      resetOutputInfo();
+      draw();
+    }
+
+    function updateEraserAvailability() {
+      const unavailable = fastModeToggle.checked || !image;
+      eraserToggle.disabled = unavailable;
+      eraserSizeRange.disabled = unavailable;
+      eraserHardnessRange.disabled = unavailable;
+      clearEraserBtn.disabled = unavailable || !eraserHasChanges;
+
+      if (unavailable && eraserEnabled) setEraserEnabled(false);
+    }
+
+    function setEraserEnabled(enabled) {
+      eraserEnabled = Boolean(enabled && image && !fastModeToggle.checked);
+      eraserToggle.classList.toggle('active', eraserEnabled);
+      eraserToggle.textContent = eraserEnabled ? 'Borracha ativa' : 'Ativar borracha';
+      canvas.classList.toggle('is-erasing', eraserEnabled);
+      if (!eraserEnabled) eraserCursor.classList.remove('is-visible');
+    }
+
+    function imageCoordinatesFromCanvas(point) {
+      if (!image) return null;
+      const scale = baseScale * zoom;
+      const drawW = image.width * scale;
+      const drawH = image.height * scale;
+      const x = (canvas.width - drawW) / 2 + offsetX;
+      const y = (canvas.height - drawH) / 2 + offsetY;
+
+      return {
+        x: (point.x - x) / scale,
+        y: (point.y - y) / scale,
+        scale
+      };
+    }
+
+    function addEraseStamp(canvasPosition) {
+      const mapped = imageCoordinatesFromCanvas(canvasPosition);
+      if (!mapped) return;
+
+      const radius = Math.max(0.5, (Number(eraserSizeRange.value) / 2) / mapped.scale);
+      if (mapped.x < -radius || mapped.y < -radius || mapped.x > eraseMaskCanvas.width + radius || mapped.y > eraseMaskCanvas.height + radius) return;
+
+      const hardness = Math.max(0, Math.min(100, Number(eraserHardnessRange.value))) / 100;
+      const innerRadius = radius * Math.min(0.995, hardness);
+      const gradient = eraseMaskCtx.createRadialGradient(mapped.x, mapped.y, innerRadius, mapped.x, mapped.y, radius);
+      gradient.addColorStop(0, 'rgba(255,255,255,1)');
+      if (hardness < 0.995) gradient.addColorStop(Math.max(0.001, hardness), 'rgba(255,255,255,1)');
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+      eraseMaskCtx.save();
+      eraseMaskCtx.globalCompositeOperation = 'source-over';
+      eraseMaskCtx.fillStyle = gradient;
+      eraseMaskCtx.beginPath();
+      eraseMaskCtx.arc(mapped.x, mapped.y, radius, 0, Math.PI * 2);
+      eraseMaskCtx.fill();
+      eraseMaskCtx.restore();
+
+      eraserHasChanges = true;
+      clearEraserBtn.disabled = false;
+      resetOutputInfo();
+    }
+
+    function eraseStroke(from, to) {
+      const distance = Math.hypot(to.x - from.x, to.y - from.y);
+      const spacing = Math.max(1, Number(eraserSizeRange.value) * 0.12);
+      const steps = Math.max(1, Math.ceil(distance / spacing));
+
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        addEraseStamp({
+          x: from.x + (to.x - from.x) * t,
+          y: from.y + (to.y - from.y) * t
+        });
+      }
+      draw();
+    }
+
+    function updateEraserCursor(event) {
+      if (!eraserEnabled || !image) return;
+      const rect = canvas.getBoundingClientRect();
+      const size = Number(eraserSizeRange.value) * (rect.width / canvas.width);
+      eraserCursor.style.width = `${Math.max(4, size)}px`;
+      eraserCursor.style.height = `${Math.max(4, size)}px`;
+      eraserCursor.style.left = `${event.clientX - rect.left}px`;
+      eraserCursor.style.top = `${event.clientY - rect.top}px`;
+      eraserCursor.classList.add('is-visible');
+    }
+
+    function flattenCanvasForJpeg(sourceCanvas){
+      const flat=document.createElement('canvas');
+      flat.width=sourceCanvas.width;flat.height=sourceCanvas.height;
+      const c=flat.getContext('2d',{alpha:false});
+      if(!c)throw new Error('Não foi possível preparar o JPG.');
+      c.fillStyle=jpegBackground.value||'#ffffff';
+      c.fillRect(0,0,flat.width,flat.height);
+      c.drawImage(sourceCanvas,0,0);
+      return flat;
+    }
+    function canvasToOutputBlob(sourceCanvas){
+      const format=selectedOutputFormat();
+      const target=format.mime==='image/jpeg'?flattenCanvasForJpeg(sourceCanvas):sourceCanvas;
+      return new Promise((resolve,reject)=>{
+        try{
+          target.toBlob(blob=>{
+            if(!blob){reject(new Error('Não foi possível gerar '+format.label+'.'));return;}
+            if(String(blob.type).toLowerCase()!==format.mime){
+              reject(new Error('Seu navegador não exporta '+format.label+'. Escolha PNG, JPG ou WebP.'));
+              return;
+            }
+            resolve(blob);
+          },format.mime,format.lossy?Number(qualityRange.value)/100:undefined);
+        }catch(error){reject(error);}
+      });
+    }
+    function updateFormatUI(){
+      const f=selectedOutputFormat();
+      qualityRange.disabled=!f.lossy;
+      qualityLabel.textContent='Qualidade '+f.label;
+      qualityValue.textContent=f.lossy?qualityRange.value+'%':'Sem perdas';
+      jpegBackgroundWrap.hidden=f.mime!=='image/jpeg';
+      formatHelp.textContent=f.mime==='image/png'?'PNG preserva a transparência e não tem perda de qualidade.':f.mime==='image/jpeg'?'JPG é ótimo para fotos, mas não aceita transparência. Use o fundo configurável.':f.mime==='image/avif'?'AVIF depende do suporte de exportação do navegador.':'WebP combina boa compressão e transparência.';
+      downloadBtn.textContent=fastModeToggle.checked?'Baixar '+f.label+' original':'Baixar recorte .'+f.ext;
+      if(batchFiles.length)renderBatchList();
+      scheduleEstimate();
+    }
+    function checkAvifSupport(){
+      const option=outputFormat.querySelector('option[value="avif"]');
+      try{
+        const test=document.createElement('canvas');test.width=test.height=1;
+        if(!test.toDataURL('image/avif').startsWith('data:image/avif')){
+          option.disabled=true;option.textContent='AVIF (não disponível neste navegador)';
+        }
+      }catch(error){option.disabled=true;option.textContent='AVIF (não disponível neste navegador)';}
+    }
+
+    async function generateImageBlob() {
+      if (!image) return null;
+
+      if (fastModeToggle.checked) {
+        const fastCanvas = document.createElement('canvas');
+        fastCanvas.width = image.naturalWidth || image.width;
+        fastCanvas.height = image.naturalHeight || image.height;
+        const fastCtx = fastCanvas.getContext('2d', { alpha: true });
+        fastCtx.imageSmoothingEnabled = true;
+        fastCtx.imageSmoothingQuality = 'high';
+        fastCtx.clearRect(0, 0, fastCanvas.width, fastCanvas.height);
+        fastCtx.drawImage(image, 0, 0);
+        return canvasToOutputBlob(fastCanvas);
+      }
+
+      updateCanvasSize();
+      draw();
+      return canvasToOutputBlob(canvas);
+    }
+
+    async function updateEstimate(){
+      if(!image)return;
+      resetOutputInfo();estimateBtn.disabled=true;
+      const requested=selectedOutputFormat();
+      setStatus('Calculando tamanho da imagem...','');
+      try{
+        const blob=await generateImageBlob();
+        if(requested!==selectedOutputFormat())return;
+        convertedBlob=blob;updateSavingInfo(blob.size);
+        setStatus(requested.label+' pronto: '+formatBytes(blob.size)+(fastModeToggle.checked?' (resolução original).':' ('+canvas.width+'×'+canvas.height+' px).'),'ok');
+      }catch(error){setStatus(error.message||'Não foi possível gerar a imagem.','error');}
+      finally{estimateBtn.disabled=false;}
+    }
+
+    function scheduleEstimate() {
+      if (!image) return;
+      resetOutputInfo();
+      clearTimeout(estimateTimer);
+      estimateTimer = setTimeout(updateEstimate, 250);
+    }
+
+
+    function setBatchStatus(message, type = '') {
+      batchStatus.textContent = message;
+      batchStatus.className = `status ${type}`.trim();
+    }
+
+    function setBatchProgress(current, total) {
+      const pct = total ? Math.round((current / total) * 100) : 0;
+      batchProgressBar.style.width = `${pct}%`;
+    }
+
+    function renderBatchList() {
+      if (!batchFiles.length) {
+        batchList.innerHTML = '<div class="batch-item"><strong>Nenhum arquivo em lote.</strong><span>—</span></div>';
+        batchZipBtn.disabled = true;
+        setBatchProgress(0, 0);
+        return;
+      }
+
+      batchList.innerHTML = batchFiles.map((file) => {
+        const displayPath = getBatchRelativePath(file);
+        const safePath = String(displayPath || file.name || 'imagem')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+        return `<div class="batch-item"><strong title="${safePath}">${safePath}</strong><span>${formatBytes(file.size)}</span></div>`;
+      }).join('');
+
+      batchZipBtn.disabled = false;
+      setBatchProgress(0, batchFiles.length);
+      const sourceText = batchSourceDescription ? ` de ${batchSourceDescription}` : '';
+      setBatchStatus(`${batchFiles.length} imagem(ns)${sourceText} prontas para exportar em ZIP, mantendo as pastas.`, 'ok');
+    }
+
+    function loadImageElementFromFile(file) {
+      return new Promise((resolve, reject) => {
+        if (!isSupportedImageFile(file)) {
+          reject(new Error('Arquivo de imagem inválido ou não suportado.'));
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error(`Não consegui ler ${file.name || 'imagem'}.`));
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject(new Error(`Não consegui abrir ${file.name || 'imagem'}.`));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function generateImageBlobFromImage(img) {
+
+      if (fastModeToggle.checked) {
+        const fastCanvas = document.createElement('canvas');
+        fastCanvas.width = img.naturalWidth || img.width;
+        fastCanvas.height = img.naturalHeight || img.height;
+        const fastCtx = fastCanvas.getContext('2d', { alpha: true });
+        fastCtx.imageSmoothingEnabled = true;
+        fastCtx.imageSmoothingQuality = 'high';
+        fastCtx.clearRect(0, 0, fastCanvas.width, fastCanvas.height);
+        fastCtx.drawImage(img, 0, 0);
+        return canvasToOutputBlob(fastCanvas);
+      }
+
+      const tempCanvas = document.createElement('canvas');
+      const w = clampOutputDimension(outWidth.value, sourceImageWidth || 1000);
+      const h = clampOutputDimension(outHeight.value, sourceImageHeight || 1000);
+      tempCanvas.width = w;
+      tempCanvas.height = h;
+      const tempCtx = tempCanvas.getContext('2d', { alpha: true });
+      tempCtx.imageSmoothingEnabled = true;
+      tempCtx.imageSmoothingQuality = 'high';
+
+      const scaleX = w / img.width;
+      const scaleY = h / img.height;
+      const currentBaseScale = Math.max(scaleX, scaleY);
+      const scale = currentBaseScale * zoom;
+      const drawW = img.width * scale;
+      const drawH = img.height * scale;
+      const x = (w - drawW) / 2 + offsetX;
+      const y = (h - drawH) / 2 + offsetY;
+
+      tempCtx.clearRect(0, 0, w, h);
+      tempCtx.drawImage(img, x, y, drawW, drawH);
+      return canvasToOutputBlob(tempCanvas);
+    }
+
+    function readU16(view, offset) {
+      return view.getUint16(offset, true);
+    }
+
+    function readU32(view, offset) {
+      return view.getUint32(offset, true);
+    }
+
+    function findZipEndOfCentralDirectory(view) {
+      const minimum = Math.max(0, view.byteLength - 22 - 0xffff);
+      for (let offset = view.byteLength - 22; offset >= minimum; offset--) {
+        if (readU32(view, offset) === 0x06054b50) return offset;
+      }
+      return -1;
+    }
+
+    function decodeZipName(bytes, utf8) {
+      try {
+        return new TextDecoder(utf8 ? 'utf-8' : 'utf-8', { fatal: false }).decode(bytes);
+      } catch (error) {
+        return Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
+      }
+    }
+
+    function parseZipCentralDirectory(buffer) {
+      const view = new DataView(buffer);
+      const bytes = new Uint8Array(buffer);
+      const eocdOffset = findZipEndOfCentralDirectory(view);
+      if (eocdOffset < 0) throw new Error('Não encontrei a estrutura central do ZIP.');
+
+      const diskNumber = readU16(view, eocdOffset + 4);
+      const centralDisk = readU16(view, eocdOffset + 6);
+      const entriesOnDisk = readU16(view, eocdOffset + 8);
+      const totalEntries = readU16(view, eocdOffset + 10);
+      const centralSize = readU32(view, eocdOffset + 12);
+      const centralOffset = readU32(view, eocdOffset + 16);
+
+      if (diskNumber !== 0 || centralDisk !== 0 || entriesOnDisk !== totalEntries) {
+        throw new Error('ZIP dividido em várias partes não é suportado.');
+      }
+      if (totalEntries === 0xffff || centralSize === 0xffffffff || centralOffset === 0xffffffff) {
+        throw new Error('ZIP64 ainda não é suportado neste conversor.');
+      }
+      if (centralOffset + centralSize > buffer.byteLength) {
+        throw new Error('O ZIP parece estar corrompido ou incompleto.');
+      }
+
+      const entries = [];
+      let offset = centralOffset;
+      for (let index = 0; index < totalEntries; index++) {
+        if (offset + 46 > buffer.byteLength || readU32(view, offset) !== 0x02014b50) {
+          throw new Error('A lista de arquivos do ZIP está corrompida.');
+        }
+
+        const flags = readU16(view, offset + 8);
+        const method = readU16(view, offset + 10);
+        const checksum = readU32(view, offset + 16);
+        const compressedSize = readU32(view, offset + 20);
+        const uncompressedSize = readU32(view, offset + 24);
+        const nameLength = readU16(view, offset + 28);
+        const extraLength = readU16(view, offset + 30);
+        const commentLength = readU16(view, offset + 32);
+        const localHeaderOffset = readU32(view, offset + 42);
+        const nameStart = offset + 46;
+        const nameEnd = nameStart + nameLength;
+        if (nameEnd > buffer.byteLength) throw new Error('Nome de arquivo inválido dentro do ZIP.');
+
+        const name = normalizeArchivePath(decodeZipName(bytes.slice(nameStart, nameEnd), Boolean(flags & 0x0800)));
+        entries.push({
+          name,
+          flags,
+          method,
+          checksum,
+          compressedSize,
+          uncompressedSize,
+          localHeaderOffset,
+          isDirectory: !name || /\/$/.test(decodeZipName(bytes.slice(nameStart, nameEnd), Boolean(flags & 0x0800)))
+        });
+
+        offset = nameEnd + extraLength + commentLength;
+      }
+      return entries;
+    }
+
+    async function inflateRawBytes(compressedBytes) {
+      if (typeof DecompressionStream !== 'function') {
+        throw new Error('Seu navegador não oferece suporte para descompactar ZIP com Deflate. Use Chrome/Edge atualizado.');
+      }
+
+      let stream;
+      try {
+        stream = new Blob([compressedBytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      } catch (error) {
+        throw new Error('Seu navegador não conseguiu iniciar a descompactação Deflate do ZIP.');
+      }
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    }
+
+    async function extractZipEntryBytes(buffer, entry) {
+      if (entry.flags & 0x0001) throw new Error(`O arquivo ${entry.name} está criptografado.`);
+      if (entry.localHeaderOffset + 30 > buffer.byteLength) throw new Error(`Entrada inválida no ZIP: ${entry.name}`);
+
+      const view = new DataView(buffer);
+      if (readU32(view, entry.localHeaderOffset) !== 0x04034b50) {
+        throw new Error(`Cabeçalho local inválido no ZIP: ${entry.name}`);
+      }
+
+      const nameLength = readU16(view, entry.localHeaderOffset + 26);
+      const extraLength = readU16(view, entry.localHeaderOffset + 28);
+      const dataStart = entry.localHeaderOffset + 30 + nameLength + extraLength;
+      const dataEnd = dataStart + entry.compressedSize;
+      if (dataEnd > buffer.byteLength) throw new Error(`Dados incompletos no ZIP: ${entry.name}`);
+
+      const compressed = new Uint8Array(buffer, dataStart, entry.compressedSize);
+      let output;
+      if (entry.method === 0) {
+        output = new Uint8Array(compressed);
+      } else if (entry.method === 8) {
+        output = await inflateRawBytes(compressed);
+      } else {
+        throw new Error(`Método de compressão ${entry.method} não suportado em ${entry.name}.`);
+      }
+
+      if (entry.uncompressedSize !== output.byteLength) {
+        throw new Error(`Tamanho inválido após descompactar ${entry.name}.`);
+      }
+      if (crc32(output) !== entry.checksum) {
+        throw new Error(`Falha de integridade ao ler ${entry.name}.`);
+      }
+      return output;
+    }
+
+    function getZipRootFolderName(zipFile, index = 1, usedRoots = new Map()) {
+      const rawName = String(zipFile?.name || `zip-${index}`).replace(/\.zip$/i, '').trim() || `zip-${index}`;
+      const baseName = normalizeArchivePath(rawName).split('/').pop() || `zip-${index}`;
+      const key = baseName.toLowerCase();
+      const count = usedRoots.get(key) || 0;
+      usedRoots.set(key, count + 1);
+      return count ? `${baseName}-${count + 1}` : baseName;
+    }
+
+    async function loadImagesFromZips(zipFileList) {
+      const selectedZips = Array.from(zipFileList || []).filter((file) => /\.zip$/i.test(String(file?.name || '')));
+      if (!selectedZips.length) {
+        setBatchStatus('Selecione pelo menos um arquivo .zip.', 'error');
+        return;
+      }
+
+      batchZipBtn.disabled = true;
+      setBatchStatus(`Lendo ${selectedZips.length} ZIP(s)...`, '');
+      setBatchProgress(0, selectedZips.length * 1000);
+
+      const files = [];
+      const pathMap = new Map();
+      const usedRoots = new Map();
+      const failedZips = [];
+      let ignoredCount = 0;
+      let emptyZipCount = 0;
+
+      try {
+        for (let zipIndex = 0; zipIndex < selectedZips.length; zipIndex++) {
+          const zipFile = selectedZips[zipIndex];
+          const rootFolder = selectedZips.length > 1 ? getZipRootFolderName(zipFile, zipIndex + 1, usedRoots) : '';
+          setBatchStatus(`Lendo ZIP ${zipIndex + 1}/${selectedZips.length}: ${zipFile.name}...`, '');
+
+          try {
+            const buffer = await zipFile.arrayBuffer();
+            const allEntries = parseZipCentralDirectory(buffer);
+            const imageEntries = allEntries.filter((entry) => !entry.isDirectory && isSupportedImagePath(entry.name));
+            ignoredCount += allEntries.filter((entry) => !entry.isDirectory && !isSupportedImagePath(entry.name)).length;
+
+            if (!imageEntries.length) {
+              emptyZipCount += 1;
+              setBatchProgress((zipIndex + 1) * 1000, selectedZips.length * 1000);
+              continue;
+            }
+
+            for (let entryIndex = 0; entryIndex < imageEntries.length; entryIndex++) {
+              const entry = imageEntries[entryIndex];
+              setBatchStatus(`ZIP ${zipIndex + 1}/${selectedZips.length} · imagem ${entryIndex + 1}/${imageEntries.length}: ${entry.name}...`, '');
+              const bytes = await extractZipEntryBytes(buffer, entry);
+              const file = new File([bytes], getBaseNameFromPath(entry.name), {
+                type: imageMimeFromPath(entry.name),
+                lastModified: zipFile.lastModified || Date.now()
+              });
+              files.push(file);
+              pathMap.set(file, normalizeArchivePath(rootFolder ? `${rootFolder}/${entry.name}` : entry.name));
+
+              const zipFraction = (entryIndex + 1) / imageEntries.length;
+              setBatchProgress((zipIndex + zipFraction) * 1000, selectedZips.length * 1000);
+            }
+          } catch (error) {
+            console.error(`Falha ao ler ${zipFile.name}:`, error);
+            failedZips.push({ name: zipFile.name || `ZIP ${zipIndex + 1}`, message: error?.message || 'erro desconhecido' });
+          }
+
+          setBatchProgress((zipIndex + 1) * 1000, selectedZips.length * 1000);
+        }
+
+        if (!files.length) {
+          batchFiles = [];
+          batchFilePaths = new Map();
+          batchSourceDescription = '';
+          renderBatchList();
+          const failureText = failedZips.length
+            ? ` ${failedZips.length} ZIP(s) não puderam ser lidos.`
+            : '';
+          setBatchStatus(`Nenhuma imagem compatível foi encontrada nos ZIPs.${failureText}`, 'error');
+          return;
+        }
+
+        batchFiles = files;
+        batchFilePaths = pathMap;
+        batchSourceDescription = selectedZips.length === 1
+          ? `ZIP ${selectedZips[0].name}`
+          : `${selectedZips.length} ZIPs`;
+        renderBatchList();
+        if (batchFiles[0]) loadImageFromFile(batchFiles[0]);
+
+        if (selectedZips.length === 1) {
+          syncBatchArchiveName(`${String(selectedZips[0].name || 'imagens').replace(/\.zip$/i, '')}-${selectedOutputFormat().ext}`);
+        } else {
+          syncBatchArchiveName('zips-'+selectedOutputFormat().ext);
+        }
+
+        const extras = [];
+        if (ignoredCount) extras.push(`${ignoredCount} arquivo(s) que não são imagem foram ignorados`);
+        if (emptyZipCount) extras.push(`${emptyZipCount} ZIP(s) não tinham imagens compatíveis`);
+        if (failedZips.length) extras.push(`${failedZips.length} ZIP(s) falharam e foram ignorados`);
+        const extraText = extras.length ? ` ${extras.join(' · ')}.` : '';
+
+        const structureText = selectedZips.length > 1
+          ? ' Cada ZIP foi mantido como pasta-raiz e as subpastas internas foram preservadas.'
+          : ' As subpastas internas do ZIP foram preservadas.';
+        setBatchStatus(`${batchFiles.length} imagem(ns) carregadas de ${selectedZips.length} ZIP(s).${structureText}${extraText}`, failedZips.length ? '' : 'ok');
+      } finally {
+        batchZipBtn.disabled = !batchFiles.length;
+      }
+    }
+
+    function makeCrc32Table() {
+      const table = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+        table[n] = c >>> 0;
+      }
+      return table;
+    }
+
+    const crc32Table = makeCrc32Table();
+
+    function crc32(bytes) {
+      let c = 0xffffffff;
+      for (let i = 0; i < bytes.length; i++) c = crc32Table[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+      return (c ^ 0xffffffff) >>> 0;
+    }
+
+    function dosDateTime(date = new Date()) {
+      const dosTime = (date.getHours() << 11) | (date.getMinutes() << 5) | Math.floor(date.getSeconds() / 2);
+      const dosDate = ((date.getFullYear() - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
+      return { dosTime, dosDate };
+    }
+
+    function writeU16(view, offset, value) {
+      view.setUint16(offset, value, true);
+    }
+
+    function writeU32(view, offset, value) {
+      view.setUint32(offset, value >>> 0, true);
+    }
+
+    async function createZipBlob(entries) {
+      const encoder = new TextEncoder();
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+      const { dosTime, dosDate } = dosDateTime();
+
+      for (const entry of entries) {
+        const nameBytes = encoder.encode(entry.name);
+        const dataBytes = new Uint8Array(await entry.blob.arrayBuffer());
+        const checksum = crc32(dataBytes);
+
+        const localHeader = new ArrayBuffer(30 + nameBytes.length);
+        const localView = new DataView(localHeader);
+        writeU32(localView, 0, 0x04034b50);
+        writeU16(localView, 4, 20);
+        writeU16(localView, 6, 0x0800);
+        writeU16(localView, 8, 0);
+        writeU16(localView, 10, dosTime);
+        writeU16(localView, 12, dosDate);
+        writeU32(localView, 14, checksum);
+        writeU32(localView, 18, dataBytes.length);
+        writeU32(localView, 22, dataBytes.length);
+        writeU16(localView, 26, nameBytes.length);
+        writeU16(localView, 28, 0);
+        new Uint8Array(localHeader, 30).set(nameBytes);
+
+        localParts.push(localHeader, dataBytes);
+
+        const centralHeader = new ArrayBuffer(46 + nameBytes.length);
+        const centralView = new DataView(centralHeader);
+        writeU32(centralView, 0, 0x02014b50);
+        writeU16(centralView, 4, 20);
+        writeU16(centralView, 6, 20);
+        writeU16(centralView, 8, 0x0800);
+        writeU16(centralView, 10, 0);
+        writeU16(centralView, 12, dosTime);
+        writeU16(centralView, 14, dosDate);
+        writeU32(centralView, 16, checksum);
+        writeU32(centralView, 20, dataBytes.length);
+        writeU32(centralView, 24, dataBytes.length);
+        writeU16(centralView, 28, nameBytes.length);
+        writeU16(centralView, 30, 0);
+        writeU16(centralView, 32, 0);
+        writeU16(centralView, 34, 0);
+        writeU16(centralView, 36, 0);
+        writeU32(centralView, 38, 0);
+        writeU32(centralView, 42, offset);
+        new Uint8Array(centralHeader, 46).set(nameBytes);
+
+        centralParts.push(centralHeader);
+        offset += localHeader.byteLength + dataBytes.length;
+      }
+
+      const centralSize = centralParts.reduce((sum, part) => sum + part.byteLength, 0);
+      const centralOffset = offset;
+      const endRecord = new ArrayBuffer(22);
+      const endView = new DataView(endRecord);
+      writeU32(endView, 0, 0x06054b50);
+      writeU16(endView, 4, 0);
+      writeU16(endView, 6, 0);
+      writeU16(endView, 8, entries.length);
+      writeU16(endView, 10, entries.length);
+      writeU32(endView, 12, centralSize);
+      writeU32(endView, 16, centralOffset);
+      writeU16(endView, 20, 0);
+
+      return new Blob([...localParts, ...centralParts, endRecord], { type: 'application/zip' });
+    }
+
+    async function exportBatchZip() {
+      if (!batchFiles.length) {
+        setBatchStatus('Selecione imagens, uma pasta ou um ou vários ZIPs antes de exportar.', 'error');
+        return;
+      }
+
+      batchZipBtn.disabled = true;
+      const format=selectedOutputFormat();
+      setBatchStatus('Gerando '+format.label+' em lote...', '');
+      setBatchProgress(0, batchFiles.length);
+
+      const usedPaths = new Map();
+      const entries = [];
+      let totalOriginal = 0;
+      let totalOutput = 0;
+
+      try {
+        for (let i = 0; i < batchFiles.length; i++) {
+          const file = batchFiles[i];
+          const sourcePath = getBatchRelativePath(file);
+          setBatchStatus(`Convertendo ${i + 1}/${batchFiles.length}: ${sourcePath || file.name || 'imagem'}...`, '');
+          const img = await loadImageElementFromFile(file);
+          const blob = await generateImageBlobFromImage(img);
+
+          if (!blob) throw new Error(`Falha ao converter ${sourcePath || file.name || 'imagem'}.`);
+
+          const desiredPath = replacePathExtensionForOutput(sourcePath, i + 1);
+          const finalPath = makeUniqueArchivePath(desiredPath, usedPaths);
+
+          entries.push({ name: finalPath, blob });
+          totalOriginal += file.size || 0;
+          totalOutput += blob.size || 0;
+          setBatchProgress(i + 1, batchFiles.length);
+        }
+
+        setBatchStatus('Compactando ZIP e mantendo a estrutura de pastas...', '');
+        const zipBlob = await createZipBlob(entries);
+        const zipName = sanitizeFileName(fileName.value || 'imagens-'+format.ext);
+
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${zipName}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        const saving = totalOriginal ? Math.max(-999, Math.min(100, (1 - (totalOutput / totalOriginal)) * 100)).toFixed(1) : '0.0';
+        setBatchStatus(`ZIP baixado com ${entries.length} ${format.label} e as pastas preservadas. Original: ${formatBytes(totalOriginal)} · Saída: ${formatBytes(totalOutput)} · Redução: ${saving}%.`, 'ok');
+      } catch (error) {
+        console.error(error);
+        setBatchStatus(error.message || 'Erro ao gerar o lote.', 'error');
+      } finally {
+        batchZipBtn.disabled = !batchFiles.length;
+      }
+    }
+
+    function updateModeUI() {
+      const fast = fastModeToggle.checked;
+      outWidth.disabled = fast;
+      outHeight.disabled = fast;
+      ratioLockBtn.disabled = fast;
+      resizeRange.disabled = fast || !sourceImageWidth;
+      useOriginalSizeBtn.disabled = fast || !sourceImageWidth;
+      originalPresetBtn.disabled = fast || !sourceImageWidth;
+      swapDimensionsBtn.disabled = fast;
+      copyDimensionsBtn.disabled = !image;
+      document.querySelectorAll('[data-size-preset]:not([data-size-preset="original"])').forEach((button) => { button.disabled = fast; });
+      fitBtn.disabled = fast;
+      fillBtn.disabled = fast;
+      centerBtn.disabled = fast;
+      resetBtn.disabled = fast;
+      zoomRange.disabled = fast;
+      posXInput.disabled = fast;
+      posYInput.disabled = fast;
+      lockFreeBtn.disabled = fast;
+      lockXBtn.disabled = fast;
+      lockYBtn.disabled = fast;
+      circleToggle.disabled = fast;
+      downloadBtn.textContent = fast ? 'Baixar '+selectedOutputFormat().label+' original' : 'Baixar recorte .'+selectedOutputFormat().ext;
+      modeNote.innerHTML = fast
+        ? '<strong>Modo rápido ligado:</strong> a imagem mantém automaticamente a resolução original; largura e altura ficam apenas como referência.'
+        : '<strong>Modo recorte ligado:</strong> escolha a resolução, use os presets e ative o ímã para manter largura e altura na mesma proporção.';
+
+      if (image) {
+        if (fast) {
+          setFastPreviewCanvasSize();
+        } else {
+          updateCanvasSize();
+          fitImage('fill');
+        }
+      } else {
+        updateStageSize();
+        draw();
+      }
+
+      updateEraserAvailability();
+      refreshRatioUI();
+    }
+
+    function setMovementLock(mode) {
+      movementLock = mode;
+      lockFreeBtn.classList.toggle('active', mode === 'free');
+      lockXBtn.classList.toggle('active', mode === 'x');
+      lockYBtn.classList.toggle('active', mode === 'y');
+      lockValue.textContent = mode === 'free' ? 'Livre' : mode === 'x' ? 'Só X' : 'Só Y';
+    }
+
+    function loadImageFromFile(file) {
+      if (!isSupportedImageFile(file)) {
+        setStatus('Arquivo inválido. Envie uma imagem PNG, JPG, WebP ou outro formato de imagem compatível.', 'error');
+        return;
+      }
+
+      sourceFile = file;
+      originalSize.textContent = formatBytes(file.size);
+      resetOutputInfo();
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          image = img;
+          sourceImageWidth = img.naturalWidth || img.width;
+          sourceImageHeight = img.naturalHeight || img.height;
+          sourceResolution.textContent = `${sourceImageWidth} × ${sourceImageHeight} px · ${formatAspectRatio(sourceImageWidth, sourceImageHeight)}`;
+          originalDimensions.textContent = `${sourceImageWidth} × ${sourceImageHeight} px`;
+
+          // A resolução de saída começa exatamente no tamanho detectado da imagem.
+          syncingDimensions = true;
+          outWidth.value = sourceImageWidth;
+          outHeight.value = sourceImageHeight;
+          syncingDimensions = false;
+          lockedAspectRatio = sourceImageWidth / sourceImageHeight;
+          resizeSliderTouched = false;
+          resizeRange.value = 50;
+          resizeValue.textContent = '50%';
+          refreshRatioUI();
+
+          useOriginalSizeBtn.disabled = fastModeToggle.checked;
+          originalPresetBtn.disabled = fastModeToggle.checked;
+          copyDimensionsBtn.disabled = false;
+          resetEraseMask();
+          imageName = sanitizeFileName(file.name || 'imagem-convertida');
+          fileName.value = imageName;
+          dropHint.style.display = 'none';
+          downloadBtn.disabled = false;
+          estimateBtn.disabled = false;
+          updateModeUI();
+          setStatus(`Imagem carregada: ${sourceImageWidth}×${sourceImageHeight}px — ${formatBytes(file.size)}.`, 'ok');
+          scheduleEstimate();
+        };
+        img.onerror = () => setStatus('Não consegui ler essa imagem.', 'error');
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function canvasPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      const source = event.touches?.[0] || event;
+      const clientX = source.clientX;
+      const clientY = source.clientY;
+      return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+
+    batchInput.addEventListener('change', (event) => {
+      setBatchSelection(event.target.files || [], (file) => file.name, 'arquivos selecionados');
+      if (batchFiles.length) syncBatchArchiveName('imagens-'+selectedOutputFormat().ext);
+    });
+
+    folderInput.addEventListener('change', (event) => {
+      const selected = Array.from(event.target.files || []);
+      const imageFiles = selected.filter(isSupportedImageFile);
+      const firstPath = imageFiles[0]?.webkitRelativePath || imageFiles[0]?.name || '';
+      const rootFolder = normalizeArchivePath(firstPath).split('/')[0] || 'pasta';
+      setBatchSelection(imageFiles, (file) => file.webkitRelativePath || file.name, `pasta ${rootFolder}`);
+      if (batchFiles.length) syncBatchArchiveName(`${rootFolder}-${selectedOutputFormat().ext}`);
+    });
+
+    zipInput.addEventListener('change', (event) => {
+      loadImagesFromZips(event.target.files || []);
+    });
+
+    batchZipBtn.addEventListener('click', exportBatchZip);
+
+    fileInput.addEventListener('change', (event) => {
+      loadImageFromFile(event.target.files[0]);
+    });
+
+    document.addEventListener('paste', (event) => {
+      const items = event.clipboardData?.items || [];
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          loadImageFromFile(file);
+          return;
+        }
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach((name) => {
+      dropArea.addEventListener(name, (event) => {
+        event.preventDefault();
+        dropArea.style.outline = '2px solid var(--accent)';
+      });
+    });
+
+    ['dragleave', 'drop'].forEach((name) => {
+      dropArea.addEventListener(name, (event) => {
+        event.preventDefault();
+        dropArea.style.outline = 'none';
+      });
+    });
+
+    dropArea.addEventListener('drop', (event) => {
+      const file = event.dataTransfer.files?.[0];
+      loadImageFromFile(file);
+    });
+
+    canvas.addEventListener('pointerdown', (event) => {
+      if (!image) return;
+      canvas.setPointerCapture?.(event.pointerId);
+      const point = canvasPoint(event);
+
+      if (eraserEnabled && !fastModeToggle.checked) {
+        event.preventDefault();
+        isErasing = true;
+        lastErasePoint = point;
+        addEraseStamp(point);
+        draw();
+        return;
+      }
+
+      isDragging = true;
+      dragStartX = point.x;
+      dragStartY = point.y;
+      startOffsetX = offsetX;
+      startOffsetY = offsetY;
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+      updateEraserCursor(event);
+      if (!image) return;
+      const point = canvasPoint(event);
+
+      if (isErasing && eraserEnabled) {
+        event.preventDefault();
+        eraseStroke(lastErasePoint || point, point);
+        lastErasePoint = point;
+        return;
+      }
+
+      if (!isDragging) return;
+      const nextX = startOffsetX + (point.x - dragStartX);
+      const nextY = startOffsetY + (point.y - dragStartY);
+
+      if (movementLock === 'free' || movementLock === 'x') offsetX = nextX;
+      if (movementLock === 'free' || movementLock === 'y') offsetY = nextY;
+
+      syncPositionInputs();
+      draw();
+    });
+
+    function finishCanvasInteraction(event) {
+      if (event?.pointerId !== undefined) canvas.releasePointerCapture?.(event.pointerId);
+      if ((isDragging || isErasing) && !fastModeToggle.checked) scheduleEstimate();
+      isDragging = false;
+      isErasing = false;
+      lastErasePoint = null;
+    }
+
+    canvas.addEventListener('pointerup', finishCanvasInteraction);
+    canvas.addEventListener('pointercancel', finishCanvasInteraction);
+    canvas.addEventListener('pointerleave', () => {
+      if (!isErasing) eraserCursor.classList.remove('is-visible');
+    });
+    canvas.addEventListener('pointerenter', updateEraserCursor);
+
+    canvas.addEventListener('wheel', (event) => {
+      if (!image) return;
+      event.preventDefault();
+      const next = Number(zoomRange.value) + (event.deltaY < 0 ? 5 : -5);
+      setZoomValue(next);
+      if (!fastModeToggle.checked) scheduleEstimate();
+    }, { passive: false });
+
+    zoomRange.addEventListener('input', () => {
+      setZoomValue(zoomRange.value);
+      if (!fastModeToggle.checked) scheduleEstimate();
+    });
+
+    qualityRange.addEventListener('input', () => {
+      qualityValue.textContent=qualityRange.value+'%';
+      scheduleEstimate();
+    });
+
+    outputFormat.addEventListener('change',()=>{
+      const old=fileName.value;
+      if(/-(?:webp|png|jpg|avif)$/i.test(old))fileName.value=old.replace(/-(?:webp|png|jpg|avif)$/i,'-'+selectedOutputFormat().ext);
+      updateFormatUI();
+    });
+    jpegBackground.addEventListener('input',scheduleEstimate);
+    posXInput.addEventListener('input', () => {
+      offsetX = Number(posXInput.value || 0);
+      draw();
+      if (!fastModeToggle.checked) scheduleEstimate();
+    });
+
+    posYInput.addEventListener('input', () => {
+      offsetY = Number(posYInput.value || 0);
+      draw();
+      if (!fastModeToggle.checked) scheduleEstimate();
+    });
+
+    lockFreeBtn.addEventListener('click', () => setMovementLock('free'));
+    lockXBtn.addEventListener('click', () => setMovementLock('x'));
+    lockYBtn.addEventListener('click', () => setMovementLock('y'));
+
+    eraserToggle.addEventListener('click', () => setEraserEnabled(!eraserEnabled));
+    eraserSizeRange.addEventListener('input', () => {
+      eraserSizeValue.textContent = `${eraserSizeRange.value} px`;
+    });
+    eraserHardnessRange.addEventListener('input', () => {
+      eraserHardnessValue.textContent = `${eraserHardnessRange.value}%`;
+    });
+    clearEraserBtn.addEventListener('click', () => {
+      if (!image) return;
+      resetEraseMask();
+      updateEraserAvailability();
+      scheduleEstimate();
+      setStatus('Áreas apagadas foram restauradas.', 'ok');
+    });
+
+    circleToggle.addEventListener('change', () => {
+      circleOverlay.classList.toggle('is-visible', circleToggle.checked);
+    });
+
+    outWidth.addEventListener('input', () => handleDimensionChange('width'));
+    outHeight.addEventListener('input', () => handleDimensionChange('height'));
+    outWidth.addEventListener('change', () => commitDimensionChange('width'));
+    outHeight.addEventListener('change', () => commitDimensionChange('height'));
+
+    resizeRange.addEventListener('input', () => {
+      const percent = Math.max(1, Math.min(100, Number(resizeRange.value) || 50));
+      resizeSliderTouched = true;
+      resizeValue.textContent = `${Math.round(percent)}%`;
+      if (!sourceImageWidth || !sourceImageHeight || fastModeToggle.checked) return;
+
+      const width = Math.max(1, Math.round(sourceImageWidth * percent / 100));
+      const height = Math.max(1, Math.round(sourceImageHeight * percent / 100));
+      setOutputDimensions(width, height, { updateLockRatio: true, refit: true });
+    });
+
+    ratioLockBtn.addEventListener('click', () => {
+      setAspectLock(!aspectLockEnabled, true);
+    });
+
+    useOriginalSizeBtn.addEventListener('click', useOriginalDimensions);
+    originalPresetBtn.addEventListener('click', useOriginalDimensions);
+
+    document.querySelectorAll('[data-size-preset]').forEach((button) => {
+      const preset = button.dataset.sizePreset;
+      if (!preset || preset === 'original') return;
+      button.addEventListener('click', () => {
+        const [width, height] = preset.split('x').map(Number);
+        setOutputDimensions(width, height, { updateLockRatio: true, refit: true });
+      });
+    });
+
+    swapDimensionsBtn.addEventListener('click', () => {
+      const width = Number(outWidth.value);
+      const height = Number(outHeight.value);
+      setOutputDimensions(height, width, { updateLockRatio: true, refit: true });
+    });
+
+    copyDimensionsBtn.addEventListener('click', async () => {
+      const fast = fastModeToggle.checked && sourceImageWidth && sourceImageHeight;
+      const width = fast ? sourceImageWidth : Number(outWidth.value);
+      const height = fast ? sourceImageHeight : Number(outHeight.value);
+      const text = `${width}x${height}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus(`Resolução copiada: ${text}px.`, 'ok');
+      } catch (error) {
+        setStatus(`Resolução: ${text}px.`, 'ok');
+      }
+    });
+    fastModeToggle.addEventListener('change', () => {
+      updateModeUI();
+      scheduleEstimate();
+    });
+    estimateBtn.addEventListener('click', updateEstimate);
+    copyInfoBtn.addEventListener('click', async () => {
+      const currentResolution = fastModeToggle.checked && sourceImageWidth && sourceImageHeight
+        ? `${sourceImageWidth}x${sourceImageHeight}`
+        : `${outWidth.value}x${outHeight.value}`;
+      const text = `Resolução: ${currentResolution} | Original: ${originalSize.textContent} | ${selectedOutputFormat().label}: ${outputSize.textContent} | Redução: ${savingSize.textContent} | Qualidade: ${qualityRange.value}%`;
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus('Informações copiadas.', 'ok');
+      } catch (error) {
+        setStatus(text, 'ok');
+      }
+    });
+
+    fitBtn.addEventListener('click', () => { fitImage('fit'); if (!fastModeToggle.checked) scheduleEstimate(); });
+    fillBtn.addEventListener('click', () => { fitImage('fill'); if (!fastModeToggle.checked) scheduleEstimate(); });
+    centerBtn.addEventListener('click', () => {
+      offsetX = 0;
+      offsetY = 0;
+      syncPositionInputs();
+      draw();
+      if (!fastModeToggle.checked) scheduleEstimate();
+    });
+    resetBtn.addEventListener('click', () => {
+      if (!image) return;
+      fitImage('fill');
+      if (!fastModeToggle.checked) scheduleEstimate();
+    });
+
+    downloadBtn.addEventListener('click',async()=>{
+      if(!image){setStatus('Carregue uma imagem antes de baixar.','error');return;}
+      const outputName=sanitizeFileName(fileName.value||imageName),format=selectedOutputFormat();
+      downloadBtn.disabled=true;setStatus('Gerando '+format.label+'...','');
+      try{
+        const blob=convertedBlob||await generateImageBlob();
+        if(!blob||blob.type.toLowerCase()!==format.mime)throw new Error('Não foi possível gerar o formato escolhido.');
+        convertedBlob=blob;updateSavingInfo(blob.size);
+        const url=URL.createObjectURL(blob),a=document.createElement('a');
+        a.href=url;a.download=outputName+'.'+format.ext;
+        document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+        setStatus('Arquivo baixado: '+outputName+'.'+format.ext+' — '+formatBytes(blob.size)+'.','ok');
+      }catch(error){setStatus(error.message||'Erro ao converter a imagem.','error');}
+      finally{downloadBtn.disabled=false;}
+    });
+
+    function initializeCollapsibleSections() {
+      document.querySelectorAll('.collapsible-section').forEach((section) => {
+        const toggle = section.querySelector('.section-toggle');
+        const sectionKey = section.dataset.section;
+        if (!toggle || !sectionKey) return;
+
+        try {
+          const savedState = localStorage.getItem(`png-webp-section:${sectionKey}`);
+          if (savedState === 'collapsed') {
+            section.classList.add('is-collapsed');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        } catch (error) {
+          // O conversor continua funcionando mesmo se o navegador bloquear o armazenamento local.
+        }
+
+        toggle.addEventListener('click', () => {
+          const collapsed = section.classList.toggle('is-collapsed');
+          toggle.setAttribute('aria-expanded', String(!collapsed));
+
+          try {
+            localStorage.setItem(
+              `png-webp-section:${sectionKey}`,
+              collapsed ? 'collapsed' : 'expanded'
+            );
+          } catch (error) {
+            // Sem persistência, o recolhimento ainda funciona durante a sessão atual.
+          }
+        });
+      });
+    }
+
+
+    checkAvifSupport();
+    initializeCollapsibleSections();
+    setAspectLock(true, true);
+    updateCanvasSize();
+    updateModeUI();
+    updateFormatUI();
+    setMovementLock('free');
+    window.addEventListener('resize', updateStageSize);
+  </script>
+</body>
+</html>
