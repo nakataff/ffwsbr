@@ -1,7 +1,7 @@
 'use strict';
 /* Read-only preview by default. --write prepares local files for one git release. */
 const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
-const overview=require('./build-global-overview.cjs'),profiles=require('./build-global-players.cjs'),camp=require('./build-global-camp-model.cjs');
+const overview=require('./build-global-overview.cjs'),profiles=require('./build-global-players.cjs'),camp=require('./build-global-camp-model.cjs'),analysis=require('./build-global-analysis.cjs');
 const {norm,build:buildMvp}=require('./build-mvp-summary.cjs'),s1=require('./build-s1-mvp.cjs'),s2=require('./build-s2-overview.cjs');
 const ROOT=path.join(__dirname,'..');
 const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,file),'utf8'));
@@ -78,9 +78,10 @@ async function prepare(edition,exportFile,close=false){
   if(close)closePhaseOne(data);
   const views=overview.build({...data,standingsDay1,includeMvp:true});
   const individual=profiles.build({...data,identities:read(base+'player-identities.json'),routes:read('player-data/routes.json').routes});
+  const summary=analysis.build(data,individual[base+'jogadores-resumo.json']);
   const model=camp.build({...data,playerSummary:individual[base+'jogadores-resumo.json']});
   const official=close?Object.fromEntries(['stages','dates'].map(key=>[base+key+'.json',JSON.stringify(data[key],null,2)+'\n'])):{};
-  return {coverage,files:{...official,...prefixed(base,views),...individual,[base+'camp-model.json']:model},generatedFolders:[base+'player-data',base+'player-details']};
+  return {coverage,files:{...official,...prefixed(base,views),...individual,[base+'camp-model.json']:model,[analysis.FILE]:summary},generatedFolders:[base+'player-data',base+'player-details']};
  }
  if(edition==='s1'){
   const base='ffws-br-2026-s1/',data=s1.build({archive:read(base+'players.json'),meta:read(base+'player-meta.json'),teams:read(base+'teams.json')});
@@ -109,7 +110,7 @@ async function main(){
  const stale=result.generatedFolders.flatMap(dir=>fs.existsSync(path.join(ROOT,dir))?fs.readdirSync(path.join(ROOT,dir)).filter(name=>name.endsWith('.json')&&!Object.hasOwn(result.files,dir+'/'+name)).map(name=>dir+'/'+name):[]);
  const changed=artifacts.filter(a=>a.old!==a.content);
  for(const {period,drops} of result.coverage)console.log(period+': '+drops+' quedas verificadas');
- for(const a of artifacts.filter(a=>/home-resumo|mvp-resumo|selecoes-resumo/.test(a.name)))console.log(a.name+': '+Buffer.byteLength(a.content)+' bytes / '+zlib.gzipSync(a.content).length+' gzip');
+ for(const a of artifacts.filter(a=>/home-resumo|mvp-resumo|selecoes-resumo|raio-x/.test(a.name)))console.log(a.name+': '+Buffer.byteLength(a.content)+' bytes / '+zlib.gzipSync(a.content).length+' gzip');
  console.log(changed.length+' de '+artifacts.length+' arquivos a atualizar; '+stale.length+' arquivos gerados obsoletos.');
  for(const a of changed.slice(0,24))console.log('  '+a.name+' ('+Buffer.byteLength(a.old||'')+' → '+Buffer.byteLength(a.content)+' bytes)');
  if(changed.length>24)console.log('  … mais '+(changed.length-24)+' arquivos.');

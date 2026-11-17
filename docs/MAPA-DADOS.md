@@ -196,6 +196,12 @@ navegação usa os mesmos filtros e preserva os parâmetros dos links antigos
 de `index.html#ffws-global-2026-…`. Estatísticas carrega os dados detalhados
 e o gráfico conforme o uso. MVP continua limitado ao resumo da edição.
 
+O Raio-X em `/ffws-global-2026/stats/raio-x/` usa apenas o resumo estático
+`stats/raio-x/resumo.json`, gerado pelo preparo global a partir do calendário,
+dos placares e dos registros individuais. Compara rodadas completas com o
+mesmo número de quedas ou a média ponderada por queda. O resumo acompanha
+os resultados cadastrados, sem consultar o Camp ao Vivo.
+
 ### Início do Mundial 2026
 
 Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu).

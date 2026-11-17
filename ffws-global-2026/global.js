@@ -169,13 +169,14 @@
     return state.playersLoading;
   }
 
-  function hero(title, subtitle) {
+  function hero(title, subtitle, showAnalysis = false) {
     return `<section class="ffws-global-hero">
       <div class="ffws-global-brand"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="86" height="67" alt="Free Fire World Series" decoding="async"><div class="ffws-global-kicker">FFWS GLOBAL FINALS 2026</div></div>
       <h1>${escapeHtml(title)}</h1>
       <p>${escapeHtml(subtitle)}</p>
       <div class="ffws-global-event-meta"><span>6 a 28 de novembro de 2026</span><span>Bangkok, Tailândia</span><span>24 equipes • Presencial • Garena</span><span>Reach Your Prime</span></div>
       <a class="ffws-global-pred-link" href="/interacoes.html#palpites" aria-label="Participar dos palpites da rodada do Mundial">🎯 Fazer meus palpites <span aria-hidden="true">↗</span></a>
+      ${showAnalysis ? '<a class="ffws-global-pred-link" href="/ffws-global-2026/stats/raio-x/">Explorar o Raio-X do Mundial <span aria-hidden="true">↗</span></a>' : ''}
     </section>`;
   }
 
@@ -2234,7 +2235,7 @@
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-ranking-columns"><div id="anchor-s2-ranking-medias"><div class="ffws-global-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div id="anchor-s2-ranking-totais"><div class="ffws-global-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
     ` : `<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-empty"><div><strong>Etapa ainda sem resultados</strong>As estatísticas aparecerão após o cadastro das quedas.</div></div></div></section>`;
 
-    root.innerHTML = `<div class="ffws-global-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Global Finals 2026')}
+    root.innerHTML = `<div class="ffws-global-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Global Finals 2026', true)}
       ${s2StatsStickyNavHtml(events.length, playerEntries.length)}
       <div id="cff-stats-share-gallery-slot" class="cff-stats-gallery-slot" aria-hidden="true"></div>
       ${summaryBlock}

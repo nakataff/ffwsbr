@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Raio-X do Mundial · FFWS Global Finals 2026 | Central Free Fire</title>
+  <meta name="description" content="Veja os recordes do Mundial de Free Fire 2026 em contexto e compare o desempenho de jogadores e equipes com a média de cada fase.">
+  <link rel="canonical" href="https://centralfreefire.com.br/ffws-global-2026/stats/raio-x/">
+  <link rel="icon" href="/central%20free%20fire.webp">
+  <link rel="stylesheet" href="/css/bundle.min.css?v=20260904-sidebar-nested-v22">
+  <link rel="stylesheet" href="/css/public-shell.css?v=20260901-nav-unified-v11">
+  <link rel="stylesheet" href="/css/shared-navigation.css?v=20261108-dock-collapse-v1">
+  <script defer src="/js/config.min.js?v=20261020-chat-layout-v1"></script>
+  <script defer src="/js/season-routes.js?v=20261026-world-players-v1"></script>
+  <script defer src="/js/shared-navigation.js?v=20261108-dock-collapse-v1"></script>
+  <script defer src="/js/public-shell.min.js?v=20261011-header-actions-v2"></script>
+  <script type="module" src="/js/public-account.js?v=20261111-account-on-demand-v1"></script>
+  <link rel="stylesheet" href="/ffws-global-2026/stats/raio-x/raio-x.css?v=1">
+  <script type="module" src="/ffws-global-2026/stats/raio-x/raio-x.mjs?v=1"></script>
+</head>
+<body class="cff-analysis-route">
+<header class="cff-public-topbar">
+  <div class="cff-public-left">
+    <button class="cff-public-menu-button" id="cff-public-menu-open" type="button" aria-label="Abrir menu">☰</button>
+    <div class="cff-public-teams">
+      <button class="cff-public-teams-button" id="cff-public-teams-toggle" type="button" aria-expanded="false">EQUIPES ▼</button>
+      <div class="cff-public-teams-dropdown" id="cff-public-teams-dropdown">
+        <div class="cff-public-teams-grid" id="cff-public-teams-grid"></div>
+      </div>
+    </div>
+  </div>
+  <a class="cff-public-brand" href="index.html" aria-label="Ir para o início"><img src="central free fire.webp" alt="Central Free Fire"><span>CENTRAL FREE FIRE</span></a>
+  <div class="cff-public-search"><div class="cff-public-search-row"><input id="cff-public-search-input" type="search" placeholder="BUSCAR JOGADOR, EQUIPE OU PÁGINA..." autocomplete="off" aria-label="Buscar no site"><button id="cff-public-search-submit" type="button" aria-label="Buscar">⌕</button></div><div id="cff-public-search-results" class="cff-public-search-results"></div></div>
+</header>
+<div class="cff-public-overlay" id="cff-public-overlay"></div><aside class="cff-public-sidebar" id="cff-public-sidebar" aria-label="Menu lateral"><div class="cff-public-sidebar-head"><span>MENU</span><button class="cff-public-sidebar-close" id="cff-public-menu-close" type="button" aria-label="Fechar menu">✕</button></div><nav class="cff-public-sidebar-nav" id="cff-public-sidebar-nav"></nav></aside>
+<main class="rx-page">
+  <nav class="rx-breadcrumb" aria-label="Localização"><a href="/ffws-global-2026/inicio/">Mundial 2026</a><span aria-hidden="true">/</span><a href="/ffws-global-2026/stats/">Estatísticas</a><span aria-hidden="true">/</span><span aria-current="page">Raio-X</span></nav>
+  <nav class="rx-highlights" aria-label="Destaques do Mundial">
+    <span>Destaques</span>
+    <button type="button" data-preset="players:kills" aria-pressed="false">Recorde de abates</button>
+    <button type="button" data-preset="players:damage" aria-pressed="false">Maior dano</button>
+    <button type="button" data-preset="teams:points" aria-pressed="false">Melhor rodada de equipe</button>
+  </nav>
+  <form class="rx-controls" id="rx-controls" aria-label="Explorar os resultados" hidden>
+    <label>Fase<select name="fase"></select></label>
+    <label>Categoria<select name="tipo"><option value="players">Jogadores</option><option value="teams">Equipes</option></select></label>
+    <label>Comparação<select name="visao"><option value="rodada">Melhor rodada</option><option value="media">Média por queda</option></select></label>
+    <label>Métrica<select name="metrica"></select></label>
+    <label class="rx-entity"><span id="rx-entity-label">Jogador</span><select name="id"></select></label>
+    <label id="rx-size-control" hidden>Quedas na rodada<select name="quedas"></select></label>
+  </form>
+  <section class="rx-sheet" aria-labelledby="rx-headline">
+    <div class="rx-masthead"><span>Raio-X do Mundial</span><span>FFWS Global Finals 2026</span></div>
+    <p id="rx-announcement" class="rx-sr-only" role="status"></p>
+    <div id="rx-story"><h1 id="rx-headline">Raio-X do Mundial</h1><p role="status">Carregando os resultados…</p></div>
+  </section>
+</main>
+</body>
+</html>
