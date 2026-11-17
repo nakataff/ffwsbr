@@ -12,6 +12,8 @@
   --rx-track: #182740;
   --rx-bar: #6687ad;
   --rx-marker: #c0d3e9;
+  --rx-phase-marker: #ffd27a;
+  --rx-compare-color: #c5a5ff;
   width: min(1240px, calc(100% - 44px));
   margin: 24px auto 50px;
 }
@@ -269,13 +271,16 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px 11px;
+  gap: 8px 20px;
   padding-block: 0 12px;
   color: var(--rx-muted);
   font-size: .8rem;
   font-weight: 700;
 }
-.rx-chart-tools select { min-width: min(185px,100%); max-width: 100%; }
+.rx-chart-field { display: flex; min-width: 0; align-items: center; gap: 10px; }
+.rx-chart-field label { flex: none; }
+.rx-chart-tools select { width: 185px; min-width: 0; text-overflow: ellipsis; }
+#rx-compare { width: 246px; }
 .rx-panels {
   display: grid;
   grid-template-columns: 1.13fr 1fr 1fr;
@@ -421,7 +426,11 @@
   font-size: clamp(1.12rem, 2vw, 1.42rem);
 }
 .rx-evolution p { color: var(--rx-muted); font-size: .82rem; }
-.rx-evolution p.rx-legend { margin-top: 11px; }
+.rx-trend-legend { display: flex; flex-wrap: wrap; gap: 5px 16px; margin: 10px 0 0; }
+.rx-trend-legend i { flex: none; }
+.rx-legend-phase i { border-top: 2px solid var(--rx-phase-marker); }
+.rx-legend-other i { border-top: 3px solid var(--rx-compare-color); border-radius: 3px; }
+.rx-evolution p.rx-compare-note { margin-top: 9px; }
 .rx-trend {
   --rx-trend-label: clamp(80px, 23vw, 152px);
   --rx-trend-value: clamp(50px, 14vw, 86px);
@@ -444,8 +453,13 @@
   z-index: 1;
 }
 .rx-trend-guide i { top: 3px; bottom: 3px; }
+.rx-trend-guide .rx-mean-phase { border-left: 2px solid var(--rx-phase-marker); }
+.rx-trend-guide .rx-mean-primary { transform: translateX(-2px); }
 .rx-trend .rx-bar { height: 9px; }
 .rx-trend .rx-bar > i:first-child { background: var(--rx-highlight); }
+.rx-trend-compare li { min-height: 49px; padding-block: 5px; column-gap: var(--rx-trend-gap); row-gap: 2px; }
+.rx-trend-compare .rx-trend-label { grid-row: span 2; }
+.rx-trend .rx-bar-other > i:first-child { background: var(--rx-compare-color); }
 .rx-trend-label strong { display: block; font-size: .8rem; }
 .rx-trend-label small { display: block; color: var(--rx-muted); font-size: .69rem; }
 .rx-trend-value {
@@ -455,6 +469,8 @@
   text-align: right;
   overflow-wrap: anywhere;
 }
+.rx-trend-compare .rx-trend-value { color: var(--rx-accent); }
+.rx-trend-compare .rx-trend-other { color: var(--rx-compare-color); }
 .rx-method p, .rx-method small { font-size: .76rem; line-height: 1.5; color: var(--rx-muted); }
 .rx-method { padding-top: 13px; }
 .rx-empty { padding: 25px 0; color: var(--rx-muted); }
@@ -484,6 +500,8 @@
   .rx-filters-toggle { gap: 5px; padding-inline: 8px; white-space: nowrap; font-size: .76rem; }
   .rx-tabs { width: 100%; }
   .rx-chart-tools select { min-height: 44px; }
+  .rx-chart-field { display: grid; width: 100%; grid-template-columns: 6.3rem minmax(0,1fr); }
+  .rx-chart-tools select, #rx-compare { width: 100%; }
   .rx-hero { grid-template-columns: 1fr; gap: 14px; padding: 16px 0 20px; }
   .rx-sheet h1 { font-size: clamp(1.78rem,8.05vw,2.35rem); }
   .rx-identity { grid-template-columns: 55px minmax(0,1fr); justify-content: start; }

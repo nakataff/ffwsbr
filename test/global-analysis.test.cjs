@@ -67,7 +67,7 @@ test('Raio-X opens in Campanha and keeps player or team when moving between the 
  assert.equal(headline(),'WASSANA');
  assert.match(document.querySelector('.rx-evolution .rx-legend').textContent,/Média de WASSANA · 4,17 por queda/);
  assert.deepEqual([...document.querySelectorAll('.rx-trend-label strong')].map(el=>el.textContent),['Rodada 8','Rodada 10','Rodada 12']);
- assert.deepEqual([...document.querySelectorAll('.rx-trend-value')].map(el=>el.textContent),['4,83','5,50','2,17']);
+ assert.deepEqual([...document.querySelectorAll('.rx-trend-value')].map(el=>el.firstChild.textContent),['4,83','5,50','2,17']);
  select(metric(),'assists');
  assert.match(document.querySelector('.rx-evolution p').textContent,/Assistências por queda/);
 
@@ -119,6 +119,45 @@ test('Raio-X opens in Campanha and keeps player or team when moving between the 
  assert.equal(document.getElementById('rx-search-empty').hidden,false);
  keyboard(search,'Escape');
  assert.equal(search.getAttribute('aria-expanded'),'false');
+});
+
+test('Evolução compares each round on the same scale and preserves the second participant when the metric changes',async t=>{
+ const {window,document}=await openPage(t,'?visao=evolucao&id=loud-trap');
+ const get=id=>document.getElementById(id);
+ const select=(id,value)=>{
+  get(id).value=value;
+  get(id).dispatchEvent(new window.Event('change',{bubbles:true}));
+ };
+ const param=key=>new URLSearchParams(window.location.search).get(key);
+ const legend=selector=>document.querySelector(selector).textContent;
+ assert.match(legend('.rx-legend-primary'),/Média de Trap · 2,39 por queda/);
+ assert.match(legend('.rx-legend-phase'),/Média da fase · 1,90 por queda/);
+ assert.equal(document.querySelectorAll('.rx-trend-guide i').length,2);
+ assert.equal(get('rx-compare').querySelector('[value="loud-trap"]'),null);
+ assert.equal(get('rx-compare').querySelector('[value="loud"]'),null);
+ select('rx-compare','los-rigby');
+ assert.equal(param('comparar'),'los-rigby');
+ assert.equal(document.activeElement,get('rx-compare'));
+ assert.match(legend('.rx-legend-other'),/RIGBY · LOS · média de 3,56 por queda/);
+ const rounds=[...document.querySelectorAll('.rx-trend li')];
+ assert.deepEqual(rounds.map(row=>row.querySelector('.rx-trend-label strong').textContent),
+  ['Rodada 1','Rodada 2','Rodada 4','Rodada 5','Rodada 6','Rodada 7','Rodada 8','Rodada 9','Rodada 11','Rodada 12']);
+ assert.equal(rounds[1].querySelector('.rx-trend-value').firstChild.textContent,'—');
+ assert.equal(rounds[1].querySelector('.rx-trend-other').title,'6 quedas');
+ assert.equal(rounds[0].querySelector('.rx-trend-value').firstChild.textContent,'3,50');
+ select('rx-metric','damage');
+ assert.equal(get('rx-compare').value,'los-rigby');
+ assert.match(legend('.rx-legend-phase'),/1\.295,48 por queda/);
+ const shared=await openPage(t,window.location.search);
+ assert.equal(shared.document.getElementById('rx-compare').value,'los-rigby');
+ select('rx-compare','');
+ assert.equal(param('comparar'),null);
+ assert.equal(document.querySelector('.rx-trend-other'),null);
+
+ const teams=await openPage(t,'?visao=evolucao&tipo=teams&id=loud&comparar=los');
+ assert.match(teams.document.querySelector('.rx-legend-phase').textContent,/12,33 por queda/);
+ assert.equal(teams.document.getElementById('rx-compare').value,'los');
+ assert.match(teams.document.querySelector('.rx-legend-other').textContent,/LOS · média de 17,67 por queda/);
 });
 
 test('links to specific records still open Recordes and metric changes preserve the round',async t=>{
