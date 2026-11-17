@@ -18,3 +18,8 @@ new_sqlite_classes = ["NotificationHub"]
 binding = "COMMUNITY_DB"
 database_name = "cff-instagram-community"
 database_id = "48e14987-34f9-4591-874f-c45c513dcb39"
+
+[[services]]
+binding = "OWNER_CHECKIN"
+service = "cff-instagram-community"
+entrypoint = "OwnerCheckin"

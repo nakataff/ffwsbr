@@ -60,7 +60,7 @@ function initEconomy(sql){
  if(!rows('SELECT id FROM eco_settings WHERE id=?','roulette-vouchers-v1').length){sql.exec("UPDATE eco_stock SET bucket='shop' WHERE bucket='roulette' AND receipt IS NULL");sql.exec('INSERT INTO eco_settings VALUES(?,?)','roulette-vouchers-v1','1');}
  sql.exec('INSERT OR IGNORE INTO eco_items VALUES(?,?)','code-default',JSON.stringify({id:'code-default',kind:'code',title:'Um codiguinho',price:1000,enabled:true,description:'Um código de item do Free Fire, conforme o estoque disponível.'}));
 }
-function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,ranking=null,quizImageLoader,now=()=>Date.now(),random=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}}){
+function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,ownerCheckin=null,ranking=null,quizImageLoader,now=()=>Date.now(),random=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}}){
  const rows=(q,...args)=>{const result=sql.exec(q,...args);return typeof result.toArray==='function'?result.toArray():Array.from(result);};
  const actor=identity=>{if(!validUid(identity?.uid))throw fail(401,'Entre com Google para acessar suas CFF COINS.');if(identity.provider!=='google.com'&&identity.email!==ADMIN)throw fail(403,'Entre com Google para participar do sistema de CFF COINS.');return identity.uid;};
  const admin=identity=>{actor(identity);if(identity.email!==ADMIN)throw fail(403,'Somente o administrador pode gerenciar a carteira de CFF COINS e o estoque.');};
@@ -107,13 +107,21 @@ function createEconomy({sql,transaction,db,verifySession,communityCheckin=null,r
  async function profileCheckin(uid,coinsAwarded){
   const status=checkinStatus(uid);if(status.ranking)return {ok:true,...status,coinsAwarded,rankingStatus:'done'};
   try{
-   const [link,community]=await Promise.all(['communityInstagramLinks/'+uid,'userAccounts/'+uid+'/community'].map(p=>db.get(p)));
-   const username=String(link?.username||'').toLowerCase();
-   if(!username||!community?.session)return {ok:true,...status,coinsAwarded,rankingStatus:'link_required'};
-   const verified=await verifySession(community.session);
-   if(verified?.status!=='verified'||String(verified.username||'').toLowerCase()!==username)return {ok:true,...status,coinsAwarded,rankingStatus:'link_required'};
-   let result=verified;
-   if(!verified.checkedInToday){if(!communityCheckin)throw Error('Check-in indisponível');result=await communityCheckin(community.session);if(result?.ok!==true)throw Error('Check-in não confirmado');}
+   const [link,community,owner]=await Promise.all(['communityInstagramLinks/'+uid,'userAccounts/'+uid+'/community','communityOwnerInstagram'].map(p=>db.get(p)));
+   const ownsPage=owner?.uid===uid&&owner.username==='nakataff';
+   const username=ownsPage?'nakataff':String(link?.username||'').toLowerCase();
+   let result;
+   if(ownsPage){
+    if(!ownerCheckin)throw Error('Check-in indisponível');
+    result=await ownerCheckin();
+    if(result?.ok!==true)throw Error('Check-in não confirmado');
+   }else{
+    if(!username||!community?.session)return {ok:true,...status,coinsAwarded,rankingStatus:'link_required'};
+    const verified=await verifySession(community.session);
+    if(verified?.status!=='verified'||String(verified.username||'').toLowerCase()!==username)return {ok:true,...status,coinsAwarded,rankingStatus:'link_required'};
+    result=verified.checkedInToday?verified:await communityCheckin?.(community.session);
+    if(!verified.checkedInToday&&result?.ok!==true)throw Error('Check-in não confirmado');
+   }
    if(String(result.username||'').toLowerCase()!==username||result.dayKey!==status.day)throw Error('Confira novamente o check-in');
    sql.exec('INSERT OR REPLACE INTO eco_profile_checkins VALUES(?,?,?)',uid,status.day,username);
    return {ok:true,...checkinStatus(uid),coinsAwarded,rankingStatus:'done'};

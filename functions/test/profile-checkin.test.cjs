@@ -2,9 +2,9 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),{Database
 const user={uid:'person',provider:'google.com'};
 function setup(){
  const sqlite=new DatabaseSync(':memory:'),sql={exec(q,...args){let out=[];for(const query of q.split(';').filter(s=>s.trim())){const st=sqlite.prepare(query);out=st.columns().length?st.all(...args):(st.run(...args),[]);}return out;}};E.initEconomy(sql);
- const data={'userAccounts/person/profile':{name:'Pessoa',username:'pessoa',gender:'masculino'},'communityInstagramLinks/person':{username:'pessoa'},'userAccounts/person/community':{session:'saved-session'}},db={get:async p=>structuredClone(data[p]||null)},calls={verify:0,checkin:0};let time=Date.parse('2026-10-14T15:00:00Z'),checked=false,offline=false,verified=true;
+ const data={'userAccounts/person/profile':{name:'Pessoa',username:'pessoa',gender:'masculino'},'communityInstagramLinks/person':{username:'pessoa'},'userAccounts/person/community':{session:'saved-session'}},db={get:async p=>structuredClone(data[p]||null)},calls={verify:0,checkin:0,owner:0};let time=Date.parse('2026-10-14T15:00:00Z'),checked=false,offline=false,verified=true;
  const transaction=fn=>{sqlite.exec('BEGIN');try{const r=fn();sqlite.exec('COMMIT');return r;}catch(e){sqlite.exec('ROLLBACK');throw e;}};
- const core=E.createEconomy({sql,db,transaction,now:()=>time,verifySession:async session=>{calls.verify++;assert.equal(session,'saved-session');if(offline)throw Error('offline');return {status:'verified',username:verified?'pessoa':'other_person',dayKey:E.dayKey(time),checkedInToday:checked};},communityCheckin:async session=>{calls.checkin++;assert.equal(session,'saved-session');if(offline)throw Error('offline');checked=true;return {ok:true,username:'pessoa',awarded:true,dayKey:E.dayKey(time)};}});
+ const core=E.createEconomy({sql,db,transaction,now:()=>time,ownerCheckin:async()=>{calls.owner++;if(offline)throw Error('offline');return {ok:true,username:'nakataff',dayKey:E.dayKey(time)};},verifySession:async session=>{calls.verify++;assert.equal(session,'saved-session');if(offline)throw Error('offline');return {status:'verified',username:verified?'pessoa':'other_person',dayKey:E.dayKey(time),checkedInToday:checked};},communityCheckin:async session=>{calls.checkin++;assert.equal(session,'saved-session');if(offline)throw Error('offline');checked=true;return {ok:true,username:'pessoa',awarded:true,dayKey:E.dayKey(time)};}});
  return {core,sql,data,calls,setTime:t=>{time=t;checked=false;},setOffline:v=>offline=v,setChecked:v=>checked=v,setVerified:v=>verified=v};
 }
 test('profile checkin credits the wallet and the linked ranking with only the server saved session',async()=>{
@@ -30,4 +30,26 @@ test('concurrent requests credit once and both checkins renew at Brasilia midnig
 });
 test('profile checkin keeps authentication and registration requirements',async()=>{
  const s=setup();await assert.rejects(s.core.handle({uid:'person',provider:'password'},{operation:'profileCheckin'}),{status:403});delete s.data['userAccounts/person/profile'];await assert.rejects(s.core.handle(user,{operation:'profileCheckin'}),{status:403});assert.equal(s.calls.checkin,0);assert.equal(s.sql.exec('SELECT COUNT(*) AS n FROM eco_ledger')[0].n,0);
+});
+
+test('the saved page owner can retry without a DM session, and other accounts cannot use the owner check-in',async()=>{
+ const s=setup();
+ s.data.communityOwnerInstagram={uid:'someone-else',username:'nakataff'};
+ delete s.data['userAccounts/person/community'];
+ let r=await s.core.handle(user,{operation:'profileCheckin',username:'nakataff',owner:true});
+ assert.equal(r.rankingStatus,'link_required');
+ assert.equal(s.calls.owner,0);
+ s.data.communityOwnerInstagram.uid=user.uid;
+ s.setOffline(true);
+ r=await s.core.handle(user,{operation:'profileCheckin'});
+ assert.equal(r.rankingStatus,'error');
+ s.setOffline(false);
+ r=await s.core.handle(user,{operation:'profileCheckin'});
+ assert.equal(r.rankingStatus,'done');
+ assert.equal(r.coinsAwarded,false);
+ assert.equal(r.wallet.balance,1);
+ assert.deepEqual(s.calls,{verify:0,checkin:0,owner:2});
+ const repeated=await s.core.handle(user,{operation:'profileCheckin'});
+ assert.equal(repeated.rankingStatus,'done');
+ assert.equal(s.calls.owner,2);
 });
