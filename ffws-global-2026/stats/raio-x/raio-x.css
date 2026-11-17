@@ -4,10 +4,14 @@
   font-family: Inter, system-ui, sans-serif;
 }
 .rx-page {
-  --rx-accent: #1149bb;
-  --rx-ink: #14213b;
-  --rx-muted: #52627a;
-  --rx-rule: #d7e0ec;
+  --rx-accent: #81ddff;
+  --rx-highlight: #00c8ff;
+  --rx-ink: #eef5ff;
+  --rx-muted: #a4b6ca;
+  --rx-rule: #263a53;
+  --rx-track: #182740;
+  --rx-bar: #6687ad;
+  --rx-marker: #c0d3e9;
   width: min(1240px, calc(100% - 44px));
   margin: 24px auto 50px;
 }
@@ -97,11 +101,12 @@
 }
 .rx-controls select:disabled { color: #abb8cc; }
 .rx-sheet {
-  background: #fcfdff;
+  background: linear-gradient(150deg, #101c31, #0b1426 63%);
   color: var(--rx-ink);
   border-radius: 14px;
   box-shadow: 0 24px 62px #03071280;
-  border-top: 4px solid #1149bb;
+  border: 1px solid var(--rx-rule);
+  border-top: 3px solid var(--rx-highlight);
   padding: clamp(16px, 3vw, 36px);
 }
 .rx-masthead {
@@ -149,23 +154,28 @@
 .rx-subtitle strong { color: var(--rx-ink); }
 .rx-identity {
   display: grid;
+  min-width: 0;
   grid-template-columns: minmax(0,1fr) minmax(90px, 158px);
   align-items: center;
   gap: 10px;
 }
 .rx-profile-copy {
   display: grid;
+  min-width: 0;
+  overflow-wrap: anywhere;
   justify-items: end;
   gap: 6px;
   text-align: right;
   font-size: .75rem;
   color: var(--rx-muted);
 }
-.rx-profile-copy a { color: var(--rx-ink); font-weight: 800; }
+.rx-profile-copy a { color: var(--rx-ink); font-weight: 800; text-decoration: none; }
+.rx-profile-copy a:hover { color: var(--rx-accent); }
 .rx-photo, .rx-team-portrait {
+  box-sizing: border-box;
   display: block;
-  background: #eaf0fa;
-  border: 1px solid #d6e0ef;
+  background: #14233a;
+  border: 1px solid var(--rx-rule);
   border-radius: 8px;
   width: 100%;
   min-width: 0;
@@ -173,8 +183,16 @@
   aspect-ratio: 1;
   object-fit: cover;
 }
-.rx-team-portrait { background: #15233d; border-color: #15233d; padding: 22%; }
-.rx-team-portrait img { width: 100%; height: 100%; object-fit: contain; }
+.rx-team-portrait {
+  position: relative;
+}
+.rx-team-portrait img {
+  position: absolute;
+  inset: 18%;
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
+}
 .rx-panels {
   display: grid;
   grid-template-columns: 1.13fr 1fr 1fr;
@@ -211,7 +229,7 @@
   text-align: left;
   font: inherit;
 }
-.rx-ranking button:hover { background: #eaf1fc; }
+.rx-ranking button:hover { background: var(--rx-track); }
 .rx-ranking button[aria-pressed="true"] { color: var(--rx-accent); }
 .rx-bar-label {
   display: grid;
@@ -241,26 +259,26 @@
   height: 6px;
   min-width: 0;
   border-radius: 3px;
-  background: #eef2f8;
+  background: var(--rx-track);
 }
 .rx-bar > i:first-child {
   display: block;
   width: var(--fill);
   height: 100%;
   border-radius: inherit;
-  background: #a5b4c9;
+  background: var(--rx-bar);
 }
 .rx-ranking button[aria-pressed="true"] .rx-bar > i:first-child,
-.rx-duel-featured .rx-bar > i:first-child { background: var(--rx-accent); }
+.rx-duel-featured .rx-bar > i:first-child { background: var(--rx-highlight); }
 .rx-mean-tick {
   position: absolute;
   top: -2px;
   bottom: -2px;
   left: var(--mark);
-  border-left: 1px dashed #465d7b;
+  border-left: 1px dashed var(--rx-marker);
 }
 .rx-legend { display: flex; align-items: center; gap: 6px; }
-.rx-legend i { width: 12px; border-top: 1px dashed #465d7b; }
+.rx-legend i { width: 12px; border-top: 1px dashed var(--rx-marker); }
 .rx-duel { display: grid; gap: 16px; margin: 18px 0 17px; }
 .rx-duel > div {
   display: grid;
@@ -302,17 +320,17 @@
   align-items: end;
   width: min(25px,90%);
   height: 100%;
-  background: #edf2fa;
+  background: var(--rx-track);
   border-radius: 3px 3px 0 0;
 }
-.rx-column i { width: 100%; height: var(--fill); background: #b3c2d7; border-radius: inherit; }
-.rx-peak .rx-column i { background: var(--rx-accent); }
+.rx-column i { width: 100%; height: var(--fill); background: var(--rx-bar); border-radius: inherit; }
+.rx-peak .rx-column i { background: var(--rx-highlight); }
 .rx-panel p.rx-detail-note { line-height: 1.5; }
 .rx-detail-note strong { color: var(--rx-accent); }
 .rx-method p, .rx-method small { font-size: .76rem; line-height: 1.5; color: var(--rx-muted); }
 .rx-method { padding-top: 13px; }
 .rx-empty { padding: 25px 0; color: var(--rx-muted); }
-.rx-page :is(a,button,select):focus-visible { outline: 2px solid #0075dc; outline-offset: 2px; }
+.rx-page :is(a,button,select):focus-visible { outline: 2px solid var(--rx-accent); outline-offset: 2px; }
 @media (max-width: 920px) {
   .rx-hero { grid-template-columns: minmax(0, 1fr) minmax(190px, 250px); gap: 15px; }
   .rx-identity { grid-template-columns: minmax(0,1fr) minmax(80px,118px); }
