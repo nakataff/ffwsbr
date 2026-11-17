@@ -16,8 +16,8 @@
   <script defer src="/js/shared-navigation.js?v=20261108-dock-collapse-v1"></script>
   <script defer src="/js/public-shell.min.js?v=20261011-header-actions-v2"></script>
   <script type="module" src="/js/public-account.js?v=20261111-account-on-demand-v1"></script>
-  <link rel="stylesheet" href="/ffws-global-2026/stats/raio-x/raio-x.css?v=3">
-  <script type="module" src="/ffws-global-2026/stats/raio-x/raio-x.mjs?v=2"></script>
+  <link rel="stylesheet" href="/ffws-global-2026/stats/raio-x/raio-x.css?v=4">
+  <script type="module" src="/ffws-global-2026/stats/raio-x/raio-x.mjs?v=3"></script>
 </head>
 <body class="cff-analysis-route">
 <header class="cff-public-topbar">
@@ -47,16 +47,16 @@
     <button type="button" id="rx-filters-toggle" class="rx-filters-toggle" aria-expanded="false" aria-controls="rx-filter-fields">Mais filtros</button>
     <div class="rx-filter-fields" id="rx-filter-fields" hidden>
       <label>Fase<select name="fase"></select></label>
-      <label>Comparação<select name="visao"><option value="rodada">Melhor rodada</option><option value="media">Média por queda</option></select></label>
+      <label>Categoria<select name="tipo"><option value="players">Jogadores</option><option value="teams">Equipes</option></select></label>
       <label id="rx-size-control" hidden>Quedas na rodada<select name="quedas"></select></label>
     </div>
-    <nav class="rx-highlights" aria-label="Destaques do Mundial">
-      <button type="button" data-preset="players:kills" aria-pressed="false">Recorde de abates</button>
-      <button type="button" data-preset="players:damage" aria-pressed="false">Maior dano</button>
-      <button type="button" data-preset="teams:points" aria-pressed="false">Recorde de equipe</button>
-    </nav>
+    <div class="rx-tabs" role="tablist" aria-label="Visões do Raio-X">
+      <button type="button" id="rx-tab-media" role="tab" data-view="media" aria-controls="rx-panel" aria-selected="true">Campanha</button>
+      <button type="button" id="rx-tab-evolucao" role="tab" data-view="evolucao" aria-controls="rx-panel" aria-selected="false" tabindex="-1">Evolução</button>
+      <button type="button" id="rx-tab-rodada" role="tab" data-view="rodada" aria-controls="rx-panel" aria-selected="false" tabindex="-1">Recordes</button>
+    </div>
   </div>
-  <section class="rx-sheet" aria-labelledby="rx-headline">
+  <section class="rx-sheet" id="rx-panel" role="tabpanel" aria-labelledby="rx-tab-media">
     <div class="rx-masthead"><span>Raio-X do Mundial</span><span>FFWS Global Finals 2026</span></div>
     <p id="rx-announcement" class="rx-sr-only" role="status"></p>
     <div id="rx-story"><h1 id="rx-headline">Raio-X do Mundial</h1><p role="status">Carregando os resultados…</p></div>

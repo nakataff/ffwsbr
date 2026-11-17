@@ -26,51 +26,65 @@ test('record cohorts require complete rounds with the same number of drops and d
  assert.equal(campaign.rows.find(row=>row.id==='b').count,2);
 });
 
-test('Raio-X shows the published WASSANA comparison and navigates stories from controls and rankings',async t=>{
- const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/ffws-global-2026/stats/raio-x/',runScripts:'outside-only'});
+async function openPage(t,search=''){
+ const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/ffws-global-2026/stats/raio-x/'+search,runScripts:'outside-only'});
  t.after(()=>dom.window.close());
  const {window}=dom,{document}=window;
  window.fetch=async()=>({ok:true,json:async()=>summary});
  window.eval(script.replace('export function comparison','function comparison').replace('import.meta.url','location.href'));
  await new Promise(resolve=>setImmediate(resolve));
+ return {window,document};
+}
+
+test('Raio-X opens in Campanha and keeps player or team when moving between the three views',async t=>{
+ const {window,document}=await openPage(t);
  const headline=()=>document.querySelector('h1').textContent;
- const control=key=>document.querySelector('select[name="'+key+'"]');
- const select=(key,value)=>{control(key).value=value;control(key).dispatchEvent(new window.Event('change',{bubbles:true}));};
- const chip=key=>document.querySelector('[data-metric="'+key+'"]');
  const param=key=>new URLSearchParams(window.location.search).get(key);
+ const metric=()=>document.getElementById('rx-metric');
+ const select=(element,value)=>{element.value=value;element.dispatchEvent(new window.Event('change',{bubbles:true}));};
+ const tab=view=>document.querySelector('[data-view="'+view+'"]');
+ const keyboard=(element,key)=>element.dispatchEvent(new window.KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}));
  const search=document.getElementById('rx-search');
  const type=query=>{search.value=query;search.dispatchEvent(new window.Event('input',{bubbles:true}));};
- const press=key=>search.dispatchEvent(new window.KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}));
  const filters=document.getElementById('rx-filter-fields');
  const toggle=document.getElementById('rx-filters-toggle');
- assert.equal(filters.hidden,true);
 
- assert.match(headline(),/WASSANA fez 33 abates em 6 quedas/);
- assert.match(document.querySelector('.rx-duel').textContent,/11,57/);
- assert.match(document.querySelector('.rx-sample').textContent,/543 desempenhos.*105 jogadores/);
- assert.deepEqual([...document.querySelectorAll('.rx-series strong')].map(row=>row.textContent),['2','12','1','7','9','2']);
- assert.equal(chip('kills').getAttribute('aria-pressed'),'true');
- chip('damage').click();
- assert.match(headline(),/WASSANA fez 14\.582 de dano em 6 quedas/);
- assert.equal(param('rodada'),'10');
- assert.equal(param('metrica'),'damage');
- assert.equal(chip('damage'),document.activeElement);
- document.querySelector('[data-preset="players:damage"]').click();
- assert.match(headline(),/de dano em 6 quedas/);
- document.querySelector('[data-preset="teams:points"]').click();
- assert.match(headline(),/Buriram United Esports fez 151 pontos em 6 quedas/);
- assert.deepEqual([...document.querySelectorAll('.rx-metrics button strong')].map(el=>el.textContent),['151','97','4']);
- chip('kills').click();
- assert.match(headline(),/Buriram United Esports fez 97 abates em 6 quedas/);
- assert.equal(param('rodada'),'8');
+ assert.equal(filters.hidden,true);
+ assert.equal(tab('media').getAttribute('aria-selected'),'true');
+ assert.equal(headline(),'WASSANA');
+ assert.match(document.querySelector('.rx-subtitle').textContent,/18 quedas disputadas/);
+ assert.match(document.querySelector('.rx-metrics').textContent,/Abates754,17 por queda/);
+ assert.equal(document.querySelectorAll('.rx-metrics button').length,0);
+ assert.match(document.querySelector('.rx-duel').textContent,/1,90/);
+ select(metric(),'damage');
+ assert.equal(param('id'),'bru-wassana');
+ assert.equal(metric(),document.activeElement);
+ select(metric(),'kills');
+
+ keyboard(tab('media'),'ArrowRight');
+ assert.equal(tab('evolucao').getAttribute('aria-selected'),'true');
+ assert.equal(tab('evolucao'),document.activeElement);
+ assert.equal(headline(),'WASSANA');
+ assert.match(document.querySelector('.rx-evolution .rx-legend').textContent,/Média de WASSANA · 4,17 por queda/);
+ assert.deepEqual([...document.querySelectorAll('.rx-trend-label strong')].map(el=>el.textContent),['Rodada 8','Rodada 10','Rodada 12']);
+ assert.deepEqual([...document.querySelectorAll('.rx-trend-value')].map(el=>el.textContent),['4,83','5,50','2,17']);
+ select(metric(),'assists');
+ assert.match(document.querySelector('.rx-evolution p').textContent,/Assistências por queda/);
+
  type('los');
  assert.match(document.querySelector('[role="option"]').textContent,/LOSEquipe/);
- press('ArrowDown');
+ keyboard(search,'ArrowDown');
  assert.equal(search.getAttribute('aria-activedescendant'),'rx-result-0');
- press('Enter');
+ keyboard(search,'Enter');
  assert.equal(param('tipo'),'teams');
  assert.equal(param('id'),'los');
+ assert.equal(param('visao'),'evolucao');
  assert.equal(search.getAttribute('aria-expanded'),'false');
+
+ tab('rodada').click();
+ assert.match(headline(),/LOS fez 135 pontos em 6 quedas/);
+ assert.equal(param('rodada'),'5');
+ assert.match(document.querySelector('#rx-detail-title').textContent,/Queda a queda/);
  type('RÍGBY');
  const result=document.querySelector('[role="option"]');
  assert.match(result.textContent,/RIGBY/);
@@ -80,25 +94,43 @@ test('Raio-X shows the published WASSANA comparison and navigates stories from c
  document.querySelectorAll('.rx-ranking button')[2].click();
  assert.match(window.location.search,/rodada=\d+/);
  assert.equal(document.activeElement.dataset.row,param('id'));
+
  toggle.click();
  assert.equal(filters.hidden,false);
  assert.equal(toggle.getAttribute('aria-expanded'),'true');
- select('visao','media');
- assert.match(headline(),/por queda/);
- assert.match(document.querySelector('#rx-detail-title').textContent,/Rodada a rodada/);
- select('fase','segundaFase');
+ select(document.querySelector('select[name="tipo"]'),'teams');
+ assert.match(headline(),/Buriram United Esports fez 151 pontos em 6 quedas/);
+ assert.deepEqual([...document.querySelectorAll('.rx-metrics strong')].map(el=>el.textContent),['151','97','4']);
+ select(metric(),'kills');
+ assert.match(headline(),/Buriram United Esports fez 97 abates em 6 quedas/);
+ assert.equal(param('rodada'),'8');
+
+ select(document.querySelector('select[name="fase"]'),'segundaFase');
  if(!summary.phases.segundaFase.rounds.length){
-  assert.match(document.querySelector('.rx-empty').textContent,/Ainda não há resultados cadastrados/);
+  assert.match(document.querySelector('.rx-empty').textContent,/ainda não tem dados/);
   type('Rigby');
-  press('Enter');
+  keyboard(search,'Enter');
   assert.equal(param('fase'),'classificatoria');
   assert.equal(param('id'),'los-rigby');
-  assert.match(headline(),/RIGBY.*por queda/);
  }
  toggle.click();
  assert.equal(filters.hidden,true);
  type('___');
  assert.equal(document.getElementById('rx-search-empty').hidden,false);
- press('Escape');
+ keyboard(search,'Escape');
  assert.equal(search.getAttribute('aria-expanded'),'false');
+});
+
+test('links to specific records still open Recordes and metric changes preserve the round',async t=>{
+ const {window,document}=await openPage(t,'?fase=classificatoria&tipo=players&visao=rodada&metrica=kills&id=bru-wassana&rodada=10&quedas=6');
+ const headline=document.getElementById('rx-headline');
+ assert.match(headline.textContent,/WASSANA fez 33 abates em 6 quedas/);
+ assert.match(document.querySelector('.rx-duel').textContent,/11,57/);
+ assert.match(document.querySelector('.rx-sample').textContent,/543 desempenhos.*105 jogadores/);
+ assert.deepEqual([...document.querySelectorAll('.rx-series strong')].map(row=>row.textContent),['2','12','1','7','9','2']);
+ const select=document.getElementById('rx-metric');
+ select.value='damage';
+ select.dispatchEvent(new window.Event('change',{bubbles:true}));
+ assert.match(document.getElementById('rx-headline').textContent,/WASSANA fez 14[.]582 de dano em 6 quedas/);
+ assert.equal(new URLSearchParams(window.location.search).get('rodada'),'10');
 });

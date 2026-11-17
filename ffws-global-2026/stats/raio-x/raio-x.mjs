@@ -1,4 +1,5 @@
 const BASE='/ffws-global-2026/';
+const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes'};
 const phaseLabels={classificatoria:'Fase 1',segundaFase:'Fase 2',lastChance:'Repescagem',final:'Grande Final'};
 const metrics={
  players:{kills:{column:1,label:'Abates',unit:'abates'},damage:{column:2,label:'Dano',unit:'de dano'},assists:{column:3,label:'Assistências',unit:'assistências'}},
@@ -61,7 +62,8 @@ function boot(data){
  const filterToggle=document.getElementById('rx-filters-toggle');
  const filterFields=document.getElementById('rx-filter-fields');
  const controls=Object.fromEntries([...filterFields.querySelectorAll('select')].map(control=>[control.name,control]));
- const presets=[...document.querySelectorAll('[data-preset]')];
+ const tabs=[...explorer.querySelectorAll('[data-view]')];
+ const panel=document.getElementById('rx-panel');
  const state={};
  const meta=id=>data[state.tipo][id];
  const team=id=>data.teams[state.tipo==='teams'?id:meta(id).teamId];
@@ -73,7 +75,7 @@ function boot(data){
   const phase=params.get('fase'),type=params.get('tipo'),view=params.get('visao'),metric=params.get('metrica');
   state.fase=Object.hasOwn(data.phases,phase)?phase:'classificatoria';
   state.tipo=type==='teams'?'teams':'players';
-  state.visao=view==='media'?'media':'rodada';
+  state.visao=Object.hasOwn(views,view)?view:'media';
   state.metrica=Object.hasOwn(metrics[state.tipo],metric)?metric:Object.keys(metrics[state.tipo])[0];
   state.id=params.get('id')||'';
   state.rodada=Number(params.get('rodada'))||null;
@@ -83,7 +85,7 @@ function boot(data){
  function updateUrl(){
   const next=new URL(location.href);
   for(const key of ['fase','tipo','visao','metrica','id','rodada','quedas']){
-   if(state[key]&&!(state.visao==='media'&&['rodada','quedas'].includes(key)))next.searchParams.set(key,state[key]);
+   if(state[key]&&!(state.visao!=='rodada'&&['rodada','quedas'].includes(key)))next.searchParams.set(key,state[key]);
    else next.searchParams.delete(key);
   }
   history.replaceState(history.state,'',next);
@@ -91,31 +93,46 @@ function boot(data){
 
  function render(writeUrl=false){
   const phase=data.phases[state.fase],metric=metrics[state.tipo][state.metrica];
-  const byRound=state.visao==='rodada';
+  const byRound=state.visao==='rodada',evolution=state.visao==='evolucao';
   const pool=comparison(phase,state.tipo,state.metrica,state.visao,state.quedas);
   const {rows,observations,mean,falls,entities,sizes}=pool;
   const selected=rows.find(row=>row.id===state.id&&row.round?.number===state.rodada)
-   ||rows.find(row=>row.id===state.id)||rows[0];
-  state.id=selected?.id||'';
-  state.rodada=selected?.round?.number||null;
-  state.quedas=byRound?(falls||null):null;
+   ||rows.find(row=>row.id===state.id)||(!Object.hasOwn(data[state.tipo],state.id)?rows[0]:null);
+  state.id=selected?.id||state.id;
+  if(byRound){
+   state.rodada=selected?.round?.number||null;
+   state.quedas=falls||null;
+  }
 
   controls.fase.innerHTML=options(Object.entries(data.phases).map(([id,value])=>[id,phaseLabels[id]||value.name]));
   controls.quedas.innerHTML=options(sizes.map(size=>[size,String(size)]));
   for(const [key,control] of Object.entries(controls))control.value=state[key]??'';
   document.getElementById('rx-size-control').hidden=!byRound||sizes.length<2;
-  presets.forEach(button=>button.setAttribute('aria-pressed',String(!!selected&&byRound&&button.dataset.preset===state.tipo+':'+state.metrica&&selected===rows[0])));
+  for(const tab of tabs){
+   const active=tab.dataset.view===state.visao;
+   tab.setAttribute('aria-selected',String(active));
+   tab.tabIndex=active?0:-1;
+   if(active)panel.setAttribute('aria-labelledby',tab.id);
+  }
+  const metricControl=`<div class="rx-chart-tools"><label for="rx-metric">Métrica</label><select id="rx-metric">${options(Object.entries(metrics[state.tipo]).map(([key,entry])=>[key,entry.label]))}</select></div>`;
   if(writeUrl)updateUrl();
   if(!selected){
-   announce.textContent=phase.name+' sem resultados para essa comparação.';
-   story.innerHTML=`<div class="rx-empty"><h1 id="rx-headline">${esc(phase.name)}</h1><p>${byRound?'Ainda não há rodadas completas com essa métrica.':'Ainda não há resultados cadastrados para essa métrica.'}</p></div>`;
+   const subject=Object.hasOwn(data[state.tipo],state.id)?meta(state.id).name:'';
+   const message=subject
+    ? `${subject} ainda não tem dados de ${metric.label.toLowerCase()} neste recorte.`
+    : `Ainda não há resultados de ${metric.label.toLowerCase()} para ${views[state.visao]} nesta fase.`;
+   const best=byRound?rows[0]:null;
+   const recordLink=best?`<button type="button" class="rx-empty-record" data-row="${esc(best.id)}" data-round="${best.round.number}">Ver a melhor marca da fase</button>`:'';
+   announce.textContent=message;
+   story.innerHTML=`<div class="rx-empty"><h1 id="rx-headline">${esc(subject||phase.name)}</h1><p>${esc(message)}</p>${recordLink}</div>${metricControl}`;
+   story.querySelector('#rx-metric').value=state.metrica;
    return;
   }
 
   const person=meta(selected.id),teamInfo=team(selected.id);
   const pickedScore=format(selected.value,!byRound);
   const ratio=mean>0?selected.value/mean:null;
-  const roundDetails=byRound?`Dia ${selected.round.day} · Rodada ${selected.round.number} · ${dateFormat.format(new Date(selected.round.date+'T12:00:00Z'))}`:`${selected.count} quedas com dados da métrica`;
+  const roundDetails=byRound?`Dia ${selected.round.day} · Rodada ${selected.round.number} · ${dateFormat.format(new Date(selected.round.date+'T12:00:00Z'))}`:`${phase.rounds.reduce((total,round)=>total+(round[state.tipo][selected.id]?.length||0),0)} quedas disputadas`;
   const portrait=state.tipo==='players'&&path(person.photo)?`<img class="rx-photo" src="${esc(path(person.photo))}" width="480" height="480" alt="${esc(person.name)}">`:emblem(selected.id,'rx-team-portrait');
   const visible=rows.slice(0,5);
   if(!visible.includes(selected))visible.push(selected);
@@ -128,22 +145,25 @@ function boot(data){
    ? `<p class="rx-insight"><strong>${number.format(ratio)}×</strong> a média da fase.</p>`
    : ratio===1?'<p class="rx-insight">Igual à média da fase.</p>':`<p class="rx-insight"><strong>${number.format((1-ratio)*100)}%</strong> abaixo da média da fase.</p>`;
   const peak=Math.max(...selected.series.map(row=>row.value));
-  const metricButtons=Object.entries(metrics[state.tipo]).map(([key,entry])=>{
+  const summaries=Object.values(metrics[state.tipo]).map(entry=>{
    const series=byRound
     ? dropsFor(selected.round,state.tipo,selected.id,entry.column)
     : phase.rounds.flatMap(round=>dropsFor(round,state.tipo,selected.id,entry.column));
    const available=byRound?isFullRound(selected.round,series):series.length>0;
-   const value=available?format(sum(series.map(drop=>drop.value))/(byRound?1:series.length),!byRound):'—';
-   return `<button type="button" data-metric="${key}" aria-pressed="${key===state.metrica}"${available?'':' disabled title="Dados insuficientes para este recorte"'}><strong>${value}</strong><span>${entry.shortLabel||entry.label}</span></button>`;
+   const total=available?sum(series.map(drop=>drop.value)):null;
+   const meanByDrop=available&&!byRound?`<small>${decimal.format(total/series.length)} por queda</small>`:'';
+   return `<div><dt>${entry.shortLabel||entry.label}</dt><dd><strong>${total===null?'—':number.format(total)}</strong>${meanByDrop}</dd></div>`;
   }).join('');
+  const headline=`<a href="${profile(selected.id)}">${esc(person.name)}</a>${byRound?` fez <strong>${pickedScore} ${metric.unit}</strong> <span class="rx-measure">em ${falls} quedas</span>`:''}`;
+  const rankLabel=byRound?'no recorte':`em ${metric.shortLabel?.toLowerCase()||metric.label.toLowerCase()} por queda`;
 
   story.innerHTML=`
    <header class="rx-hero">
     <div>
-     <p class="rx-kicker">${esc(phase.name)} · ${byRound?'Por rodada':'Por queda'}</p>
-     <h1 id="rx-headline"><a href="${profile(selected.id)}">${esc(person.name)}</a> ${byRound?'fez':'tem média de'} <strong>${pickedScore} ${metric.unit}</strong> ${byRound?`<span class="rx-measure">em ${falls} quedas</span>`:'por queda'}</h1>
-     <p class="rx-subtitle">${esc(roundDetails)} <span aria-hidden="true">·</span> <strong>${selected.rank}º no recorte</strong></p>
-     <div class="rx-metrics" role="group" aria-label="${byRound?'Métricas desta rodada':'Médias por queda'}">${metricButtons}</div>
+     <p class="rx-kicker">${esc(phase.name)} · ${views[state.visao]}</p>
+     <h1 id="rx-headline">${headline}</h1>
+     <p class="rx-subtitle">${esc(roundDetails)}${evolution?'':` · <strong>${selected.rank}º ${rankLabel}</strong>`}</p>
+     <dl class="rx-metrics" aria-label="${byRound?'Totais da rodada':'Totais e médias da fase'}">${summaries}</dl>
     </div>
     <div class="rx-identity">
      <div class="rx-profile-copy">
@@ -154,9 +174,11 @@ function boot(data){
      ${portrait}
     </div>
    </header>
-   <div class="rx-panels">
+   ${metricControl}
+   ${evolution?evolutionChart(selected,metric,person.name):`
+   <div class="rx-panels${byRound?'':' rx-panels-campaign'}">
     <section class="rx-panel" aria-labelledby="rx-ranking-title">
-     <h2 id="rx-ranking-title">As melhores marcas</h2>
+     <h2 id="rx-ranking-title">${byRound?'As melhores marcas':'Melhores médias da fase'}</h2>
      <p>${metric.label} · ${byRound?`Rodadas de ${falls} quedas`:'Média por queda'}</p>
      <ol class="rx-ranking">
       ${visible.map(row=>`<li><button type="button" data-row="${esc(row.id)}" data-round="${row.round?.number||''}" aria-pressed="${row===selected}">
@@ -175,21 +197,22 @@ function boot(data){
      ${comparisonCopy}
      <p class="rx-sample">${sampling}</p>
     </section>
-    <section class="rx-panel" aria-labelledby="rx-detail-title">
-     <h2 id="rx-detail-title">${byRound?'Queda a queda':'Rodada a rodada'}</h2>
-     <p>${metric.label}${byRound?'':' por queda'} · ${esc(person.name)}</p>
+    ${byRound?`<section class="rx-panel" aria-labelledby="rx-detail-title">
+     <h2 id="rx-detail-title">Queda a queda</h2>
+     <p>${metric.label} · ${esc(person.name)}</p>
      <ol class="rx-series" style="--columns:${Math.min(selected.series.length,6)}">
-      ${selected.series.map(row=>`<li class="${row.value===peak?'rx-peak':''}" title="${esc(row.label)}${row.count?` · ${row.count} quedas`:''}"><strong>${format(row.value,!byRound)}</strong><span class="rx-column" aria-hidden="true"><i style="--fill:${bar(row.value,peak)}%"></i></span><span aria-label="${byRound?'Queda':'Rodada'} ${row.number}">${byRound?'Q':'R'}${row.number}</span></li>`).join('')}
+      ${selected.series.map(row=>`<li class="${row.value===peak?'rx-peak':''}" title="${esc(row.label)}"><strong>${number.format(row.value)}</strong><span class="rx-column" aria-hidden="true"><i style="--fill:${bar(row.value,peak)}%"></i></span><span aria-label="Queda ${row.number}">Q${row.number}</span></li>`).join('')}
      </ol>
-     ${bestDrop?`<p class="rx-detail-note"><strong>${number.format(bestDrop.value)} ${metric.unit}</strong> na queda ${bestDrop.number}${bestDrop.label?` · ${esc(bestDrop.label)}`:''}.</p>`:'<p class="rx-detail-note">Cada barra mostra a média nas quedas disputadas naquela rodada.</p>'}
-    </section>
-   </div>
+     <p class="rx-detail-note"><strong>${number.format(bestDrop.value)} ${metric.unit}</strong> na queda ${bestDrop.number}${bestDrop.label?` · ${esc(bestDrop.label)}`:''}.</p>
+    </section>`:''}
+   </div>`}
    <footer class="rx-method">
-    <p>${byRound?'A média inclui todos os desempenhos completos com o mesmo número de quedas.':'A média da fase é ponderada pela quantidade de quedas com dados de cada participante.'}
+    <p>${byRound?'A média inclui todos os desempenhos completos com o mesmo número de quedas.':'As médias consideram apenas as quedas com dados da métrica selecionada.'}
     ${state.tipo==='teams'&&state.metrica==='points'?'Os pontos mostram o placar obtido nas quedas. Penalidades administrativas constam na classificação oficial.':''}</p>
     ${data.updatedAt?`<small>Resultados cadastrados até ${dateFormat.format(new Date(data.updatedAt+'T12:00:00Z'))}.</small>`:''}
    </footer>`;
-  if(writeUrl)announce.textContent=document.getElementById('rx-headline').textContent;
+  story.querySelector('#rx-metric').value=state.metrica;
+  if(writeUrl)announce.textContent=`${views[state.visao]} · ${person.name} · ${metric.label}`;
  }
 
  filterToggle.addEventListener('click',()=>{
@@ -201,18 +224,20 @@ function boot(data){
   if(!Object.hasOwn(controls,key))return;
   state[key]=key==='quedas'?Number(event.target.value):event.target.value;
   state.rodada=null;
-  if(key==='fase')state.quedas=null;
+  if(key==='fase'||key==='tipo')state.quedas=null;
+  if(key==='tipo'){
+   state.id='';
+   state.metrica=Object.keys(metrics[state.tipo])[0];
+  }
   render(true);
  });
+ story.addEventListener('change',event=>{
+  if(event.target.id!=='rx-metric')return;
+  state.metrica=event.target.value;
+  render(true);
+  story.querySelector('#rx-metric').focus({preventScroll:true});
+ });
  story.addEventListener('click',event=>{
-  const metricButton=event.target.closest('[data-metric]');
-  if(metricButton&&!metricButton.disabled){
-   if(metricButton.dataset.metric===state.metrica)return;
-   state.metrica=metricButton.dataset.metric;
-   render(true);
-   story.querySelector('[data-metric][aria-pressed="true"]')?.focus({preventScroll:true});
-   return;
-  }
   const button=event.target.closest('[data-row]');
   if(!button)return;
   state.id=button.dataset.row;
@@ -220,11 +245,17 @@ function boot(data){
   render(true);
   story.querySelector('[data-row][aria-pressed="true"]')?.focus({preventScroll:true});
  });
- for(const button of presets){
-  button.addEventListener('click',()=>{
-   [state.tipo,state.metrica]=button.dataset.preset.split(':');
-   Object.assign(state,{visao:'rodada',id:'',rodada:null,quedas:null});
+ for(const [index,tab] of tabs.entries()){
+  tab.addEventListener('click',()=>{
+   state.visao=tab.dataset.view;
    render(true);
+  });
+  tab.addEventListener('keydown',event=>{
+   const next={ArrowLeft:(index+tabs.length-1)%tabs.length,ArrowRight:(index+1)%tabs.length,Home:0,End:tabs.length-1}[event.key];
+   if(next===undefined)return;
+   event.preventDefault();
+   tabs[next].click();
+   tabs[next].focus();
   });
  }
  window.addEventListener('popstate',()=>{read();render();});
@@ -255,6 +286,22 @@ function boot(data){
   }
  });
  explorer.hidden=false;
+}
+
+function evolutionChart(selected,metric,name){
+ const rounds=[...selected.series].sort((a,b)=>a.number-b.number);
+ const max=Math.max(selected.value,...rounds.map(round=>round.value));
+ return `<section class="rx-evolution" aria-labelledby="rx-evolution-title">
+  <h2 id="rx-evolution-title">Rodada a rodada</h2>
+  <p>${metric.label} por queda · ${esc(name)}</p>
+  <p class="rx-legend"><i aria-hidden="true"></i> Média de ${esc(name)} · ${decimal.format(selected.value)} por queda</p>
+  <div class="rx-trend" style="--mark:${bar(selected.value,max)}%">
+   <span class="rx-trend-guide" aria-hidden="true"><i class="rx-mean-tick"></i></span>
+   <ol>
+    ${rounds.map(round=>`<li><span class="rx-trend-label"><strong>Rodada ${round.number}</strong><small>${esc(round.label)} · ${round.count} ${round.count===1?'queda':'quedas'}</small></span><span class="rx-bar" aria-hidden="true"><i style="--fill:${bar(round.value,max)}%"></i></span><strong class="rx-trend-value">${decimal.format(round.value)}</strong></li>`).join('')}
+   </ol>
+  </div>
+ </section>`;
 }
 
 function attachSearch(data,select){
