@@ -2,24 +2,29 @@ const BASE='/ffws-global-2026/';
 const phaseLabels={classificatoria:'Fase 1',segundaFase:'Fase 2',lastChance:'Repescagem',final:'Grande Final'};
 const metrics={
  players:{kills:{column:1,label:'Abates',unit:'abates'},damage:{column:2,label:'Dano',unit:'de dano'},assists:{column:3,label:'Assistências',unit:'assistências'}},
- teams:{points:{column:1,label:'Pontos nas quedas',unit:'pontos'},kills:{column:2,label:'Abates',unit:'abates'},booyahs:{column:3,label:'Booyahs',unit:'Booyahs'}}
+ teams:{points:{column:1,label:'Pontos nas quedas',shortLabel:'Pontos',unit:'pontos'},kills:{column:2,label:'Abates',unit:'abates'},booyahs:{column:3,label:'Booyahs',unit:'Booyahs'}}
 };
 const number=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2});
 const decimal=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const dateFormat=new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeZone:'UTC'});
 const sum=values=>values.reduce((total,value)=>total+value,0);
+const dropsFor=(round,type,id,column)=>(round[type][id]||[])
+ .filter(row=>Number.isFinite(row[column]))
+ .map(row=>({number:row[0],label:round.drops[row[0]],value:row[column]}));
+const isFullRound=(round,series)=>round.expected>0&&series.length===round.expected&&series.every((drop,i)=>drop.number===i+1);
+const normalizeSearch=value=>value.normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase().trim();
+
 
 export function comparison(phase,type,metric,mode,size){
  const column=metrics[type][metric].column;
  const records=[],campaign=new Map();
  for(const round of phase.rounds){
-  for(const [id,drops] of Object.entries(round[type])){
-   const series=drops.filter(row=>Number.isFinite(row[column])).map(row=>({number:row[0],label:round.drops[row[0]],value:row[column]}));
+  for(const id of Object.keys(round[type])){
+   const series=dropsFor(round,type,id,column);
    if(!series.length)continue;
    const total=sum(series.map(drop=>drop.value));
    const item={id,round,value:total,series};
-   const complete=round.expected>0&&series.length===round.expected&&series.every((drop,i)=>drop.number===i+1);
-   if(complete)records.push(item);
+   if(isFullRound(round,series))records.push(item);
    if(!campaign.has(id))campaign.set(id,{id,total:0,count:0,series:[]});
    const player=campaign.get(id);
    player.total+=total;
@@ -50,10 +55,12 @@ const options=items=>items.map(([value,label])=>`<option value="${esc(value)}">$
 const bar=(value,max)=>max>0?Math.max(0,Math.min(100,value/max*100)):0;
 
 function boot(data){
- const form=document.getElementById('rx-controls');
+ const explorer=document.getElementById('rx-controls');
  const story=document.getElementById('rx-story');
  const announce=document.getElementById('rx-announcement');
- const controls=Object.fromEntries(['fase','tipo','visao','metrica','id','quedas'].map(key=>[key,form.elements.namedItem(key)]));
+ const filterToggle=document.getElementById('rx-filters-toggle');
+ const filterFields=document.getElementById('rx-filter-fields');
+ const controls=Object.fromEntries([...filterFields.querySelectorAll('select')].map(control=>[control.name,control]));
  const presets=[...document.querySelectorAll('[data-preset]')];
  const state={};
  const meta=id=>data[state.tipo][id];
@@ -89,18 +96,13 @@ function boot(data){
   const {rows,observations,mean,falls,entities,sizes}=pool;
   const selected=rows.find(row=>row.id===state.id&&row.round?.number===state.rodada)
    ||rows.find(row=>row.id===state.id)||rows[0];
-  const ids=[...new Set(rows.map(row=>row.id))].sort((a,b)=>meta(a).name.localeCompare(meta(b).name,'pt-BR'));
   state.id=selected?.id||'';
   state.rodada=selected?.round?.number||null;
   state.quedas=byRound?(falls||null):null;
 
   controls.fase.innerHTML=options(Object.entries(data.phases).map(([id,value])=>[id,phaseLabels[id]||value.name]));
-  controls.metrica.innerHTML=options(Object.entries(metrics[state.tipo]).map(([id,value])=>[id,value.label]));
-  controls.id.innerHTML=options(ids.length?ids.map(id=>[id,state.tipo==='players'?`${meta(id).name} · ${team(id).abbreviation}`:meta(id).name]):[['','Sem resultados']]);
   controls.quedas.innerHTML=options(sizes.map(size=>[size,String(size)]));
   for(const [key,control] of Object.entries(controls))control.value=state[key]??'';
-  controls.id.disabled=!ids.length;
-  document.getElementById('rx-entity-label').textContent=state.tipo==='teams'?'Equipe':'Jogador';
   document.getElementById('rx-size-control').hidden=!byRound||sizes.length<2;
   presets.forEach(button=>button.setAttribute('aria-pressed',String(!!selected&&byRound&&button.dataset.preset===state.tipo+':'+state.metrica&&selected===rows[0])));
   if(writeUrl)updateUrl();
@@ -126,6 +128,14 @@ function boot(data){
    ? `<p class="rx-insight"><strong>${number.format(ratio)}×</strong> a média da fase.</p>`
    : ratio===1?'<p class="rx-insight">Igual à média da fase.</p>':`<p class="rx-insight"><strong>${number.format((1-ratio)*100)}%</strong> abaixo da média da fase.</p>`;
   const peak=Math.max(...selected.series.map(row=>row.value));
+  const metricButtons=Object.entries(metrics[state.tipo]).map(([key,entry])=>{
+   const series=byRound
+    ? dropsFor(selected.round,state.tipo,selected.id,entry.column)
+    : phase.rounds.flatMap(round=>dropsFor(round,state.tipo,selected.id,entry.column));
+   const available=byRound?isFullRound(selected.round,series):series.length>0;
+   const value=available?format(sum(series.map(drop=>drop.value))/(byRound?1:series.length),!byRound):'—';
+   return `<button type="button" data-metric="${key}" aria-pressed="${key===state.metrica}"${available?'':' disabled title="Dados insuficientes para este recorte"'}><strong>${value}</strong><span>${entry.shortLabel||entry.label}</span></button>`;
+  }).join('');
 
   story.innerHTML=`
    <header class="rx-hero">
@@ -133,6 +143,7 @@ function boot(data){
      <p class="rx-kicker">${esc(phase.name)} · ${byRound?'Por rodada':'Por queda'}</p>
      <h1 id="rx-headline"><a href="${profile(selected.id)}">${esc(person.name)}</a> ${byRound?'fez':'tem média de'} <strong>${pickedScore} ${metric.unit}</strong> ${byRound?`<span class="rx-measure">em ${falls} quedas</span>`:'por queda'}</h1>
      <p class="rx-subtitle">${esc(roundDetails)} <span aria-hidden="true">·</span> <strong>${selected.rank}º no recorte</strong></p>
+     <div class="rx-metrics" role="group" aria-label="${byRound?'Métricas desta rodada':'Médias por queda'}">${metricButtons}</div>
     </div>
     <div class="rx-identity">
      <div class="rx-profile-copy">
@@ -181,25 +192,33 @@ function boot(data){
   if(writeUrl)announce.textContent=document.getElementById('rx-headline').textContent;
  }
 
- form.addEventListener('change',event=>{
+ filterToggle.addEventListener('click',()=>{
+  filterFields.hidden=!filterFields.hidden;
+  filterToggle.setAttribute('aria-expanded',String(!filterFields.hidden));
+ });
+ filterFields.addEventListener('change',event=>{
   const key=event.target.name;
   if(!Object.hasOwn(controls,key))return;
   state[key]=key==='quedas'?Number(event.target.value):event.target.value;
   state.rodada=null;
-  if(key==='tipo'){
-   state.metrica=Object.keys(metrics[state.tipo])[0];
-   state.id='';
-  }
   if(key==='fase')state.quedas=null;
   render(true);
  });
  story.addEventListener('click',event=>{
+  const metricButton=event.target.closest('[data-metric]');
+  if(metricButton&&!metricButton.disabled){
+   if(metricButton.dataset.metric===state.metrica)return;
+   state.metrica=metricButton.dataset.metric;
+   render(true);
+   story.querySelector('[data-metric][aria-pressed="true"]')?.focus({preventScroll:true});
+   return;
+  }
   const button=event.target.closest('[data-row]');
   if(!button)return;
   state.id=button.dataset.row;
   state.rodada=Number(button.dataset.round)||null;
   render(true);
-  story.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});
+  story.querySelector('[data-row][aria-pressed="true"]')?.focus({preventScroll:true});
  });
  for(const button of presets){
   button.addEventListener('click',()=>{
@@ -211,7 +230,116 @@ function boot(data){
  window.addEventListener('popstate',()=>{read();render();});
  read();
  render();
- form.hidden=false;
+ attachSearch(data,(type,id,phases)=>{
+  const candidates=[...new Set([state.fase,...phases])].filter(phase=>phases.has(phase));
+  const keys=Object.keys(metrics[type]);
+  const metric=type===state.tipo?state.metrica:keys[0];
+  for(const fase of candidates){
+   const phase=data.phases[fase];
+   for(const visao of new Set([state.visao,'media'])){
+    for(const metrica of new Set([metric,...keys])){
+     const pool=comparison(phase,type,metrica,visao,state.quedas);
+     let result=pool.rows.find(row=>row.id===id);
+     if(!result&&visao==='rodada'){
+      for(const size of pool.sizes.filter(size=>size!==pool.falls)){
+       result=comparison(phase,type,metrica,visao,size).rows.find(row=>row.id===id);
+       if(result)break;
+      }
+     }
+     if(!result)continue;
+     Object.assign(state,{fase,tipo:type,visao,metrica,id,rodada:result.round?.number||null,quedas:result.round?.expected||null});
+     render(true);
+     return;
+    }
+   }
+  }
+ });
+ explorer.hidden=false;
+}
+
+function attachSearch(data,select){
+ const input=document.getElementById('rx-search');
+ const container=input.closest('.rx-search');
+ const popup=document.getElementById('rx-suggestions');
+ const list=document.getElementById('rx-search-results');
+ const empty=document.getElementById('rx-search-empty');
+ const phasesByEntity=new Map();
+ for(const [phase,{rounds}] of Object.entries(data.phases)){
+  for(const round of rounds){
+   for(const type of ['players','teams']){
+    for(const [id,drops] of Object.entries(round[type])){
+     if(!drops.some(row=>row.slice(1).some(Number.isFinite)))continue;
+     const key=type+':'+id;
+     if(!phasesByEntity.has(key))phasesByEntity.set(key,new Set());
+     phasesByEntity.get(key).add(phase);
+    }
+   }
+  }
+ }
+ const catalog=[];
+ for(const type of ['players','teams']){
+  for(const [id,entity] of Object.entries(data[type])){
+   const phases=phasesByEntity.get(type+':'+id);
+   if(!phases)continue;
+   const team=type==='teams'?entity:data.teams[entity.teamId];
+   const terms=type==='teams'?[entity.name,entity.abbreviation,id]:[entity.name];
+   catalog.push({type,id,phases,name:entity.name,label:type==='teams'?'Equipe':team?.abbreviation||'Jogador',terms:terms.filter(Boolean).map(normalizeSearch)});
+  }
+ }
+ let matches=[],active=-1;
+
+ function close(){
+  popup.hidden=true;
+  input.setAttribute('aria-expanded','false');
+  input.removeAttribute('aria-activedescendant');
+  active=-1;
+ }
+ function complete(index){
+  const selected=matches[index];
+  if(!selected)return;
+  close();
+  input.value='';
+  select(selected.type,selected.id,selected.phases);
+ }
+ function show(){
+  const query=normalizeSearch(input.value);
+  if(!query){close();return;}
+  matches=catalog.map(entry=>({entry,score:Math.min(...entry.terms.map(term=>term===query?0:term.startsWith(query)?1:term.includes(query)?2:3))}))
+   .filter(row=>row.score<3).sort((a,b)=>a.score-b.score||a.entry.name.localeCompare(b.entry.name,'pt-BR'))
+   .slice(0,7).map(row=>row.entry);
+  list.innerHTML=matches.map((entry,index)=>`<li id="rx-result-${index}" role="option" aria-selected="false" data-result="${index}"><strong>${esc(entry.name)}</strong><span>${esc(entry.label)}</span></li>`).join('');
+  empty.hidden=matches.length>0;
+  active=-1;
+  input.removeAttribute('aria-activedescendant');
+  input.setAttribute('aria-expanded','true');
+  popup.hidden=false;
+ }
+
+ input.addEventListener('input',show);
+ input.addEventListener('focus',show);
+ input.addEventListener('keydown',event=>{
+  if(event.key==='Escape'||event.key==='Tab'){close();return;}
+  if(event.key==='Enter'&&!popup.hidden&&matches.length){
+   event.preventDefault();
+   complete(Math.max(active,0));
+  }
+  if(event.key!=='ArrowDown'&&event.key!=='ArrowUp')return;
+  if(popup.hidden)show();
+  if(!matches.length||popup.hidden)return;
+  event.preventDefault();
+  const next=event.key==='ArrowDown'?active+1:active<0?matches.length-1:active-1;
+  active=(next+matches.length)%matches.length;
+  [...list.children].forEach((option,index)=>option.setAttribute('aria-selected',String(index===active)));
+  input.setAttribute('aria-activedescendant',list.children[active].id);
+  list.children[active].scrollIntoView?.({block:'nearest'});
+ });
+ list.addEventListener('click',event=>{
+  const target=event.target.closest('[data-result]');
+  if(target)complete(Number(target.dataset.result));
+ });
+ document.addEventListener('pointerdown',event=>{
+  if(!container.contains(event.target))close();
+ });
 }
 
 if(typeof document!=='undefined'){
