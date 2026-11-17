@@ -15,8 +15,8 @@ test('daily cap survives concurrency and includes legacy awarded stories',async(
 test('failed credit writes roll back review, ledger and every counter, then allow retry',async()=>{const db=fixture();db.sqlite.exec("CREATE TRIGGER simulate_month_failure BEFORE INSERT ON monthly_users BEGIN SELECT RAISE(ABORT,'simulated outage'); END;");await queueStory(db,mention('s'));await assert.rejects(approve(db,'s'),/simulated outage/);for(const table of ['awards','users','monthly_users','story_daily','active_days'])assert.equal(count(db,table),0);assert.equal(db.sqlite.prepare('SELECT status FROM story_reviews').get().status,'pending');db.sqlite.exec('DROP TRIGGER simulate_month_failure');assert.equal((await approve(db,'s')).status,200)});
 test('legacy webhook retries are not queued again; migrations are repeatable without deleting awards',async()=>{const db=fixture(),row=mention('old');db.sqlite.prepare("INSERT INTO awards VALUES(?, 'ig_alice','alice','story','old',5,'2026-10-13','2026-10',?)").run(row.key,eventAt);await queueStory(db,row);assert.equal(count(db,'story_reviews'),0);for(const sql of STORY_REVIEW_SCHEMA)db.sqlite.exec(sql);assert.equal(count(db,'awards'),1)});
 test('permalinks identify the same post through different URL forms and reject arbitrary image hosts',()=>{assert.equal(instagramPost('https://www.instagram.com/reel/AbC123/?igsh=x').key,instagramPost('https://instagram.com/p/AbC123/').key);for(const url of ['javascript:alert(1)','https://instagram.com.evil.test/p/AbC/','https://evil.test/p/AbC/','https://name:pass@instagram.com/p/AbC/','http://instagram.com/p/AbC/'])assert.equal(instagramPost(url),null);assert(storyImage('https://lookaside.fbsbx.com/test.jpg'));assert.equal(storyImage('https://arbitrary.test/private'),'')});
-let source=readFileSync(new URL('../worker.js',import.meta.url),'utf8').replace("from './optimizations.js'",`from '${new URL('../optimizations.js',import.meta.url).href}'`).replace("from './profile-insights.js'",`from '${new URL('../profile-insights.js',import.meta.url).href}'`).replace("from './story-reviews.js'",`from '${new URL('../story-reviews.js',import.meta.url).href}'`).replace("from './story-previews.js'",`from '${new URL('../story-previews.js',import.meta.url).href}'`).replace('async function evaluateWeeklyBonuses(env, base) {','async function evaluateWeeklyBonuses(env, base) { return;');source=source.replace("from './global-prediction-identity.js'",`from '${new URL('../global-prediction-identity.js',import.meta.url).href}'`);source=source.replace("from './global-prediction-service.js'",`from '${new URL('../global-prediction-service.js',import.meta.url).href}'`);source=source.replace("from './tier-shares.js'",`from '${new URL('../tier-shares.js',import.meta.url).href}'`);source=source.replace("from './ranking-penalties.js'",`from '${new URL('../ranking-penalties.js',import.meta.url).href}'`);source=source.replace("from './interaction-age-policy.js'",`from '${new URL('../interaction-age-policy.js',import.meta.url).href}'`);source+='\nexport {processStoryMention,findStoryMention,getAdminStories,getAdminStoryPosts,reviewAdminStory,reviewAdminStoryBatch,getRanking,receiveWebhook};';const w=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
-test('webhook queues unverified mentions without points and keeps preview source',async()=>{const db=fixture();const event={sender:{id:'alice',username:'alice'},timestamp:Date.now(),message:{mid:'m',attachments:[{type:'story_mention',payload:{id:'s',url:'https://lookaside.fbsbx.com/story.jpg'}}]}};await w.processStoryMention({CFF_ADMIN_UID:'admin-test',DB:db},event,w.findStoryMention(event));assert.equal(count(db,'story_reviews'),1);assert.equal(count(db,'awards'),0);assert.equal(db.sqlite.prepare('SELECT status FROM story_reviews').get().status,'pending');assert.equal(db.sqlite.prepare('SELECT media_url FROM story_reviews').get().media_url,'https://lookaside.fbsbx.com/story.jpg');assert.equal(w.findStoryMention({referral:{source:'STORY_MENTION',story:{id:'ref',url:'https://lookaside.fbsbx.com/ref.jpg'}}}).mediaUrl,'https://lookaside.fbsbx.com/ref.jpg')});
+let source=readFileSync(new URL('../worker.js',import.meta.url),'utf8').replace("from './optimizations.js'",`from '${new URL('../optimizations.js',import.meta.url).href}'`).replace("from './profile-insights.js'",`from '${new URL('../profile-insights.js',import.meta.url).href}'`).replace("from './story-reviews.js'",`from '${new URL('../story-reviews.js',import.meta.url).href}'`).replace("from './story-previews.js'",`from '${new URL('../story-previews.js',import.meta.url).href}'`).replace('async function evaluateWeeklyBonuses(env, base) {','async function evaluateWeeklyBonuses(env, base) { return;');source=source.replace("from './global-prediction-identity.js'",`from '${new URL('../global-prediction-identity.js',import.meta.url).href}'`);source=source.replace("from './global-prediction-service.js'",`from '${new URL('../global-prediction-service.js',import.meta.url).href}'`);source=source.replace("from './tier-shares.js'",`from '${new URL('../tier-shares.js',import.meta.url).href}'`);source=source.replace("from './ranking-penalties.js'",`from '${new URL('../ranking-penalties.js',import.meta.url).href}'`);source=source.replace("from './interaction-age-policy.js'",`from '${new URL('../interaction-age-policy.js',import.meta.url).href}'`);source+='\nexport {processStoryMention,findStoryMention,getAdminStories,getAdminStoryPosts,reviewAdminStory,reviewAdminStoryBatch,getRanking,receiveWebhook,recoverCurrentWeekStories};';const w=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+test('webhook automatically awards a signed mention and keeps preview source',async()=>{const db=fixture();const event={sender:{id:'alice',username:'alice'},timestamp:Date.now(),message:{mid:'m',attachments:[{type:'story_mention',payload:{id:'s',url:'https://lookaside.fbsbx.com/story.jpg'}}]}};await w.processStoryMention({CFF_ADMIN_UID:'admin-test',DB:db},event,w.findStoryMention(event));assert.equal(count(db,'story_reviews'),1);assert.equal(count(db,'awards'),1);assert.equal(db.sqlite.prepare('SELECT status FROM story_reviews').get().status,'approved');assert.equal(db.sqlite.prepare('SELECT media_url FROM story_reviews').get().media_url,'https://lookaside.fbsbx.com/story.jpg');assert.equal(w.findStoryMention({referral:{source:'STORY_MENTION',story:{id:'ref',url:'https://lookaside.fbsbx.com/ref.jpg'}}}).mediaUrl,'https://lookaside.fbsbx.com/ref.jpg')});
 test('admin endpoints enforce auth and check manual dates before affecting the public ranking',async t=>{const db=fixture();await queueStory(db,mention('s'));const unauth=new Request('https://test/api/admin/stories');assert.equal((await w.getAdminStories(unauth,{CFF_ADMIN_UID:'admin-test',DB:db},new URL(unauth.url))).status,401);const bad=new Request('https://test/api/admin/stories/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:'story:ig_alice:s',decision:'approve'})});assert.equal((await w.reviewAdminStory(bad,{CFF_ADMIN_UID:'admin-test',DB:db})).status,401);assert.equal(count(db,'awards'),0);const original=globalThis.fetch;globalThis.fetch=async req=>new Response('{}',{status:String(req).includes('auth='+adminTestToken)?200:403});t.after(()=>globalThis.fetch=original);const make=extra=>new Request('https://test/api/admin/stories/review',{method:'POST',headers:{Authorization:'Bearer '+adminTestToken,'Content-Type':'application/json'},body:JSON.stringify({key:'story:ig_alice:s',decision:'approve',postUrl:post().url,publishedAt:'2026-10-13T10:00:00-03:00',confirmDate:true,confirmSamePost:true,...extra})});assert.equal((await w.reviewAdminStory(make({confirmSamePost:false}),{CFF_ADMIN_UID:'admin-test',DB:db})).status,400);assert.equal((await w.reviewAdminStory(make({publishedAt:'2026-10-11T23:59:00-03:00'}),{CFF_ADMIN_UID:'admin-test',DB:db})).status,409);assert.equal(count(db,'awards'),0);const approved=await w.reviewAdminStory(make({}),{CFF_ADMIN_UID:'admin-test',DB:db});assert.equal(approved.status,200);assert.equal((await approved.json()).points,5);const rank=await (await w.getRanking(new Request('https://test/api/ranking'),{CFF_ADMIN_UID:'admin-test',DB:db},new URL('https://test/api/ranking?period=week&week=2026-10-12'))).json();assert.equal(rank.users.ig_alice.points,5)});
 test('authoritative Meta publication dates override manual dates, including old posts',async t=>{
  const db=fixture();await queueStory(db,{...mention('s'),accountId:'account'});const original=globalThis.fetch;t.after(()=>globalThis.fetch=original);
@@ -30,7 +30,7 @@ test('signed webhook failures remain retryable, while valid replay queues only o
  const secret='test-webhook-secret',key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);const sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(body));
  const signature='sha256='+Buffer.from(sig).toString('hex'),make=()=>new Request('https://test/webhook',{method:'POST',headers:{'x-hub-signature-256':signature},body});
  const failing={...db,prepare(sql){if(sql.includes('FROM story_reviews'))throw Error('temporary queue outage');return db.prepare(sql)}};const oldLog=console.error;console.error=()=>{};try{assert.equal((await w.receiveWebhook(make(),{DB:failing,META_APP_SECRET:secret})).status,503)}finally{console.error=oldLog}
- assert.equal((await w.receiveWebhook(make(),{CFF_ADMIN_UID:'admin-test',DB:db,META_APP_SECRET:secret})).status,200);assert.equal((await w.receiveWebhook(make(),{CFF_ADMIN_UID:'admin-test',DB:db,META_APP_SECRET:secret})).status,200);assert.equal(count(db,'story_reviews'),1);assert.equal(count(db,'awards'),0);
+ assert.equal((await w.receiveWebhook(make(),{CFF_ADMIN_UID:'admin-test',DB:db,META_APP_SECRET:secret})).status,200);assert.equal((await w.receiveWebhook(make(),{CFF_ADMIN_UID:'admin-test',DB:db,META_APP_SECRET:secret})).status,200);assert.equal(count(db,'story_reviews'),1);assert.equal(count(db,'awards'),1);
 });
 
 const batchRequest=body=>new Request('https://test/api/admin/stories/review-batch',{method:'POST',headers:{Authorization:'Bearer '+adminTestToken,'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -78,19 +78,29 @@ test('bulk rejection reverses approved credit without fetching posts',async t=>{
  const out=await (await w.reviewAdminStoryBatch(batchRequest({keys:['story:ig_alice:approved','story:ig_bob:pending'],decision:'reject',note:'Publicação repetida'}),{CFF_ADMIN_UID:'admin-test',DB:db,INSTAGRAM_ACCESS_TOKEN:'test'})).json();
  assert.deepEqual(out.results.map(r=>r.ok),[true,true]);assert(out.results[0].reversed);assert.equal(out.results[1].story.note,'Publicação repetida');assert.equal(count(db,'awards'),0);assert.equal(calls.length,1);
 });
-test('unverified mentions stay pending, remain deduplicated and cannot bypass verification',async()=>{
+test('automatic Story credits obey the daily cap and rejected mentions stay rejected on replay',async()=>{
  const db=fixture();for(let i=0;i<5;i++)await queueStory(db,mention('auto'+i));
- const results=await Promise.all(Array.from({length:5},(_,i)=>autoApproveStory(db,'story:ig_alice:auto'+i)));
- assert(results.every(r=>r.row.status==='pending'));
- assert.equal(count(db,'awards'),0);
- const wrong=await reviewStory(db,'story:ig_alice:auto0','approved',{key:'auto:auto0',url:'',publishedAt:eventAt,verification:'auto'},'system:auto');
+ const wrong=await reviewStory(db,'story:ig_alice:auto0','approved',{key:'incorrect',url:'',publishedAt:eventAt,verification:'auto'},'system:auto');
  assert.equal(wrong.status,409);
- const approved=await approve(db,'auto0');assert.equal(approved.status,200);
- assert.equal(count(db,'awards'),1);
- const rejected=await reviewStory(db,'story:ig_alice:auto0','rejected',null,'admin','Não mostra a publicação da Central');
+ const results=await Promise.all(Array.from({length:5},(_,i)=>autoApproveStory(db,'story:ig_alice:auto'+i)));
+ assert.equal(results.filter(r=>r.row?.status==='approved').length,3);
+ assert.equal(count(db,'awards'),3);
+ const credited=results.find(r=>r.row?.status==='approved').row;
+ const rejected=await reviewStory(db,credited.mention_key,'rejected',null,'admin','Não mostra a publicação da Central');
  assert(rejected.reversed);
- assert.equal((await autoApproveStory(db,'story:ig_alice:auto0')).row.status,'rejected');
- assert.equal(count(db,'awards'),0);
+ assert.equal((await autoApproveStory(db,credited.mention_key)).row.status,'rejected');
+ assert.equal(count(db,'awards'),2);
+});
+
+test('recovery credits eligible mentions from the current week once, using their original days',async()=>{
+ const db=fixture(),old={...mention('old','ig_alice','2026-10-06'),weekKey:'2026-10-05'};
+ await queueStory(db,old);
+ for(let i=0;i<5;i++)await queueStory(db,mention('current'+i));
+ db.sqlite.prepare("INSERT INTO awards VALUES('comments','ig_alice','alice','comment','post',18,'2026-10-13','2026-10',?)").run(eventAt);
+ await w.recoverCurrentWeekStories({DB:db},eventAt+3000);
+ await w.recoverCurrentWeekStories({DB:db},eventAt+3000);
+ assert.deepEqual(db.sqlite.prepare("SELECT source_id,points,day_key FROM awards WHERE type='story'").all().map(r=>({...r})),[{source_id:'auto:current0',points:5,day_key:'2026-10-13'}]);
+ assert.equal(db.sqlite.prepare('SELECT status FROM story_reviews WHERE mention_key=?').get(old.key).status,'pending');
 });
 test('rejection preserves legacy totals and other activity, and rolls back all writes on failure',async()=>{
  const db=fixture();await queueStory(db,mention('s'));await approve(db,'s');
@@ -127,4 +137,17 @@ test('administrator email cannot bypass a different pinned UID or a missing iden
   assert.equal((await w.getAdminStories(req,env,url)).status,401);
  }
  assert.equal(calls,0,'unmatched UID is rejected before any database or Auth lookup');
+});
+
+test('the private owner check-in credits its existing ranking identity only once per Brasília day',async()=>{
+ const db=fixture();
+ db.sqlite.prepare("INSERT INTO users(user_key,instagram_id,username) VALUES('ig_owner','owner','nakataff')").run();
+ const first=await w.recordOwnerCheckin({DB:db});
+ const second=await w.recordOwnerCheckin({DB:db});
+ assert.equal(first.points,1);
+ assert.equal(second.alreadyCheckedIn,true);
+ assert.equal(first.dayKey,second.dayKey);
+ assert.equal(db.sqlite.prepare("SELECT SUM(points) AS points FROM awards WHERE user_key='ig_owner' AND type='checkin'").get().points,1);
+ const publicRequest=new Request('https://test/api/owner-checkin',{method:'POST'});
+ assert.equal((await w.default.fetch(publicRequest,{DB:db},{})).status,404);
 });

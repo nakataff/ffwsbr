@@ -1,4 +1,4 @@
-export const STORY_REVIEW_VERSION = '20261110-age-verified-v2';
+export const STORY_REVIEW_VERSION = '20261117-story-auto-v2';
 // Pontuação reduzida quando o post é anterior à data do Story (horário de Brasília).
 const dayPublished="date(NEW.published_at/1000,'unixepoch','-3 hours')";
 const scoreSql="CASE WHEN "+dayPublished+"=NEW.day_key THEN 5 WHEN "+dayPublished+"=date(NEW.day_key,'-1 day') THEN 2 ELSE 1 END";
@@ -18,10 +18,12 @@ export const STORY_REVIEW_SCHEMA = [
  "CREATE UNIQUE INDEX IF NOT EXISTS idx_story_review_post_once ON story_reviews(user_key,post_key) WHERE status='approved'",
  'DROP TRIGGER IF EXISTS cff_story_review_guard',
  'DROP TRIGGER IF EXISTS cff_story_review_guard_auto_v1',
+ 'DROP TRIGGER IF EXISTS cff_story_review_guard_verified_v2',
  'DROP TRIGGER IF EXISTS cff_story_review_credit',
- `CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_verified_v2 BEFORE UPDATE ON story_reviews
+ `CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_auto_v2 BEFORE UPDATE ON story_reviews
  WHEN NEW.status='approved' AND OLD.status='pending' BEGIN
- SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual') OR NEW.post_url=''
+ SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual','auto') OR (NEW.verification<>'auto' AND NEW.post_url='')
+ OR (NEW.verification='auto' AND (NEW.post_key<>'auto:'||NEW.story_id OR NEW.published_at<>NEW.event_at))
  THEN RAISE(ABORT,'story_missing_post') END;
  SELECT CASE WHEN ${monday("date(NEW.published_at/1000,'unixepoch','-3 hours')")}<>NEW.week_key OR NEW.published_at>NEW.event_at+300000
  THEN RAISE(ABORT,'story_wrong_week') END;
@@ -79,8 +81,8 @@ export const STORY_REVIEW_SCHEMA = [
  OR (type='bonus_streak_7' AND (SELECT COUNT(*) FROM active_days WHERE user_key=NEW.user_key AND day_key BETWEEN NEW.week_key AND date(NEW.week_key,'+6 days'))<7));
  DELETE FROM story_rejection_context WHERE mention_key=NEW.mention_key;
  END`,
- "DELETE FROM community_response_cache WHERE cache_key LIKE 'ranking:%' AND NOT EXISTS(SELECT 1 FROM community_period_versions WHERE period_key='policy:story-auto-v1')",
- "INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES('policy:story-auto-v1',1)",
+ "DELETE FROM community_response_cache WHERE cache_key LIKE 'ranking:%' AND NOT EXISTS(SELECT 1 FROM community_period_versions WHERE period_key='policy:story-auto-v2')",
+ "INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES('policy:story-auto-v2',1)",
 ];
 export function instagramPost(value) {
  try {const url=new URL(String(value||'').trim());if(url.protocol!=='https:'||!['instagram.com','www.instagram.com'].includes(url.hostname)||url.username||url.password||url.port)return null;
@@ -113,9 +115,8 @@ export async function reviewStory(db,key,decision,post,actor,note=''){
  }
 }
 
-// A menção prova que o Story existiu, mas não qual post ele mostra.
-// Sem data do post verificada, manter pendente para não pagar 5 pontos por conteúdo antigo.
-export async function autoApproveStory(db,key){
- const row=await db.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(key).first();
- return {status:200,alreadyReviewed:true,pending:row?.status==='pending',row:row||null};
+export async function autoApproveStory(db, key) {
+ const row=await db.prepare('SELECT status,story_id,event_at FROM story_reviews WHERE mention_key=?1').bind(key).first();
+ if(row?.status!=='pending')return {status:200,alreadyReviewed:true,row:row||null};
+ return reviewStory(db,key,'approved',{key:'auto:'+row.story_id,url:'',publishedAt:Number(row.event_at),verification:'auto'},'system:auto');
 }

@@ -80,15 +80,20 @@ npx wrangler d1 execute cff-instagram-community --remote --file=migrations/2026-
 npm run deploy
 ```
 
-## Story review (regras atualizadas em 2026-11-10)
+## Story review
 
-New Meta story mentions enter `story_reviews` as pending and create no awards, active days, daily consumption or mission progress. The admin queue is `/admin-stories.html`, linked from the main admin and rewards panels. Every read and decision requires the existing Firebase admin authentication. Story CDN previews can expire; unavailable previews must be checked in the Instagram inbox.
+A signed Meta webhook credits each eligible story mention with 5 points on its
+original Brasília date. The webhook confirms the mention. The original post
+can be checked in the administrative panel. The same story only scores once,
+with daily ceilings of 3 stories and 25 base story and comment points combined.
 
-Approval requires the original Central post and reviewer confirmation that it appears in the story. The API first retrieves original post timestamps from the recipient account's recent media. When it cannot find metadata, an explicit manual confirmation of the permalink and exact publication date/time in BRT is required. Known Meta timestamps override manually supplied dates. A SQL guard checks that the post and the story belong to the same Monday–Sunday week in BRT and that the post is not later than the story. A unique approved-post index blocks repeat credit per person across permalink variants. The daily cap remains three awarded stories, including earlier automatic awards. New credits additionally share an atomic ceiling of 25 daily base points across comments and reposts; bonuses/check-ins are excluded. New posts earn 5 points in Stories on the same BRT day, 2 for yesterday, 1 earlier in the same week, 0 for prior weeks. Comments earn 2 points on the original publication day, 1 on a later day of the same week and 0 if the publication belongs to a previous week. The webhook itself cannot identify a reposted post: new mentions stay pending until the original post is verified. Previously credited Stories are not automatically changed.
-
-The approval and all ledger/user/monthly/day counters commit in one SQLite statement using triggers. Failures roll back the decision and all credits. Approval retries are idempotent. Weekly bonuses are evaluated only after credit. Points go to the original story date, so later review can correctly update historical snapshots. Existing automatic points are preserved and are not retroactively reviewed without evidence.
-
-The runtime applies `STORY_REVIEW_SCHEMA` through the existing D1 binding. The SQL migration is also provided in `migrations/2026-10-12-story-reviews.sql`. No extra secrets are needed for point evaluation. The existing Cloudflare Images binding can also generate tiny temporary previews for pending Stories so the reviewer can inspect them. A once-only policy marker invalidates cached ranking rule payloads on deployment. `/health` exposes `storyReviewVersion`; the deployment workflow checks this, the ranking's approval flag and unauthorized access to the admin endpoint.
+Administrators can reject credited stories at `/admin-stories.html` to reverse
+the award and its dependent bonuses. Pending stories with a confirmed original
+post can still be approved for 5, 2 or 1 point based on its age in the same
+Brasília week. Credits and reversals update the ledger and counters atomically.
+Deployment and the existing daily job recover eligible pending mentions from
+the current week, in batches up to 100. The webhook can retry a saved pending
+mention after a storage failure. Story previews use the existing Images binding.
 
 ### Community profiles (2026-10-12)
 

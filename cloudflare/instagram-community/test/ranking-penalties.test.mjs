@@ -32,7 +32,7 @@ function fixture(){
  sqlite.prepare('INSERT INTO monthly_users(month_key,user_key,username,points,story_mentions,comments,active_days,last_interaction_at) VALUES(?,?,?,?,?,?,?,?)')
   .run('2026-11','ig_a','alice',50,1,1,2,now-300000);
  const seed=(id,day,points)=>sqlite.prepare('INSERT INTO awards(award_key,user_key,username,type,source_id,points,day_key,month_key,created_at) VALUES(?,?,?,?,?,?,?,?,?)')
-  .run(id,'ig_a','alice','comment',id,points,day,'2026-11',Date.parse(day+'T12:00:00Z'));
+  .run(id,'ig_a','alice','prediction_correct',id,points,day,'2026-11',Date.parse(day+'T12:00:00Z'));
  seed('older','2026-11-03',30);seed('current','2026-11-10',20);
  sqlite.prepare('INSERT INTO active_days(user_key,day_key) VALUES(?,?)').run('ig_a','2026-11-03');
  sqlite.prepare('INSERT INTO active_days(user_key,day_key) VALUES(?,?)').run('ig_a','2026-11-10');

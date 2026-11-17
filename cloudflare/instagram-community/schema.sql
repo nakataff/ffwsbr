@@ -234,11 +234,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_story_review_post_once ON story_reviews(us
 
 DROP TRIGGER IF EXISTS cff_story_review_guard;
 DROP TRIGGER IF EXISTS cff_story_review_guard_auto_v1;
+DROP TRIGGER IF EXISTS cff_story_review_guard_verified_v2;
 DROP TRIGGER IF EXISTS cff_story_review_credit;
 
-CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_verified_v2 BEFORE UPDATE ON story_reviews
+CREATE TRIGGER IF NOT EXISTS cff_story_review_guard_auto_v2 BEFORE UPDATE ON story_reviews
  WHEN NEW.status='approved' AND OLD.status='pending' BEGIN
- SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual') OR NEW.post_url=''
+ SELECT CASE WHEN NEW.post_key='' OR NEW.published_at<=0 OR NEW.verification NOT IN ('meta','manual','auto') OR (NEW.verification<>'auto' AND NEW.post_url='')
+ OR (NEW.verification='auto' AND (NEW.post_key<>'auto:'||NEW.story_id OR NEW.published_at<>NEW.event_at))
  THEN RAISE(ABORT,'story_missing_post') END;
  SELECT CASE WHEN date(date(NEW.published_at/1000,'unixepoch','-3 hours'), '-' || ((CAST(strftime('%w',date(NEW.published_at/1000,'unixepoch','-3 hours')) AS INTEGER)+6)%7) || ' days')<>NEW.week_key OR NEW.published_at>NEW.event_at+300000
  THEN RAISE(ABORT,'story_wrong_week') END;
@@ -300,9 +302,9 @@ CREATE TRIGGER IF NOT EXISTS cff_story_review_revoke_auto_v1 AFTER UPDATE ON sto
  DELETE FROM story_rejection_context WHERE mention_key=NEW.mention_key;
  END;
 
-DELETE FROM community_response_cache WHERE cache_key LIKE 'ranking:%' AND NOT EXISTS(SELECT 1 FROM community_period_versions WHERE period_key='policy:story-auto-v1');
+DELETE FROM community_response_cache WHERE cache_key LIKE 'ranking:%' AND NOT EXISTS(SELECT 1 FROM community_period_versions WHERE period_key='policy:story-auto-v2');
 
-INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES('policy:story-auto-v1',1);
+INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES('policy:story-auto-v2',1);
 
 -- Community profile result archive (does not award points).
 CREATE TABLE IF NOT EXISTS community_prediction_outcomes (prediction_id TEXT PRIMARY KEY,payload TEXT NOT NULL,closes_at INTEGER NOT NULL);

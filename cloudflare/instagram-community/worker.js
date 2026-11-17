@@ -1,5 +1,5 @@
 import {PROFILE_INSIGHTS_VERSION,PROFILE_INSIGHTS_SCHEMA,cleanHandle,captureOutcomes,profileInsights,peerScores} from './profile-insights.js';
-import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, instagramPost } from './story-reviews.js';
+import { STORY_REVIEW_VERSION, STORY_REVIEW_SCHEMA, queueStory, reviewStory, autoApproveStory, instagramPost } from './story-reviews.js';
 import {AGE_POLICY_VERSION,INTERACTION_POLICY_SCHEMA,interactionAgePoints} from './interaction-age-policy.js';
 import {STORY_PREVIEW_SCHEMA,storeStoryPreview,purgeExpiredStoryPreviews,previewLink,getSignedStoryPreview} from './story-previews.js';
 import {RANKING_PENALTY_SCHEMA,findRankingPenaltyUser,listRankingPenalties,applyRankingPenalty,reverseRankingPenalty} from './ranking-penalties.js';
@@ -9,9 +9,9 @@ import {createGlobalPredictionService} from './global-prediction-service.js';
 import {TIER_SHARE_VERSION,TIER_SHARE_SCHEMA,createTierShare,getTierShare,purgeExpiredTierShares} from './tier-shares.js';
 const RULES = Object.freeze({
   storyMentionPoints: 5,
-  storyApprovalRequired: true,
-  storyAutoApproval: false,
-  storyCurrentWeekOnly: true,
+  storyApprovalRequired: false,
+  storyAutoApproval: true,
+  storyCurrentWeekOnly: false,
   storyLimitPerPost: null,
   storyLimitPerStory: 1,
   commentPoints: 2,
@@ -107,12 +107,12 @@ const globalPredictionService=createGlobalPredictionService({fetchJson,json,getC
  resolveIdentity:createPredictionIdentity({getCheckinSession,userKey})});
 
 export default {
-  async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env)){await purgeExpiredStoryPreviews(env.DB);await purgeExpiredTierShares(env.DB);}})());},
+  async scheduled(controller,env,ctx){ctx.waitUntil((async()=>{if(await ensurePerformanceIndexes(env)){await recoverCurrentWeekStories(env);await purgeExpiredStoryPreviews(env.DB);await purgeExpiredTierShares(env.DB);}})());},
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
-    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, profileInsightsVersion: PROFILE_INSIGHTS_VERSION, globalPredictionsVersion: '20261104-standalone-v1', adminUidPinned:!!env.CFF_ADMIN_UID,adminIdentityVersion:'20261105-uid-v1', tierSharesVersion: TIER_SHARE_VERSION }, 200, request);
+    if (url.pathname === '/health') return json({ ok: true, service: 'Central Free Fire Instagram Community', version: OPTIMIZATION_VERSION, storyReviewVersion: STORY_REVIEW_VERSION, ownerCheckinVersion: "20261117-owner-v1", profileInsightsVersion: PROFILE_INSIGHTS_VERSION, globalPredictionsVersion: '20261104-standalone-v1', adminUidPinned:!!env.CFF_ADMIN_UID,adminIdentityVersion:'20261105-uid-v1', tierSharesVersion: TIER_SHARE_VERSION }, 200, request);
 
     if (url.pathname.startsWith('/api/') || (url.pathname === '/webhook' && request.method === 'POST')) {
       if (!(await ensurePerformanceIndexes(env))) return json({ok:false,error:"Serviço temporariamente indisponível."},503,request);
@@ -193,6 +193,8 @@ async function ensurePerformanceIndexes(env) {
           ...PERFORMANCE_INDEXES.map((sql) => env.DB.prepare(sql)),
           env.DB.prepare('INSERT OR IGNORE INTO community_period_versions(period_key,version) VALUES(?1,1)').bind(schemaKey),
         ]);
+        try { await recoverCurrentWeekStories(env); }
+        catch (error) { console.error('Story backlog recovery pending', error); }
       }
       performanceIndexesReady = true;
       return true;
@@ -470,15 +472,19 @@ async function processStoryMention(env, event, story, ctx) {
   const eventAt=normalizeTimestamp(timestamp);if(eventAt>Date.now()+300000)return;
   let username=cleanUsername(event?.sender?.username);
   const key=await userKey(identity,username),mentionKey=`story:${key}:${story.storyId}`;
-  const known=await env.DB.prepare('SELECT * FROM story_reviews WHERE mention_key=?1').bind(mentionKey).first();
-  if(known)return; // Reenvio da Meta: nunca duplicar pontos nem capturas.
+  const known=await env.DB.prepare('SELECT status FROM story_reviews WHERE mention_key=?1').bind(mentionKey).first();
+  if(known){
+    if(known.status==='pending')await finishStoryReviews(env,[await autoApproveStory(env.DB,mentionKey)]);
+    return;
+  }
   if(!username&&story.messageId)username=await fetchMessageUsername(story.messageId,env.INSTAGRAM_ACCESS_TOKEN);
   if(!username){const user=await env.DB.prepare('SELECT username FROM users WHERE user_key=?1').bind(key).first();username=cleanUsername(user?.username)}
   const {dayKey}=dateKeys(eventAt),{weekStartKey}=weekKeys(eventAt);
   await queueStory(env.DB,{key:mentionKey,userKey:key,identity,username:username||fallbackUsername(identity),accountId:story.accountId,
     storyId:story.storyId,messageId:story.messageId,mediaUrl:story.mediaUrl,timestamp:eventAt,dayKey,weekKey:weekStartKey});
-  // O webhook comprova a menção, não a data da publicação original.
-  // Não conceder pontos automaticamente enquanto o post não for confirmado.
+  const result=await autoApproveStory(env.DB,mentionKey);
+  const refresh=finishStoryReviews(env,[result]);
+  if(ctx?.waitUntil)ctx.waitUntil(refresh);else await refresh;
   if(story.mediaUrl)ctx?.waitUntil(storeStoryPreview(env,{
     mention_key:mentionKey,week_key:weekStartKey,event_at:eventAt,status:'pending',media_url:story.mediaUrl
   }));
@@ -774,6 +780,28 @@ async function checkinStatus(request, env, url) {
   return json({ ok: true, status: 'verified', username: resolvedUsername || row.username, checkedInToday: Boolean(award?.found), dayKey, checkinPoints: RULES.checkinPoints, debug }, 200, request);
 }
 
+async function creditCheckin(env, account, timestamp = Date.now()) {
+  const { dayKey } = dateKeys(timestamp);
+  const awarded = await awardInteraction(env, {
+    awardKey: `checkin:${account.user_key}:${dayKey}`,
+    userKey: account.user_key,
+    identity: account.instagram_id || '',
+    username: account.username || fallbackUsername(account.instagram_id),
+    type: 'checkin',
+    sourceId: dayKey,
+    points: RULES.checkinPoints,
+    timestamp,
+  });
+  return { ok: true, awarded, alreadyCheckedIn: !awarded, points: awarded ? RULES.checkinPoints : 0, username: account.username, dayKey };
+}
+
+export async function recordOwnerCheckin(env) {
+  if (!(await ensurePerformanceIndexes(env))) throw Error('Serviço de check-in indisponível.');
+  const owner = await env.DB.prepare('SELECT user_key, instagram_id, username FROM users WHERE username=?1 COLLATE NOCASE ORDER BY last_interaction_at DESC,user_key LIMIT 1').bind('nakataff').first();
+  if (!owner?.user_key) throw Error('Conta da página ainda não aparece no ranking.');
+  return creditCheckin(env, owner);
+}
+
 async function doCheckin(request, env) {
   const body = await readJson(request);
   const sessionId = String(body?.session || '').trim();
@@ -782,20 +810,9 @@ async function doCheckin(request, env) {
   if (!row.verified_at || !row.user_key) return json({ ok: false, error: 'Vincule seu Instagram antes do check-in.' }, 403, request);
 
   const timestamp = Date.now();
-  const { dayKey } = dateKeys(timestamp);
-  const awarded = await awardInteraction(env, {
-    awardKey: `checkin:${row.user_key}:${dayKey}`,
-    userKey: row.user_key,
-    identity: row.instagram_id || '',
-    username: row.username || fallbackUsername(row.instagram_id),
-    type: 'checkin',
-    sourceId: dayKey,
-    points: RULES.checkinPoints,
-    timestamp,
-  });
-
+  const result = await creditCheckin(env, row, timestamp);
   await env.DB.prepare('UPDATE checkin_sessions SET last_used_at = ?1 WHERE session_id = ?2').bind(timestamp, sessionId).run();
-  return json({ ok: true, awarded, alreadyCheckedIn: !awarded, points: awarded ? RULES.checkinPoints : 0, username: row.username, dayKey }, 200, request);
+  return json(result, 200, request);
 }
 
 function cleanOptionId(value, fallback = 'o') {
@@ -1798,6 +1815,23 @@ async function decideAdminStory(env,row,decision,body,actor){
  }
  return reviewStory(env.DB,row.mention_key,decision,post,actor,body.note);
 }
+async function recoverCurrentWeekStories(env, now = Date.now()) {
+ const week=weekKeys(now).weekStartKey;
+ const result=await env.DB.prepare(`WITH pending AS MATERIALIZED (
+   SELECT r.mention_key,r.event_at,ROW_NUMBER() OVER(PARTITION BY r.user_key,r.day_key ORDER BY r.event_at,r.mention_key) position,
+     (SELECT COUNT(*) FROM awards a WHERE a.user_key=r.user_key AND a.day_key=r.day_key AND a.type='story') stories,
+     (SELECT COALESCE(SUM(points),0) FROM awards a WHERE a.user_key=r.user_key AND a.day_key=r.day_key AND a.type IN ('story','comment')) points
+   FROM story_reviews r WHERE r.status='pending' AND r.week_key=?1 AND r.event_at<=?2
+   AND NOT EXISTS(SELECT 1 FROM awards WHERE award_key=r.mention_key)
+ )
+ UPDATE story_reviews SET status='approved',post_key='auto:'||story_id,published_at=event_at,verification='auto',
+   reviewed_at=?2,reviewed_by='system:auto'
+ WHERE mention_key IN (SELECT mention_key FROM pending WHERE position<=MIN(?3-stories,(?4-points)/?5) ORDER BY event_at,mention_key LIMIT 100)
+ RETURNING status,user_key,week_key,instagram_id,username,event_at`)
+ .bind(week,now,RULES.storyMentionDailyLimit,RULES.dailyInteractionPointsLimit,RULES.storyMentionPoints).all();
+ await finishStoryReviews(env,(result.results||[]).map(row=>({row})));
+}
+
 async function finishStoryReviews(env,results){
  const changed=new Map();for(const result of results)if(result.row&&(result.row.status==='approved'||result.reversed)&&!result.alreadyReviewed&&!result.error)changed.set(result.row.user_key+'|'+result.row.week_key,result.row);
  for(const row of changed.values())try{await evaluateWeeklyBonuses(env,{userKey:row.user_key,identity:row.instagram_id,username:row.username,timestamp:row.event_at})}catch(error){console.error('Story weekly bonus retry pending',error)}
