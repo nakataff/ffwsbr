@@ -1,5 +1,6 @@
 const BASE='/ffws-global-2026/';
 const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes'};
+const compareLimit=4;
 const phaseLabels={classificatoria:'Fase 1',segundaFase:'Fase 2',lastChance:'Repescagem',final:'Grande Final'};
 const metrics={
  players:{kills:{column:1,label:'Abates',unit:'abates'},damage:{column:2,label:'Dano',unit:'de dano'},assists:{column:3,label:'Assistências',unit:'assistências'}},
@@ -65,6 +66,7 @@ function boot(data){
  const tabs=[...explorer.querySelectorAll('[data-view]')];
  const panel=document.getElementById('rx-panel');
  const state={};
+ const catalog=searchCatalog(data);
  const meta=id=>data[state.tipo][id];
  const team=id=>data.teams[state.tipo==='teams'?id:meta(id).teamId];
  const emblem=(id,className='rx-shield')=>team(id)?.logo?`<span class="${className}"><img src="${esc(path(team(id).logo))}" alt="" loading="lazy"></span>`:'';
@@ -78,7 +80,7 @@ function boot(data){
   state.visao=Object.hasOwn(views,view)?view:'media';
   state.metrica=Object.hasOwn(metrics[state.tipo],metric)?metric:Object.keys(metrics[state.tipo])[0];
   state.id=params.get('id')||'';
-  state.comparar=params.get('comparar')||'';
+  state.comparar=params.getAll('comparar');
   state.rodada=Number(params.get('rodada'))||null;
   state.quedas=Number(params.get('quedas'))||null;
  };
@@ -89,8 +91,10 @@ function boot(data){
    if(state[key]&&!(state.visao!=='rodada'&&['rodada','quedas'].includes(key)))next.searchParams.set(key,state[key]);
    else next.searchParams.delete(key);
   }
-  if(state.visao==='evolucao'&&state.comparar)next.searchParams.set('comparar',state.comparar);
-  else next.searchParams.delete('comparar');
+  next.searchParams.delete('comparar');
+  if(state.visao==='evolucao'){
+   for(const id of state.comparar)next.searchParams.append('comparar',id);
+  }
   history.replaceState(history.state,'',next);
  }
 
@@ -117,18 +121,20 @@ function boot(data){
    tab.tabIndex=active?0:-1;
    if(active)panel.setAttribute('aria-labelledby',tab.id);
   }
-  const compareLabel=id=>state.tipo==='players'?`${meta(id).name} · ${team(id).abbreviation}`:meta(id).name;
-  const candidates=new Set();
-  if(evolution){
-   for(const round of phase.rounds){
-    for(const [id,drops] of Object.entries(round[state.tipo])){
-     if(id!==state.id&&Object.hasOwn(data[state.tipo],id)&&drops.some(drop=>drop.slice(1).some(Number.isFinite)))candidates.add(id);
-    }
-   }
-   if(!candidates.has(state.comparar))state.comparar='';
-  }
-  const other=evolution&&state.comparar?rows.find(row=>row.id===state.comparar):null;
-  const compareControl=evolution&&selected&&candidates.size?`<div class="rx-chart-field"><label for="rx-compare">Comparar com</label><select id="rx-compare">${options([['','Sem comparação'],...[...candidates].map(id=>[id,compareLabel(id)]).sort((a,b)=>a[1].localeCompare(b[1],'pt-BR'))])}</select></div>`:'';
+  const candidates=evolution?catalog.filter(entry=>entry.type===state.tipo&&entry.phases.has(state.fase)&&entry.id!==state.id):[];
+  const byId=new Map(candidates.map(entry=>[entry.id,entry]));
+  if(evolution)state.comparar=[...new Set(state.comparar)].filter(id=>byId.has(id)).slice(0,compareLimit-1);
+  const compared=evolution?state.comparar.map((id,index)=>{
+   const entry=byId.get(id);
+   const name=state.tipo==='players'?`${entry.name} · ${entry.label}`:entry.name;
+   return {id,name,row:rows.find(row=>row.id===id),color:`var(--rx-series-${index+1})`};
+  }):[];
+  const atLimit=compared.length>=compareLimit-1;
+  const compareControl=selected&&candidates.length?`<div class="rx-chart-field rx-compare-field"><label for="rx-compare">Comparar com</label><div class="rx-search">
+   <input id="rx-compare" type="search" role="combobox" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="rx-compare-results" aria-describedby="rx-compare-count" placeholder="${atLimit?'Limite de 4 atingido':state.tipo==='players'?'Buscar jogador':'Buscar equipe'}" ${atLimit?'disabled':''}>
+   <div class="rx-suggestions" hidden><ul id="rx-compare-results" role="listbox" aria-label="Opções para comparar"></ul><p hidden>Nenhum participante encontrado nesta fase.</p></div>
+  </div><small id="rx-compare-count">${compared.length+1}/${compareLimit}</small></div>`:'';
+  const chips=compared.length?`<ul class="rx-compare-chips" aria-label="Participantes adicionados">${compared.map(entry=>`<li><button type="button" data-remove-compare="${esc(entry.id)}" aria-label="Remover ${esc(entry.name)} da comparação" style="--series-color:${entry.color}"><span>${esc(entry.name)}</span><b aria-hidden="true">×</b></button></li>`).join('')}</ul>`:'';
   const metricControl=`<div class="rx-chart-tools"><div class="rx-chart-field"><label for="rx-metric">Métrica</label><select id="rx-metric">${options(Object.entries(metrics[state.tipo]).map(([key,entry])=>[key,entry.label]))}</select></div>${compareControl}</div>`;
   if(writeUrl)updateUrl();
   if(!selected){
@@ -189,8 +195,8 @@ function boot(data){
      ${portrait}
     </div>
    </header>
-   ${metricControl}
-   ${evolution?evolutionChart(selected,metric,person.name,mean,other,state.comparar?compareLabel(state.comparar):''):`
+   ${metricControl}${chips}
+   ${evolution?evolutionChart(selected,metric,person.name,mean,compared):`
    <div class="rx-panels${byRound?'':' rx-panels-campaign'}">
     <section class="rx-panel" aria-labelledby="rx-ranking-title">
      <h2 id="rx-ranking-title">${byRound?'As melhores marcas':'Melhores médias da fase'}</h2>
@@ -226,11 +232,17 @@ function boot(data){
     ${evolution?'A média da fase inclui todos os participantes da categoria selecionada.':''}
     ${state.tipo==='teams'&&state.metrica==='points'?'Os pontos mostram o placar obtido nas quedas. Penalidades administrativas constam na classificação oficial.':''}</p>
     ${data.updatedAt?`<small>Resultados cadastrados até ${dateFormat.format(new Date(data.updatedAt+'T12:00:00Z'))}.</small>`:''}
-   </footer>`;
+  </footer>`;
   story.querySelector('#rx-metric').value=state.metrica;
-  const compareSelect=story.querySelector('#rx-compare');
-  if(compareSelect)compareSelect.value=state.comparar;
-  if(writeUrl)announce.textContent=`${views[state.visao]} · ${person.name} · ${metric.label}${evolution&&state.comparar?` · Comparação com ${compareLabel(state.comparar)}`:''}`;
+  const compareInput=story.querySelector('#rx-compare');
+  if(compareInput&&!atLimit){
+   attachSearch(compareInput,candidates.filter(entry=>!state.comparar.includes(entry.id)),entry=>{
+    state.comparar.push(entry.id);
+    render(true);
+    story.querySelector('#rx-compare:not(:disabled), .rx-compare-chips li:last-child button')?.focus({preventScroll:true});
+   });
+  }
+  if(writeUrl)announce.textContent=`${views[state.visao]} · ${person.name} · ${metric.label}${compared.length?` · Comparação com ${compared.map(entry=>entry.name).join(', ')}`:''}`;
  }
 
  filterToggle.addEventListener('click',()=>{
@@ -245,20 +257,25 @@ function boot(data){
   if(key==='fase'||key==='tipo')state.quedas=null;
   if(key==='tipo'){
    state.id='';
-   state.comparar='';
+   state.comparar=[];
    state.metrica=Object.keys(metrics[state.tipo])[0];
   }
   render(true);
  });
  story.addEventListener('change',event=>{
-  const {id,value}=event.target;
-  if(id==='rx-metric')state.metrica=value;
-  else if(id==='rx-compare')state.comparar=value;
-  else return;
+  if(event.target.id!=='rx-metric')return;
+  state.metrica=event.target.value;
   render(true);
-  document.getElementById(id)?.focus({preventScroll:true});
+  story.querySelector('#rx-metric').focus({preventScroll:true});
  });
  story.addEventListener('click',event=>{
+  const remove=event.target.closest('[data-remove-compare]');
+  if(remove){
+   state.comparar=state.comparar.filter(id=>id!==remove.dataset.removeCompare);
+   render(true);
+   story.querySelector('#rx-compare')?.focus({preventScroll:true});
+   return;
+  }
   const button=event.target.closest('[data-row]');
   if(!button)return;
   state.id=button.dataset.row;
@@ -282,7 +299,7 @@ function boot(data){
  window.addEventListener('popstate',()=>{read();render();});
  read();
  render();
- attachSearch(data,(type,id,phases)=>{
+ attachSearch(document.getElementById('rx-search'),catalog,({type,id,phases})=>{
   const candidates=[...new Set([state.fase,...phases])].filter(phase=>phases.has(phase));
   const keys=Object.keys(metrics[type]);
   const metric=type===state.tipo?state.metrica:keys[0];
@@ -299,7 +316,7 @@ function boot(data){
       }
      }
      if(!result)continue;
-     if(type!==state.tipo)state.comparar='';
+     if(type!==state.tipo)state.comparar=[];
      Object.assign(state,{fase,tipo:type,visao,metrica,id,rodada:result.round?.number||null,quedas:result.round?.expected||null});
      render(true);
      return;
@@ -310,30 +327,34 @@ function boot(data){
  explorer.hidden=false;
 }
 
-function evolutionChart(selected,metric,name,mean,other,otherName){
- const primaryRounds=new Map(selected.series.map(round=>[round.number,round]));
- const otherRounds=new Map(other?.series.map(round=>[round.number,round]));
- const roundNumbers=[...new Set([...primaryRounds.keys(),...otherRounds.keys()])].sort((a,b)=>a-b);
- const hasMissingRounds=other&&roundNumbers.some(number=>!primaryRounds.has(number)||!otherRounds.has(number));
- const max=Math.max(selected.value,mean,...selected.series.map(round=>round.value),...(other?.series.map(round=>round.value)||[]));
+function evolutionChart(selected,metric,name,mean,compared){
+ const entries=[{name,row:selected,color:'var(--rx-highlight)'},...compared]
+  .filter(entry=>entry.row).map(entry=>({...entry,rounds:new Map(entry.row.series.map(round=>[round.number,round]))}));
+ const roundNumbers=[...new Set(entries.flatMap(entry=>[...entry.rounds.keys()]))].sort((a,b)=>a-b);
+ const hasMissingRounds=entries.some(entry=>entry.rounds.size<roundNumbers.length);
+ const noData=compared.filter(entry=>!entry.row);
+ const max=Math.max(selected.value,mean,...entries.flatMap(entry=>entry.row.series.map(round=>round.value)));
  const countLabel=count=>`${count} ${count===1?'queda':'quedas'}`;
- const lane=(round,label,secondary=false)=>`<span class="rx-bar${secondary?' rx-bar-other':''}" aria-hidden="true"><i style="--fill:${bar(round?.value??0,max)}%"></i></span><strong class="rx-trend-value${secondary?' rx-trend-other':''}" title="${round?countLabel(round.count):'Sem registro nesta rodada'}">${round?decimal.format(round.value):'—'}<span class="rx-sr-only"> · ${esc(label)} · ${round?countLabel(round.count):'Sem registro nesta rodada'}</span></strong>`;
+ const lane=(entry,number)=>{
+  const round=entry.rounds.get(number);
+  const detail=round?countLabel(round.count):'Sem registro nesta rodada';
+  return `<div class="rx-trend-lane" style="--series-color:${entry.color}"><span class="rx-bar" aria-hidden="true"><i style="--fill:${bar(round?.value??0,max)}%"></i></span><strong class="rx-trend-value" title="${detail}">${round?decimal.format(round.value):'—'}<span class="rx-sr-only"> · ${esc(entry.name)} · ${detail}</span></strong></div>`;
+ };
  return `<section class="rx-evolution" aria-labelledby="rx-evolution-title">
   <h2 id="rx-evolution-title">Rodada a rodada</h2>
   <p>${metric.label} por queda</p>
   <div class="rx-trend-legend">
    <p class="rx-legend rx-legend-primary"><i aria-hidden="true"></i> Média de ${esc(name)} · ${decimal.format(selected.value)} por queda</p>
    <p class="rx-legend rx-legend-phase"><i aria-hidden="true"></i> Média da fase · ${decimal.format(mean)} por queda</p>
-   ${other?`<p class="rx-legend rx-legend-other"><i aria-hidden="true"></i> ${esc(otherName)} · média de ${decimal.format(other.value)} por queda</p>`:''}
+   ${entries.slice(1).map(entry=>`<p class="rx-legend rx-legend-other" style="--series-color:${entry.color}"><i aria-hidden="true"></i> ${esc(entry.name)} · média de ${decimal.format(entry.row.value)} por queda</p>`).join('')}
   </div>
-  ${otherName&&!other?`<p class="rx-compare-note">${esc(otherName)} ainda não tem dados de ${metric.label.toLowerCase()} nesta fase.</p>`:''}
-  <div class="rx-trend${other?' rx-trend-compare':''}">
+  ${noData.length?`<p class="rx-compare-note">Sem dados de ${metric.label.toLowerCase()} nesta fase para ${noData.map(entry=>esc(entry.name)).join(', ')}.</p>`:''}
+  <div class="rx-trend${entries.length>1?' rx-trend-compare':''}">
    <span class="rx-trend-guide" aria-hidden="true"><i class="rx-mean-tick rx-mean-phase" style="--mark:${bar(mean,max)}%"></i><i class="rx-mean-tick rx-mean-primary" style="--mark:${bar(selected.value,max)}%"></i></span>
    <ol>
     ${roundNumbers.map(number=>{
-     const primary=primaryRounds.get(number),secondary=otherRounds.get(number);
-     const round=primary||secondary;
-     return `<li><span class="rx-trend-label"><strong>Rodada ${number}</strong><small>${esc(round.label)}${other?'':` · ${countLabel(round.count)}`}</small></span>${lane(primary,name)}${other?lane(secondary,otherName,true):''}</li>`;
+     const round=entries.find(entry=>entry.rounds.has(number)).rounds.get(number);
+     return `<li><span class="rx-trend-label"><strong>Rodada ${number}</strong><small>${esc(round.label)}${entries.length===1?` · ${countLabel(round.count)}`:''}</small></span><div class="rx-trend-lanes">${entries.map(entry=>lane(entry,number)).join('')}</div></li>`;
     }).join('')}
    </ol>
   </div>
@@ -341,12 +362,7 @@ function evolutionChart(selected,metric,name,mean,other,otherName){
  </section>`;
 }
 
-function attachSearch(data,select){
- const input=document.getElementById('rx-search');
- const container=input.closest('.rx-search');
- const popup=document.getElementById('rx-suggestions');
- const list=document.getElementById('rx-search-results');
- const empty=document.getElementById('rx-search-empty');
+function searchCatalog(data){
  const phasesByEntity=new Map();
  for(const [phase,{rounds}] of Object.entries(data.phases)){
   for(const round of rounds){
@@ -370,6 +386,14 @@ function attachSearch(data,select){
    catalog.push({type,id,phases,name:entity.name,label:type==='teams'?'Equipe':team?.abbreviation||'Jogador',terms:terms.filter(Boolean).map(normalizeSearch)});
   }
  }
+ return catalog;
+}
+
+function attachSearch(input,catalog,select){
+ const container=input.closest('.rx-search');
+ const list=document.getElementById(input.getAttribute('aria-controls'));
+ const popup=list.closest('.rx-suggestions');
+ const empty=popup.querySelector('p');
  let matches=[],active=-1;
 
  function close(){
@@ -383,7 +407,7 @@ function attachSearch(data,select){
   if(!selected)return;
   close();
   input.value='';
-  select(selected.type,selected.id,selected.phases);
+  select(selected);
  }
  function show(){
   const query=normalizeSearch(input.value);
@@ -391,7 +415,7 @@ function attachSearch(data,select){
   matches=catalog.map(entry=>({entry,score:Math.min(...entry.terms.map(term=>term===query?0:term.startsWith(query)?1:term.includes(query)?2:3))}))
    .filter(row=>row.score<3).sort((a,b)=>a.score-b.score||a.entry.name.localeCompare(b.entry.name,'pt-BR'))
    .slice(0,7).map(row=>row.entry);
-  list.innerHTML=matches.map((entry,index)=>`<li id="rx-result-${index}" role="option" aria-selected="false" data-result="${index}"><strong>${esc(entry.name)}</strong><span>${esc(entry.label)}</span></li>`).join('');
+  list.innerHTML=matches.map((entry,index)=>`<li id="${list.id}-${index}" role="option" aria-selected="false" data-result="${index}"><strong>${esc(entry.name)}</strong><span>${esc(entry.label)}</span></li>`).join('');
   empty.hidden=matches.length>0;
   active=-1;
   input.removeAttribute('aria-activedescendant');
@@ -421,8 +445,9 @@ function attachSearch(data,select){
   const target=event.target.closest('[data-result]');
   if(target)complete(Number(target.dataset.result));
  });
- document.addEventListener('pointerdown',event=>{
-  if(!container.contains(event.target))close();
+ list.addEventListener('mousedown',event=>event.preventDefault());
+ container.addEventListener('focusout',event=>{
+  if(!container.contains(event.relatedTarget))close();
  });
 }
 
