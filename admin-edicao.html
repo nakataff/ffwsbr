@@ -13,13 +13,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css?v=20260902-live-layout-restore-v28">
-  <link rel="stylesheet" href="css/admin-edicao.css?v=20261109-copy-export-v1">
+  <link rel="stylesheet" href="css/admin-edicao.css?v=20261118-text-preview-v1">
   <script src="js/config.min.js?v=20261020-chat-layout-v1"></script>
-  <script type="module" src="js/admin-edicao.js?v=20261109-copy-export-v1"></script>
+  <script type="module" src="js/admin-edicao.js?v=20261118-text-preview-v1"></script>
   <script defer src="js/admin-edicao-autosave.js?v=20261106-editor-placement-v1"></script>
-  <script defer src="js/admin-edicao-enhancements.js?v=20261106-editor-placement-v1"></script>
+  <script defer src="js/admin-edicao-enhancements.js?v=20261118-text-preview-v1"></script>
   <script defer src="js/admin-edicao-studio-v2.js?v=20261106-editor-placement-v1"></script>
-  <script defer src="js/admin-edicao-photo-coverage.js?v=20261106-editor-placement-v1"></script>
+  <script defer src="js/admin-edicao-photo-coverage.js?v=20261118-text-preview-v1"></script>
   <script defer src="js/admin-edicao-position.js?v=20261106-editor-placement-v1"></script>
 </head>
 <body>
@@ -223,6 +223,7 @@
         </div>
         <div id="photo-editor-stage" class="photo-editor-stage" tabindex="0" aria-label="Área de edição. Arraste a foto para reposicionar.">
           <canvas id="photo-editor-canvas" width="3000" height="3749"></canvas>
+          <canvas id="photo-editor-text-canvas" aria-hidden="true"></canvas>
           <div id="photo-editor-cff-preview" aria-hidden="true" hidden><div class="photo-editor-cff-crop"><span class="photo-editor-cff-safe"></span><span class="photo-editor-cff-buffer"></span><span class="photo-editor-cff-reserve">Área da moldura · 20%</span></div></div>
           <div id="photo-editor-empty" class="photo-editor-empty">
             <strong>Adicione a foto que vai entrar na arte</strong>

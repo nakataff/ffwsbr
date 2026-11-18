@@ -69,3 +69,11 @@
  outline:2px solid #00c8ff;outline-offset:3px;
 }
 .photo-editor-export .photo-editor-copy:disabled{opacity:.48;cursor:not-allowed}
+
+.photo-editor-stage #photo-editor-text-canvas{
+  position:absolute;
+  inset:0;
+  z-index:91;
+  pointer-events:none;
+  background:transparent;
+}
