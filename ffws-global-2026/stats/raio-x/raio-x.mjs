@@ -1,5 +1,5 @@
 const BASE='/ffws-global-2026/';
-const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes'};
+const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes',projecao:'Projeção da Fase 2'};
 const compareLimit=4;
 const phaseLabels={classificatoria:'Fase 1',segundaFase:'Fase 2',lastChance:'Repescagem',final:'Grande Final'};
 const metrics={
@@ -67,6 +67,8 @@ function boot(data){
  const panel=document.getElementById('rx-panel');
  const state={};
  const catalog=searchCatalog(data);
+ const primarySearch=document.getElementById('rx-search');
+ let projection,projectionLoad;
  const meta=id=>data[state.tipo][id];
  const team=id=>data.teams[state.tipo==='teams'?id:meta(id).teamId];
  const emblem=(id,className='rx-shield')=>team(id)?.logo?`<span class="${className}"><img src="${esc(path(team(id).logo))}" alt="" loading="lazy"></span>`:'';
@@ -83,22 +85,71 @@ function boot(data){
   state.comparar=params.getAll('comparar');
   state.rodada=Number(params.get('rodada'))||null;
   state.quedas=Number(params.get('quedas'))||null;
+  state.projectionDay=Number(params.get('dia'))||null;
  };
 
  function updateUrl(){
   const next=new URL(location.href);
   for(const key of ['fase','tipo','visao','metrica','id','rodada','quedas']){
-   if(state[key]&&!(state.visao!=='rodada'&&['rodada','quedas'].includes(key)))next.searchParams.set(key,state[key]);
+   if(state[key]&&(state.visao!=='projecao'||key==='visao')&&!(state.visao!=='rodada'&&['rodada','quedas'].includes(key)))next.searchParams.set(key,state[key]);
    else next.searchParams.delete(key);
   }
   next.searchParams.delete('comparar');
   if(state.visao==='evolucao'){
    for(const id of state.comparar)next.searchParams.append('comparar',id);
   }
+  if(state.visao==='projecao'&&state.projectionDay)next.searchParams.set('dia',state.projectionDay);
+  else next.searchParams.delete('dia');
   history.replaceState(history.state,'',next);
  }
 
+ function showProjection(focusDay=false){
+  if(projection){
+   const {renderProjection,results}=projection;
+   const day=renderProjection(story,results,data.teams,state.projectionDay,selected=>{
+    state.projectionDay=selected;
+    updateUrl();
+    showProjection(true);
+   });
+   if(focusDay)story.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});
+   announce.textContent=day?`Projeção da Fase 2 · Dia ${day}`:'Projeção da Fase 2';
+   return;
+  }
+  story.innerHTML='<div class="rx-empty" data-rx-projection-loading><h1 id="rx-headline">Projeção da Fase 2</h1><p role="status">Carregando as chances de classificação…</p></div>';
+  projectionLoad??=Promise.all([
+   import('./projecao.mjs?v=1'),
+   fetch(new URL('./projecao.json',import.meta.url),{cache:'no-cache'}).then(response=>{
+    if(!response.ok)throw Error('Projeções indisponíveis');
+    return response.json();
+   })
+  ]);
+  projectionLoad.then(([module,results])=>{
+   projection={renderProjection:module.renderProjection,results};
+   if(state.visao==='projecao'&&story.querySelector('[data-rx-projection-loading]'))showProjection();
+  }).catch(()=>{
+   projectionLoad=null;
+   if(state.visao!=='projecao'||!story.querySelector('[data-rx-projection-loading]'))return;
+   story.innerHTML='<div class="rx-empty"><h1 id="rx-headline">Projeção da Fase 2</h1><p>Não foi possível carregar as projeções.</p><button type="button" class="rx-empty-record">Tentar de novo</button></div>';
+   story.querySelector('button').addEventListener('click',()=>showProjection());
+  });
+ }
+
  function render(writeUrl=false){
+  const isProjection=state.visao==='projecao';
+  primarySearch.closest('.rx-search').hidden=isProjection;
+  filterToggle.hidden=isProjection;
+  filterFields.hidden=isProjection||filterToggle.getAttribute('aria-expanded')!=='true';
+  for(const tab of tabs){
+   const active=tab.dataset.view===state.visao;
+   tab.setAttribute('aria-selected',String(active));
+   tab.tabIndex=active?0:-1;
+   if(active)panel.setAttribute('aria-labelledby',tab.id);
+  }
+  if(isProjection){
+   if(writeUrl)updateUrl();
+   showProjection();
+   return;
+  }
   const phase=data.phases[state.fase],metric=metrics[state.tipo][state.metrica];
   const byRound=state.visao==='rodada',evolution=state.visao==='evolucao';
   const pool=comparison(phase,state.tipo,state.metrica,state.visao,state.quedas);
@@ -115,12 +166,6 @@ function boot(data){
   controls.quedas.innerHTML=options(sizes.map(size=>[size,String(size)]));
   for(const [key,control] of Object.entries(controls))control.value=state[key]??'';
   document.getElementById('rx-size-control').hidden=!byRound||sizes.length<2;
-  for(const tab of tabs){
-   const active=tab.dataset.view===state.visao;
-   tab.setAttribute('aria-selected',String(active));
-   tab.tabIndex=active?0:-1;
-   if(active)panel.setAttribute('aria-labelledby',tab.id);
-  }
   const candidates=evolution?catalog.filter(entry=>entry.type===state.tipo&&entry.phases.has(state.fase)&&entry.id!==state.id):[];
   const byId=new Map(candidates.map(entry=>[entry.id,entry]));
   if(evolution)state.comparar=[...new Set(state.comparar)].filter(id=>byId.has(id)).slice(0,compareLimit-1);
@@ -299,7 +344,7 @@ function boot(data){
  window.addEventListener('popstate',()=>{read();render();});
  read();
  render();
- attachSearch(document.getElementById('rx-search'),catalog,({type,id,phases})=>{
+ attachSearch(primarySearch,catalog,({type,id,phases})=>{
   const candidates=[...new Set([state.fase,...phases])].filter(phase=>phases.has(phase));
   const keys=Object.keys(metrics[type]);
   const metric=type===state.tipo?state.metrica:keys[0];

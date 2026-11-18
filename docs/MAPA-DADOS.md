@@ -196,11 +196,18 @@ navegação usa os mesmos filtros e preserva os parâmetros dos links antigos
 de `index.html#ffws-global-2026-…`. Estatísticas carrega os dados detalhados
 e o gráfico conforme o uso. MVP continua limitado ao resumo da edição.
 
-O Raio-X em `/ffws-global-2026/stats/raio-x/` usa apenas o resumo estático
+O Raio-X em `/ffws-global-2026/stats/raio-x/` usa o resumo estático
 `stats/raio-x/resumo.json`, gerado pelo preparo global a partir do calendário,
 dos placares e dos registros individuais. Compara rodadas completas com o
 mesmo número de quedas ou a média ponderada por queda. O resumo acompanha
 os resultados cadastrados, sem consultar o Camp ao Vivo.
+A aba Projeção da Fase 2 busca `stats/raio-x/projecao.json` ao abrir.
+`scripts/build-global-projection.cjs` usa as classificações oficiais, o calendário
+e os recortes por queda para simular 20 mil lobbies de seis quedas por dia.
+O próximo dia só abre com 12 equipes definidas. Apenas dias anteriores completos
+entram no treino, e previsões já publicadas para o mesmo lobby são preservadas
+após as primeiras quedas. O preparo global atualiza o arquivo no mesmo commit dos
+resultados. Reconstituições sem previsão salva são identificadas como retrospectivas.
 
 ### Início do Mundial 2026
 

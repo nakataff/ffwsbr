@@ -30,8 +30,9 @@ async function openPage(t,search=''){
  const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/ffws-global-2026/stats/raio-x/'+search,runScripts:'outside-only'});
  t.after(()=>dom.window.close());
  const {window}=dom,{document}=window;
- window.fetch=async()=>({ok:true,json:async()=>summary});
- window.eval(script.replace('export function comparison','function comparison').replace('import.meta.url','location.href'));
+ window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
+ window.loadProjectionModule=()=>import(base+'projecao.mjs');
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=1')",'window.loadProjectionModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
@@ -195,4 +196,82 @@ test('links to specific records still open Recordes and metric changes preserve 
  select.dispatchEvent(new window.Event('change',{bubbles:true}));
  assert.match(document.getElementById('rx-headline').textContent,/WASSANA fez 14[.]582 de dano em 6 quedas/);
  assert.equal(new URLSearchParams(window.location.search).get('rodada'),'10');
+});
+
+test('the Phase 2 forecast balances two slots, freezes a published day and refits only with completed results',async t=>{
+ const {build}=require('../scripts/build-global-projection.cjs');
+ const forecast=require(base+'projecao.json');
+ const overview=require('../ffws-global-2026/inicio-resumo.json');
+ const data={teams:require('../ffws-global-2026/teams.json'),dates:require('../ffws-global-2026/dates.json')};
+
+ // These are the pre-tournament published inputs even after the season advances.
+ const initial=structuredClone(summary),tables=structuredClone(overview);
+ initial.phases.segundaFase.rounds=[];
+ tables.tables.segundaFase.days.forEach(day=>{day.rows=[];});
+ const baseModel=build({data,overview:tables,analysis:initial});
+ const first=baseModel.days[0];
+ assert.equal(first.forecast.length,12);
+ assert.ok(Math.abs(first.forecast.reduce((total,row)=>total+row.probability,0)-200)<.1);
+ assert.ok(first.forecast.every(row=>row.low<row.points&&row.points<row.high));
+ assert.deepEqual(baseModel.days.map(day=>day.forecast.length),[12,0,0,0]);
+
+ const finishDay=(day,ids)=>{
+  const ordered=ids.map((id,index)=>({id,points:132-index*6}));
+  const round={day,expected:6,players:{},teams:Object.fromEntries(ordered.map(({id,points},i)=>[
+   id,Array.from({length:6},(_,index)=>[index+1,points/6,Math.max(0,points/6-(i===0?12:6)),i===0?1:0])
+  ]))};
+  const rows=ordered.map(({id,points},index)=>({team:initial.teams[id].name,position:index+1,points,matches:6}));
+  initial.phases.segundaFase.rounds[day-1]=round;
+  tables.tables.segundaFase.days[day-1].rows=rows;
+ };
+ const initialIds=first.forecast.map(row=>row.id).reverse();
+ finishDay(1,initialIds);
+ initial.phases.segundaFase.rounds[0].teams[initialIds[0]].pop();
+ const partial=build({data,overview:tables,analysis:initial,previous:baseModel});
+ assert.deepEqual(partial.days[0].forecast,first.forecast);
+ assert.equal(partial.days[0].started,true);
+ assert.equal(partial.finalists.length,0);
+ assert.equal(partial.days[1].forecast.length,0);
+
+ finishDay(1,initialIds);
+ const second=build({data,overview:tables,analysis:initial,previous:baseModel});
+ assert.deepEqual(second.days[0].forecast,first.forecast);
+ assert.equal(second.days[0].basis,'published');
+ assert.deepEqual(second.finalists.map(row=>row.id),initialIds.slice(0,2));
+ assert.deepEqual(second.days[1].forecast.map(row=>row.id).sort(),[...initialIds.slice(2),'resurrection-esports','gundynasty'].sort());
+ assert.deepEqual(second.days.slice(2).map(day=>day.forecast.length),[0,0]);
+ for(let day=2;day<=4;day++){
+  const fixture=baseModel.days[day-1];
+  const previous=initial.phases.segundaFase.rounds[day-2];
+  finishDay(day,[...fixture.newcomers,...Object.keys(previous.teams).slice(2)]);
+ }
+ const finished=build({data,overview:tables,analysis:initial,previous:second});
+ assert.equal(new Set(finished.finalists.map(row=>row.id)).size,8);
+ assert.deepEqual(finished.days[1].forecast,second.days[1].forecast);
+ assert.equal(finished.days[2].basis,'retrospective');
+ assert.equal(finished.days[3].result.length,12);
+ assert.deepEqual(build({data,overview:tables,analysis:initial,previous:finished}),finished);
+ assert.ok(forecast.days[0].forecast.length===12);
+
+ const {renderProjection}=await import(base+'projecao.mjs');
+ const {window,document}=await openPage(t,'?visao=projecao&dia=2');
+ assert.equal(document.querySelector('[data-view="projecao"]').getAttribute('aria-selected'),'true');
+ assert.equal(document.getElementById('rx-search').closest('.rx-search').hidden,true);
+ assert.equal(document.getElementById('rx-projection-day-title').textContent,'Dia 2');
+ document.querySelector('[data-projection-day="1"]').click();
+ assert.equal(new URL(window.location.href).searchParams.get('dia'),'1');
+ assert.equal(document.querySelectorAll('.rx-projection-table tbody tr').length,12);
+ document.querySelector('[data-view="media"]').click();
+ assert.equal(document.getElementById('rx-search').closest('.rx-search').hidden,false);
+ const container=document.createElement('div');
+ renderProjection(container,baseModel,initial.teams,2,()=>{});
+ assert.match(container.textContent,/Lobby pendente/);
+ assert.match(container.textContent,/Resurrection Esports/);
+ assert.equal(container.querySelector('table'),null);
+ renderProjection(container,finished,initial.teams,1,()=>{});
+ assert.match(container.textContent,/0 de 2 favoritos se classificaram/);
+ assert.equal(container.querySelectorAll('.rx-projection-table tbody tr').length,12);
+ assert.equal(container.querySelectorAll('.rx-projection-finalists li').length,8);
+ renderProjection(container,finished,initial.teams,3,()=>{});
+ assert.match(container.textContent,/Simulação retrospectiva/);
 });

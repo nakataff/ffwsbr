@@ -2,6 +2,7 @@
 /* Read-only preview by default. --write prepares local files for one git release. */
 const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const overview=require('./build-global-overview.cjs'),profiles=require('./build-global-players.cjs'),camp=require('./build-global-camp-model.cjs'),analysis=require('./build-global-analysis.cjs');
+const projection=require('./build-global-projection.cjs');
 const {norm,build:buildMvp}=require('./build-mvp-summary.cjs'),s1=require('./build-s1-mvp.cjs'),s2=require('./build-s2-overview.cjs');
 const ROOT=path.join(__dirname,'..');
 const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,file),'utf8'));
@@ -79,9 +80,11 @@ async function prepare(edition,exportFile,close=false){
   const views=overview.build({...data,standingsDay1,includeMvp:true});
   const individual=profiles.build({...data,identities:read(base+'player-identities.json'),routes:read('player-data/routes.json').routes});
   const summary=analysis.build(data,individual[base+'jogadores-resumo.json']);
+  const previous=fs.existsSync(path.join(ROOT,projection.FILE))?read(projection.FILE):null;
+  const chances=projection.build({data,overview:views['inicio-resumo.json'],analysis:summary,previous});
   const model=camp.build({...data,playerSummary:individual[base+'jogadores-resumo.json']});
   const official=close?Object.fromEntries(['stages','dates'].map(key=>[base+key+'.json',JSON.stringify(data[key],null,2)+'\n'])):{};
-  return {coverage,files:{...official,...prefixed(base,views),...individual,[base+'camp-model.json']:model,[analysis.FILE]:summary},generatedFolders:[base+'player-data',base+'player-details']};
+  return {coverage,files:{...official,...prefixed(base,views),...individual,[base+'camp-model.json']:model,[analysis.FILE]:summary,[projection.FILE]:chances},generatedFolders:[base+'player-data',base+'player-details']};
  }
  if(edition==='s1'){
   const base='ffws-br-2026-s1/',data=s1.build({archive:read(base+'players.json'),meta:read(base+'player-meta.json'),teams:read(base+'teams.json')});
