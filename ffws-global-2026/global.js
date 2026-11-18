@@ -169,15 +169,26 @@
     return state.playersLoading;
   }
 
-  function hero(title, subtitle, showAnalysis = false) {
+  function hero(title, subtitle) {
     return `<section class="ffws-global-hero">
       <div class="ffws-global-brand"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="86" height="67" alt="Free Fire World Series" decoding="async"><div class="ffws-global-kicker">FFWS GLOBAL FINALS 2026</div></div>
       <h1>${escapeHtml(title)}</h1>
       <p>${escapeHtml(subtitle)}</p>
       <div class="ffws-global-event-meta"><span>6 a 28 de novembro de 2026</span><span>Bangkok, Tailândia</span><span>24 equipes • Presencial • Garena</span><span>Reach Your Prime</span></div>
       <a class="ffws-global-pred-link" href="/interacoes.html#palpites" aria-label="Participar dos palpites da rodada do Mundial">🎯 Fazer meus palpites <span aria-hidden="true">↗</span></a>
-      ${showAnalysis ? '<a class="ffws-global-pred-link" href="/ffws-global-2026/stats/raio-x/">Explorar o Raio-X do Mundial <span aria-hidden="true">↗</span></a>' : ''}
     </section>`;
+  }
+
+  function statsIntro() {
+    return `<div class="ffws-global-stats-intro">
+      <a class="ffws-global-analysis-feature" href="/ffws-global-2026/stats/raio-x/" aria-labelledby="ffws-global-analysis-title" aria-describedby="ffws-global-analysis-summary">
+        <span class="ffws-global-analysis-graphic" aria-hidden="true"><i></i><i></i><i></i></span>
+        <h2 id="ffws-global-analysis-title">Raio-X do Mundial</h2>
+        <p id="ffws-global-analysis-summary">Compare jogadores e equipes, acompanhe a evolução rodada a rodada e explore os recordes.</p>
+        <span class="ffws-global-analysis-action">Abrir Raio-X <span aria-hidden="true">↗</span></span>
+      </a>
+      ${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Global Finals 2026')}
+    </div>`;
   }
 
   function stageNavigation(stageKey) {
@@ -1582,9 +1593,11 @@
     ];
     const playerOnly = new Set(['anchor-s2-totais-jogador','anchor-s2-medias-jogador','anchor-s2-participacao','anchor-s2-rec-drop-player','anchor-s2-rec-day-player']);
     const visible = items.filter(([id]) => id === 'anchor-s2-filtros' || (hasTeams && (hasPlayers || !playerOnly.has(id))));
-    const cut = Math.ceil(visible.length / 2);
-    const rows = [visible.slice(0, cut), visible.slice(cut)];
-    return `<div class="cff-stats-sticky-nav" data-stats-sticky-nav="s2"><span>Ir para:</span><div class="cff-stats-sticky-rows">${rows.map(row => `<div class="cff-stats-sticky-row">${row.map(([id,label]) => `<button type="button" onclick="scrollFFWSGlobalStatsSection('${id}')">${escapeHtml(label)}</button>`).join('')}</div>`).join('')}</div></div>`;
+    return `<nav class="cff-stats-sticky-nav ffws-global-shortcuts" data-stats-sticky-nav="s2" aria-label="Atalhos das estatísticas">
+      <span aria-hidden="true">Ir para:</span>
+      <button class="ffws-global-shortcuts-toggle" type="button" aria-expanded="false" aria-controls="ffws-global-shortcut-links">Atalhos das estatísticas <span aria-hidden="true">⌄</span></button>
+      <div id="ffws-global-shortcut-links" class="cff-stats-sticky-row">${visible.map(([id,label]) => `<button type="button" data-stats-anchor="${id}">${escapeHtml(label)}</button>`).join('')}</div>
+    </nav>`;
   }
 
   function s2StatsEvolutionPeriods(events) {
@@ -2235,7 +2248,7 @@
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-ranking-columns"><div id="anchor-s2-ranking-medias"><div class="ffws-global-panel-head"><div><h2>Ranking de Médias</h2><p>Desempenho por queda.</p></div></div>${statsRankingTable(avgRanking, true)}</div><div id="anchor-s2-ranking-totais"><div class="ffws-global-panel-head"><div><h2>Ranking de Totais</h2><p>Desempenho acumulado.</p></div></div>${statsRankingTable(totalRanking, false)}</div></div></div></section>
     ` : `<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-empty"><div><strong>Etapa ainda sem resultados</strong>As estatísticas aparecerão após o cadastro das quedas.</div></div></div></section>`;
 
-    root.innerHTML = `<div class="ffws-global-shell">${hero('Estatísticas Gerais', 'Indicadores e rankings das equipes da FFWS Global Finals 2026', true)}
+    root.innerHTML = `<div class="ffws-global-shell">${statsIntro()}
       ${s2StatsStickyNavHtml(events.length, playerEntries.length)}
       <div id="cff-stats-share-gallery-slot" class="cff-stats-gallery-slot" aria-hidden="true"></div>
       ${summaryBlock}
@@ -2243,6 +2256,29 @@
       ${statsBlocks}
       ${s2StatsBackTopButtonHtml()}
     </div>`;
+    const shortcuts = root.querySelector('.ffws-global-shortcuts');
+    const shortcutToggle = shortcuts.querySelector('.ffws-global-shortcuts-toggle');
+    function closeShortcuts() {
+      if (shortcutToggle.getAttribute('aria-expanded') !== 'true') return false;
+      shortcutToggle.setAttribute('aria-expanded','false');
+      return true;
+    }
+    shortcuts.addEventListener('click', event => {
+      if (event.target.closest('.ffws-global-shortcuts-toggle')) {
+        shortcutToggle.setAttribute('aria-expanded', String(shortcutToggle.getAttribute('aria-expanded') !== 'true'));
+        return;
+      }
+      const id = event.target.closest('[data-stats-anchor]')?.dataset.statsAnchor;
+      const target = id ? document.getElementById(id) : null;
+      if (!target) return;
+      closeShortcuts();
+      target.tabIndex = -1;
+      target.focus({preventScroll:true});
+      target.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start'});
+    });
+    shortcuts.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && closeShortcuts()) shortcutToggle.focus({preventScroll:true});
+    });
     const standings = statsTeamStandings(state.statsFilters);
     attachGlobalStatsShare(root, {
       teams, players, playerShareRows, records, events,
@@ -2913,7 +2949,6 @@
   window.clearFFWSGlobalStatsMulti = key => { state.statsFilters[key] = []; renderStats(); };
   window.setFFWSGlobalStatsMulti = (key, value, checked) => { const selected = new Set(state.statsFilters[key] || []); checked ? selected.add(String(value)) : selected.delete(String(value)); state.statsFilters[key] = [...selected]; renderStats(); };
   window.ffwsS2StatsPageNav = (key, delta) => { const pages = s2StatsPageState(); pages[key] = delta === 'reset' ? 0 : number(pages[key]) + number(delta); renderStats(); };
-  window.scrollFFWSGlobalStatsSection = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   window.setFFWSGlobalEvolutionFilter = (field,value) => {
     const filter = state.statsEvolution;
     const holder = document.getElementById('ffws-global-evolution-filters');

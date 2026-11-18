@@ -216,9 +216,11 @@ test('standalone stats open directly with a shared date filter and no home depen
  const html=read('ffws-global-2026/stats/index.html');
  const dom=new JSDOM(html,{url:'https://centralfreefire.com.br/ffws-global-2026/stats/?statsStage=classificatoria&statsDays=3',runScripts:'outside-only'});
  const w=dom.window, requests=[];
+ let scrolledTo;
  try {
   w.requestAnimationFrame=()=>0;
   w.matchMedia=()=>({matches:false,addEventListener(){}});
+  w.HTMLElement.prototype.scrollIntoView=function(){scrolledTo=this.id;};
   w.fetch=async url=>{
    const file=String(url).split('?')[0].replace(/^\//,'');
    requests.push(file);
@@ -227,6 +229,19 @@ test('standalone stats open directly with a shared date filter and no home depen
   for(const file of ['js/season-routes.js','ffws-global-2026/config.js','ffws-global-2026/global.js'])w.eval(read(file));
   for(let i=0;i<6;i++)await new Promise(resolve=>setImmediate(resolve));
   assert.equal(w.document.querySelector('main h1').textContent,'Estatísticas Gerais');
+  const intro=w.document.querySelector('.ffws-global-stats-intro');
+  assert.equal(intro.firstElementChild.getAttribute('href'),'/ffws-global-2026/stats/raio-x/');
+  assert.equal(intro.lastElementChild.querySelector('h1').textContent,'Estatísticas Gerais');
+  const shortcuts=w.document.querySelector('nav[aria-label="Atalhos das estatísticas"]');
+  assert.equal(shortcuts.querySelectorAll('[data-stats-anchor]').length,17);
+  assert.ok(Array.from(shortcuts.querySelectorAll('[data-stats-anchor]')).every(button=>w.document.getElementById(button.dataset.statsAnchor)));
+  const toggle=shortcuts.querySelector('.ffws-global-shortcuts-toggle');
+  toggle.click();
+  assert.equal(toggle.getAttribute('aria-expanded'),'true');
+  shortcuts.querySelector('[data-stats-anchor="anchor-s2-ranking-totais"]').click();
+  assert.equal(toggle.getAttribute('aria-expanded'),'false');
+  assert.equal(scrolledTo,'anchor-s2-ranking-totais');
+  assert.equal(w.document.activeElement.id,scrolledTo);
   assert.match(w.document.querySelector('#ffws-global-2026-stats-content').textContent,/12 quedas/);
   assert.equal(w.location.pathname,'/ffws-global-2026/stats/');
   assert(requests.every(file=>file.startsWith('ffws-global-2026/')));
