@@ -2,8 +2,9 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {JSDOM}=require('jsdom');
 const read=file=>fs.readFileSync(file,'utf8');
 const calendar=JSON.parse(read('ffws-global-2026/dates.json')),teamData=JSON.parse(read('ffws-global-2026/teams.json')),groupData=JSON.parse(read('ffws-global-2026/groups.json'));
+const summary=JSON.parse(read('ffws-global-2026/inicio-resumo.json'));
 const sleep=()=>new Promise(resolve=>setImmediate(resolve));
-async function mount(at,{mobile=false,offline=false}={}){
+async function mount(at,{mobile=false,offline=false,data=summary}={}){
  const dom=new JSDOM(read('index.html'),{url:'https://centralfreefire.com.br/',runScripts:'outside-only'});
  const w=dom.window,requests=[];let now=Date.parse(at),interval=null,boundary=null;
  Object.defineProperty(w.document,'hidden',{get:()=>false});
@@ -14,7 +15,6 @@ async function mount(at,{mobile=false,offline=false}={}){
  w.fetch=async url=>{
   requests.push(String(url));
   if(offline)throw Error('Fora do ar');
-  const data=String(url).includes('dates.json')?calendar:String(url).includes('teams.json')?teamData:groupData;
   return {ok:true,json:async()=>JSON.parse(JSON.stringify(data))};
  };
  w.document.getElementById('home').classList.add('active');
@@ -63,9 +63,7 @@ test('homepage opens on knockout matchups from published dates and displays corr
    assert.equal(card.querySelector('img').getAttribute('src'),'/'+team.logo);
    assert(!card.hasAttribute('onclick'));
   }
-  assert.equal(x.requests.length,3); // Links do not fetch rosters for home visitors.
-  assert(x.requests.some(p=>p.includes('groups.json')));
-  assert(x.requests.some(p=>p.includes('dates.json')));
+  assert.deepEqual(x.requests,['/ffws-global-2026/inicio-resumo.json']);
  }finally{x.close();}
 });
 test('upcoming fixture cards are clickable and expand to the same two six-team groups without changing the main matchup',async()=>{
@@ -139,8 +137,59 @@ test('during each round the homepage highlights the matchup and stream instead o
   assert.match(focus(),/RODADA EM ANDAMENTO.*GRUPO C × GRUPO D/);
   assert(watch());
   assert.equal(d.querySelectorAll('.home-global-matchup')[0].querySelectorAll('.home-global-match-team').length,12);
-  assert.equal(x.requests.length,3);
+  assert.equal(x.requests.length,1);
  }finally{x.close();}
+});
+test('Phase 2 opens with one 12-team grid and highlights the next day entrants separately',async()=>{
+ const x=await mount('2026-11-18T12:00:00-03:00');
+ try{
+  const d=x.w.document,output=d.querySelector('#home-global-upcoming-content');
+  const current=output.querySelector(':scope > .home-global-single-roster');
+  assert.equal(current.querySelectorAll('.home-global-match-team').length,12);
+  assert.match(current.textContent,/Equipes do Dia 1.*12 DE 12 CONFIRMADAS/);
+  assert.equal(output.querySelector('.home-global-matchup'),null);
+  const debut=output.querySelector('.home-global-entrants');
+  assert.match(debut.textContent,/Estreiam no Dia 2/);
+  assert.deepEqual([...debut.querySelectorAll('strong')].map(team=>team.textContent),['Resurrection Esports','GunDynasty']);
+  assert.match(output.querySelector('.home-global-finalists').textContent,/Classificados para a Grande Final.*0 DE 12 VAGAS/);
+  const future=output.querySelector('.home-global-fixture');
+  assert.equal(future.querySelectorAll('.is-new').length,2);
+  assert.match(future.querySelector('.home-global-roster-note').textContent,/Dia 1 da Fase 2/);
+ }finally{x.close();}
+});
+test('Only completed days qualify finalists and fill the next lobby; Last Chance adds four more finalists',async()=>{
+ const data=structuredClone(summary),rounds=data.rounds.filter(round=>round.stage==='segundaFase');
+ const days=data.tables.segundaFase.days;
+ function standings(ids,matches){
+  return ids.map((id,index)=>({team:data.teams.find(team=>team.id===id).name,position:index+1,matches}));
+ }
+ let ids=rounds[0].seededTeams;
+ days[0].rows=standings(ids,6).reverse();
+ days[1].rows=standings([...rounds[1].seededTeams,...ids.slice(2)],5);
+ const x=await mount('2026-11-19T09:00:00-03:00',{data});
+ const teamIds=(d,selector)=>[...d.querySelectorAll(selector)].map(a=>new URL(a.href).searchParams.get('time'));
+ try{
+  const d=x.w.document;
+  assert.match(d.querySelector('.home-global-match-head').textContent,/Dia 2/);
+  assert.deepEqual(teamIds(d,'.home-global-upcoming-content > .home-global-single-roster a'),[...rounds[1].seededTeams,...ids.slice(2)]);
+  assert.deepEqual(teamIds(d,'.home-global-finalists a'),ids.slice(0,2));
+  assert.match(d.querySelector('.home-global-finalists a small').textContent,/Fase 2 · Dia 1 · 1º/);
+  assert.match(d.querySelector('.home-global-finalists').textContent,/2 DE 12 VAGAS/);
+ }finally{x.close();}
+ for(const [index,round] of rounds.entries()){
+  if(index)ids=[...round.seededTeams,...ids.slice(2)];
+  days[index].rows=standings(ids,6);
+ }
+ const lastChance=data.rounds.find(round=>round.stage==='lastChance'),lastIds=[...lastChance.seededTeams,...ids.slice(2)];
+ data.tables.lastChance.days[0].rows=standings(lastIds,10);
+ const final=await mount('2026-11-27T16:00:00-03:00',{data});
+ try{
+  const d=final.w.document,qualified=teamIds(d,'.home-global-finalists a');
+  assert.match(d.querySelector('.home-global-match-head').textContent,/GRANDE FINAL/);
+  assert.equal(new Set(qualified).size,12);
+  assert.deepEqual(qualified.slice(-4),lastIds.slice(0,4));
+  assert.deepEqual(teamIds(d,'.home-global-upcoming-content > .home-global-single-roster a'),qualified);
+ }finally{final.close();}
 });
 test('Last Chance shows its two known entrants; after final it shows results shortcut',async()=>{
  const x=await mount('2026-11-23T12:00:00-03:00');
@@ -148,7 +197,7 @@ test('Last Chance shows its two known entrants; after final it shows results sho
   const d=x.w.document;
   assert.match(d.querySelector('.home-global-match-head').textContent,/LAST CHANCE/);
   assert.equal(d.querySelectorAll('.home-global-match-team').length,2);
-  assert.match(d.querySelector('.home-global-future-teams').textContent,/Dia 4 da Fase 2/);
+  assert.match(d.querySelector('.home-global-roster-note').textContent,/Dia 4 da Fase 2/);
   x.setNow('2026-11-29T12:00:00-03:00');x.tick();
   assert(d.querySelector('.home-global-finished'));
   assert.equal(d.querySelector('.home-global-countdown').hidden,true);

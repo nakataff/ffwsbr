@@ -208,6 +208,9 @@ Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu)
 Reutiliza `ffws-global-2026/global.css` para manter a identidade das outras páginas.
 O módulo `ffws-global-2026/inicio.js` é independente de `global.js`: não baixa a
 base completa. O cartão Seleções usa o resumo estático e, em dias novos, o placar público compacto para escolher o coach.
+A vitrine de rodadas da home principal também usa `inicio-resumo.json`.
+Ela mostra os times previstos no calendário e usa as tabelas de dias completos
+da Fase 2 e da Repescagem para preencher os lobbies e as vagas da Grande Final.
 O cabeçalho oferece atalhos nativos para equipes, quatro etapas e calendário, com
 rankings, estatísticas, seleções, comparação, notas e formato em “Rankings, estatísticas e mais”.
 Os atalhos não antecipam o carregamento das páginas; o formato continua sendo a
