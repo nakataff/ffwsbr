@@ -22,7 +22,7 @@
         "09:00"
       ],
       "segundaFase": [
-        "07:00"
+        "09:00"
       ],
       "lastChance": [
         "07:00"
@@ -52,7 +52,7 @@
       "endDate": "2026-11-22",
       "date": "19 a 22 de novembro de 2026",
       "summary": "18 equipes entram de forma escalonada, conforme a classificação da Fase 1. São quatro dias com 12 equipes e seis quedas por dia. A pontuação é zerada entre os dias e os dois melhores de cada dia garantem vaga na Grande Final.",
-      "time": "07h • horário de Brasília"
+      "time": "09h • horário de Brasília"
     },
     {
       "id": "lastChance",
@@ -322,8 +322,8 @@
       "label": "Dia 1",
       "date": "2026-11-19",
       "dateLabel": "19 de novembro",
-      "time24": "07:00",
-      "time": "07h00",
+      "time24": "09:00",
+      "time": "09h00",
       "teamCount": 12,
       "matches": 6,
       "entrants": "As 12 equipes do Pool 1 (1º ao 12º da Fase 1).",
@@ -352,8 +352,8 @@
       "label": "Dia 2",
       "date": "2026-11-20",
       "dateLabel": "20 de novembro",
-      "time24": "07:00",
-      "time": "07h00",
+      "time24": "09:00",
+      "time": "09h00",
       "teamCount": 12,
       "matches": 6,
       "entrants": "Dez equipes do Dia 1 + Pool 2 (13º e 14º da Fase 1).",
@@ -372,8 +372,8 @@
       "label": "Dia 3",
       "date": "2026-11-21",
       "dateLabel": "21 de novembro",
-      "time24": "07:00",
-      "time": "07h00",
+      "time24": "09:00",
+      "time": "09h00",
       "teamCount": 12,
       "matches": 6,
       "entrants": "Dez equipes do Dia 2 + Pool 3 (15º e 16º da Fase 1).",
@@ -392,8 +392,8 @@
       "label": "Dia 4",
       "date": "2026-11-22",
       "dateLabel": "22 de novembro",
-      "time24": "07:00",
-      "time": "07h00",
+      "time24": "09:00",
+      "time": "09h00",
       "teamCount": 12,
       "matches": 6,
       "entrants": "Dez equipes do Dia 3 + Pool 4 (17º e 18º da Fase 1).",

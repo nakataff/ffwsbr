@@ -98,7 +98,7 @@
       "lastChanceTeamCount": 10,
       "resetEachDay": true,
       "bonusConfirmed": false,
-      "timeLabel": "07h • horário de Brasília",
+      "timeLabel": "09h • horário de Brasília",
       "stats": [
         {
           "value": "18",
@@ -8612,7 +8612,7 @@
         "09:00"
       ],
       "segundaFase": [
-        "07:00"
+        "09:00"
       ],
       "lastChance": [
         "07:00"

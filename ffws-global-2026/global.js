@@ -3,9 +3,9 @@
 
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
-    stagesUrl: 'ffws-global-2026/stages.json?v=20261116-punicao-gundynasty-v1',
+    stagesUrl: 'ffws-global-2026/stages.json?v=20261118-fase2-09h-v1',
     playersUrl: 'ffws-global-2026/players.json?v=20261115-fase1-final-v1',
-    datesUrl: 'ffws-global-2026/dates.json?v=20261116-punicao-gundynasty-v1'
+    datesUrl: 'ffws-global-2026/dates.json?v=20261118-fase2-09h-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
   const STAGE_MULTI_PAGES = {
@@ -310,7 +310,7 @@
       ${stats.length?`<div class="ffws-global-format-stats">${stats.map(item=>`<div><strong>${escapeHtml(item.value)}</strong><span>${escapeHtml(item.label)}</span></div>`).join('')}</div>`:''}
       ${rules.length?`<ul class="ffws-global-format-rules">${rules.map(rule=>`<li>${escapeHtml(rule)}</li>`).join('')}</ul>`:''}
       ${pools.length?`<div class="ffws-global-format-subsection"><h3>Entrada na Fase 2</h3><div class="ffws-global-format-pools">${pools.map(pool=>`<article><small>${escapeHtml(pool.name)}</small><strong>${escapeHtml(pool.positions)}</strong><span>${escapeHtml(pool.entry)}</span></article>`).join('')}</div></div>`:''}
-      ${days.length?`<div class="ffws-global-format-subsection"><h3>Como funciona cada dia</h3><div class="ffws-global-progression">${days.map(day=>`<article><header><strong>Dia ${number(day.day)}</strong><time datetime="${escapeHtml(day.date)}">${escapeHtml(day.dateLabel)} · 07h</time></header><p>${escapeHtml(day.entrants)}</p><b>${escapeHtml(day.advance)}</b><span>${escapeHtml(day.remaining)}</span></article>`).join('')}</div></div>`:''}
+      ${days.length?`<div class="ffws-global-format-subsection"><h3>Como funciona cada dia</h3><div class="ffws-global-progression">${days.map(day=>`<article><header><strong>Dia ${number(day.day)}</strong><time datetime="${escapeHtml(day.date)}">${escapeHtml(day.dateLabel)} · ${escapeHtml((format.timeLabel||'').split(' •')[0])}</time></header><p>${escapeHtml(day.entrants)}</p><b>${escapeHtml(day.advance)}</b><span>${escapeHtml(day.remaining)}</span></article>`).join('')}</div></div>`:''}
       ${!hideTitle?`<div class="ffws-global-format-links"><a href="/ffws-global-2026/formato" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-global-2026-formato');return false;}">Ver o formato completo</a><a href="/ffws-global-2026/datas" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-global-2026-datas');return false;}">Ver calendário e confrontos →</a></div>`:''}
     </section>`;
   }
@@ -609,7 +609,7 @@
     const root=document.getElementById('ffws-global-2026-datas-content');if(!root)return;
     const stages=Array.isArray(state.dates?.stages)?state.dates.stages:[],rounds=Array.isArray(state.dates?.rounds)?state.dates.rounds:[];
     const sorted=[...rounds].sort((a,b)=>scheduleStart(a)-scheduleStart(b)),next=sorted.find(r=>scheduleStart(r)>=Date.now())?.key||'';
-    root.innerHTML=`<div class="ffws-global-shell">${hero('Datas e horários','Calendário da FFWS Global Finals 2026')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Calendário do Mundial</h2></div><p class="ffws-global-timezone">Todos os horários são de Brasília (UTC−3). A Fase 1 tem duas rodadas por dia; as demais fases começam às 07h.</p><div class="ffws-global-dates">${stages.map(p=>`<article class="ffws-global-date-card"><h3>${escapeHtml(p.name)}</h3><b>${escapeHtml(p.date)}</b><p>${escapeHtml(p.time||'')}</p></article>`).join('')}</div></div></section>${['classificatoria','segundaFase','lastChance','final'].map(key=>renderScheduleSection(key,rounds,next)).join('')}<a class="global-participants-link" href="/ffws-global-2026/formato" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-global-2026-formato');return false;}">Entenda o formato completo →</a></div>`;
+    root.innerHTML=`<div class="ffws-global-shell">${hero('Datas e horários','Calendário da FFWS Global Finals 2026')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><h2>Calendário do Mundial</h2></div><p class="ffws-global-timezone">Todos os horários são de Brasília (UTC−3). A Fase 1 tem duas rodadas por dia; confira abaixo os horários de cada fase.</p><div class="ffws-global-dates">${stages.map(p=>`<article class="ffws-global-date-card"><h3>${escapeHtml(p.name)}</h3><b>${escapeHtml(p.date)}</b><p>${escapeHtml(p.time||'')}</p></article>`).join('')}</div></div></section>${['classificatoria','segundaFase','lastChance','final'].map(key=>renderScheduleSection(key,rounds,next)).join('')}<a class="global-participants-link" href="/ffws-global-2026/formato" onclick="if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){navigate('ffws-global-2026-formato');return false;}">Entenda o formato completo →</a></div>`;
   }
 
   function selectionEntryDay(entry) {
