@@ -14,16 +14,17 @@ test('home and public/admin editor use the new bounded summary and shared versio
 test('final rejects extra drops after an eligible Booyah; Wiki map gaps cannot silently shift match numbers',()=>{assert.throws(()=>round('final-1',full()),/já terminou/);const r=round('classificatoria-1'),text='{{Match'+r.participants.map(id=>'|opponent={{TeamOpponent|'+id+'|m2={{MS|'+r.drops[0].placements[id]+'|'+r.drops[0].kills[id]+'}}}}').join('')+'}}',drops=C.wiki(text,meta,r.participants);assert.equal(drops.length,2);assert(drops[0]);assert.throws(()=>C.validate({...r,drops},meta),/queda vazia/)});
 
 test('official phase-two day one prepares day two without live reads, excluding finalists and adding the pool',()=>{
+ const historicalMeta=clone(meta);historicalMeta.officialRounds={'segundaFase-1':clone(meta.officialRounds['segundaFase-1'])};
  const expected=['rrq','loud','xprojekt','team-flash','lyon','onic','bru','los','fx','gow','resurrection-esports','gundynasty'];
- assert.deepEqual(C.entrants('segundaFase-2',{},meta),expected);
- const first=meta.officialRounds['segundaFase-1'];assert.equal(first.complete,true);assert.equal(first.drops.length,6);
- assert.deepEqual(C.rank([first],meta).slice(0,2).map(r=>[r.id,r.points]),[['p-esports',101],['ag-al',99]]);
- const next=C.backup(base,meta,'segundaFase-2');
- assert.deepEqual(next.selectedTeams.map(id=>C.team(meta,id).id),expected);
+ assert.deepEqual(C.entrants('segundaFase-2',{},historicalMeta),expected);
+ const first=historicalMeta.officialRounds['segundaFase-1'];assert.equal(first.complete,true);assert.equal(first.drops.length,6);
+ assert.deepEqual(C.rank([first],historicalMeta).slice(0,2).map(r=>[r.id,r.points]),[['p-esports',101],['ag-al',99]]);
+ const next=C.backup(base,historicalMeta,'segundaFase-2');
+ assert.deepEqual(next.selectedTeams.map(id=>C.team(historicalMeta,id).id),expected);
  assert.equal(next.config.daySettings[0].time,'09:00');assert.equal(next.config.date,'2026-11-20');
  assert(next.drops.every(d=>Object.values(d.points).every(v=>v===null)));
  assert(Object.values(next.startingPoints).every(v=>v===0));assert.equal(next.config.cffGlobalArchive['segundaFase-1'].drops.length,6);
- const opened=C.backup(base,meta,'segundaFase-1');assert.deepEqual(C.rank([C.record(opened,'segundaFase-1',meta)],meta).slice(0,2).map(r=>r.points),[101,99]);
+ const opened=C.backup(base,historicalMeta,'segundaFase-1');assert.deepEqual(C.rank([C.record(opened,'segundaFase-1',historicalMeta)],historicalMeta).slice(0,2).map(r=>r.points),[101,99]);
 });
 test('official prerequisites preserve incomplete drafts and completed local corrections remain usable',()=>{
  const partial=clone(meta.officialRounds['segundaFase-1']);partial.drops=partial.drops.slice(0,1);partial.complete=false;
@@ -32,4 +33,19 @@ test('official prerequisites preserve incomplete drafts and completed local corr
  assert.equal(C.entrants('segundaFase-2',archive,meta).length,12);assert.equal(JSON.stringify(archive),before);
  const corrected=round('segundaFase-1',{},'rrq'),next=C.entrants('segundaFase-2',{'segundaFase-1':corrected},meta);
  assert(!next.includes('rrq'));assert.equal(next.length,12);
+});
+
+test('day two matches the official broadcast table and prepares day three with no scores carried over',()=>{
+ const record=meta.officialRounds['segundaFase-2'];assert.equal(record.complete,true);
+ const rows=C.rank([record],meta);
+ assert.deepEqual(rows.map(r=>[r.id,r.points,r.kills,r.booyahs,r.points-r.kills]),[
+  ['fx',106,61,1,45],['loud',101,48,3,53],['rrq',99,68,0,31],['lyon',92,65,0,27],['gow',92,50,0,42],['team-flash',76,46,1,30],
+  ['los',74,42,1,32],['gundynasty',59,30,0,29],['bru',48,22,0,26],['resurrection-esports',40,33,0,7],['xprojekt',36,26,0,10],['onic',34,24,0,10]
+ ]);
+ assert.equal(record.drops[4].kills.bru,0);assert.equal(record.drops[4].kills.xprojekt,2);
+ const next=C.backup(base,meta,'segundaFase-3'),ids=next.selectedTeams.map(id=>C.team(meta,id).id);
+ assert.equal(ids.length,12);assert.equal(new Set(ids).size,12);assert(ids.includes('btr'));assert(ids.includes('blue-cheese'));
+ for(const id of ['p-esports','ag-al','fx','loud'])assert(!ids.includes(id));
+ assert.equal(next.config.date,'2026-11-21');assert.equal(next.config.daySettings[0].time,'09:00');
+ assert(next.drops.every(d=>Object.values(d.points).every(v=>v===null)));assert(Object.values(next.startingPoints).every(v=>v===0));
 });

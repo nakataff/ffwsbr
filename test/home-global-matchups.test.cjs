@@ -228,7 +228,8 @@ test('an outage during the round leaves the official stream available without a 
 });
 
 test('published day one separates the two finalists and prepares the actual day two lobby',async()=>{
- const x=await mount('2026-11-20T08:00:00-03:00',{data:summary});
+ const dayOneOnly=structuredClone(summary);dayOneOnly.tables.segundaFase.days.slice(1).forEach(day=>{day.rows=[];});
+ const x=await mount('2026-11-20T08:00:00-03:00',{data:dayOneOnly});
  try{
   const d=x.w.document,roster=d.querySelector('#home-global-upcoming-content > .home-global-single-roster');
   const ids=[...roster.querySelectorAll('a')].map(a=>new URL(a.href).searchParams.get('time'));
@@ -238,5 +239,17 @@ test('published day one separates the two finalists and prepares the actual day 
   assert.match(d.querySelector('.home-global-match-head').textContent,/Dia 2/);
   assert.match(d.querySelector('.home-global-match-head').textContent,/09:00/);
   assert.deepEqual([...d.querySelectorAll('.home-global-finalists a')].map(a=>new URL(a.href).searchParams.get('time')),['p-esports','ag-al']);
+ }finally{x.close();}
+});
+
+test('published day two displays four finalists and the next two newcomers in day three',async()=>{
+ const x=await mount('2026-11-20T16:00:00-03:00',{data:summary});
+ try{
+  const d=x.w.document,roster=d.querySelector('#home-global-upcoming-content > .home-global-single-roster');
+  const ids=[...roster.querySelectorAll('a')].map(a=>new URL(a.href).searchParams.get('time'));
+  assert.equal(new Set(ids).size,12);assert(ids.includes('btr'));assert(ids.includes('blue-cheese'));
+  for(const id of ['p-esports','ag-al','fx','loud'])assert(!ids.includes(id));
+  assert.match(d.querySelector('.home-global-match-head').textContent,/Dia 3/);
+  assert.deepEqual([...d.querySelectorAll('.home-global-finalists a')].map(a=>new URL(a.href).searchParams.get('time')),['p-esports','ag-al','fx','loud']);
  }finally{x.close();}
 });

@@ -1,6 +1,6 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "updatedAt": "2026-11-19",
+  "updatedAt": "2026-11-20",
   "finished": false,
   "formatConfirmed": true,
   "format": {
@@ -9225,10 +9225,665 @@
             "booyah": 0
           }
         ]
+      },
+      {
+        "day": 2,
+        "round": 2,
+        "roundDrop": 1,
+        "drop": 1,
+        "date": "2026-11-20",
+        "time": "09h00",
+        "map": "Solara",
+        "results": [
+          {
+            "team": "LOS",
+            "position": 1,
+            "kills": 7,
+            "points": 19,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "GOW",
+            "position": 2,
+            "kills": 6,
+            "points": 15,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 3,
+            "kills": 6,
+            "points": 14,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 4,
+            "kills": 14,
+            "points": 21,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 5,
+            "kills": 4,
+            "points": 10,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 6,
+            "kills": 1,
+            "points": 6,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 7,
+            "kills": 0,
+            "points": 4,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 8,
+            "kills": 13,
+            "points": 16,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 9,
+            "kills": 7,
+            "points": 9,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 10,
+            "kills": 6,
+            "points": 7,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 11,
+            "kills": 3,
+            "points": 3,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "round": 2,
+        "roundDrop": 2,
+        "drop": 2,
+        "date": "2026-11-20",
+        "time": "09h00",
+        "map": "Nexterra",
+        "results": [
+          {
+            "team": "Team Flash",
+            "position": 1,
+            "kills": 10,
+            "points": 22,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "GOW",
+            "position": 2,
+            "kills": 13,
+            "points": 22,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 3,
+            "kills": 15,
+            "points": 23,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 4,
+            "kills": 2,
+            "points": 9,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 5,
+            "kills": 17,
+            "points": 23,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 6,
+            "kills": 13,
+            "points": 18,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 7,
+            "kills": 2,
+            "points": 6,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 8,
+            "kills": 13,
+            "points": 16,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 10,
+            "kills": 3,
+            "points": 4,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 11,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "round": 2,
+        "roundDrop": 3,
+        "drop": 3,
+        "date": "2026-11-20",
+        "time": "09h00",
+        "map": "Purgatório",
+        "results": [
+          {
+            "team": "FLUXO W7M",
+            "position": 1,
+            "kills": 13,
+            "points": 25,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "LOS",
+            "position": 2,
+            "kills": 11,
+            "points": 20,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 3,
+            "kills": 11,
+            "points": 19,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 4,
+            "kills": 4,
+            "points": 11,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 5,
+            "kills": 10,
+            "points": 16,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 6,
+            "kills": 10,
+            "points": 15,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "LOUD",
+            "position": 7,
+            "kills": 4,
+            "points": 8,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 8,
+            "kills": 4,
+            "points": 7,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 9,
+            "kills": 11,
+            "points": 13,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 10,
+            "kills": 8,
+            "points": 9,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 11,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 12,
+            "kills": 3,
+            "points": 3,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "round": 2,
+        "roundDrop": 4,
+        "drop": 4,
+        "date": "2026-11-20",
+        "time": "09h00",
+        "map": "Bermuda",
+        "results": [
+          {
+            "team": "LOUD",
+            "position": 1,
+            "kills": 10,
+            "points": 22,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "GOW",
+            "position": 2,
+            "kills": 16,
+            "points": 25,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 3,
+            "kills": 7,
+            "points": 15,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 4,
+            "kills": 12,
+            "points": 19,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 5,
+            "kills": 2,
+            "points": 8,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 6,
+            "kills": 11,
+            "points": 16,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 7,
+            "kills": 8,
+            "points": 12,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 8,
+            "kills": 5,
+            "points": 8,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 9,
+            "kills": 13,
+            "points": 15,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 10,
+            "kills": 10,
+            "points": 11,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 11,
+            "kills": 4,
+            "points": 4,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 12,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "round": 2,
+        "roundDrop": 5,
+        "drop": 5,
+        "date": "2026-11-20",
+        "time": "09h00",
+        "map": "Kalahari",
+        "results": [
+          {
+            "team": "LOUD",
+            "position": 1,
+            "kills": 10,
+            "points": 22,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 2,
+            "kills": 10,
+            "points": 19,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 3,
+            "kills": 9,
+            "points": 17,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 4,
+            "kills": 10,
+            "points": 17,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 5,
+            "kills": 1,
+            "points": 7,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 6,
+            "kills": 10,
+            "points": 15,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 7,
+            "kills": 8,
+            "points": 12,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 8,
+            "kills": 12,
+            "points": 15,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 9,
+            "kills": 0,
+            "points": 2,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 10,
+            "kills": 7,
+            "points": 8,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 11,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "round": 2,
+        "roundDrop": 6,
+        "drop": 6,
+        "date": "2026-11-20",
+        "time": "09h00",
+        "map": "Bermuda",
+        "results": [
+          {
+            "team": "LOUD",
+            "position": 1,
+            "kills": 5,
+            "points": 17,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "GunDynasty",
+            "position": 2,
+            "kills": 13,
+            "points": 22,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 3,
+            "kills": 22,
+            "points": 30,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 4,
+            "kills": 1,
+            "points": 8,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "FLUXO W7M",
+            "position": 5,
+            "kills": 4,
+            "points": 10,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Team Flash",
+            "position": 6,
+            "kills": 15,
+            "points": 20,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "LYON",
+            "position": 7,
+            "kills": 11,
+            "points": 15,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 8,
+            "kills": 3,
+            "points": 6,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 10,
+            "kills": 8,
+            "points": 9,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 11,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
       }
     ],
     "rows": [],
-    "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/2026/Knockout_Stage/Phase_2"
+    "source": "https://liquipedia.net/freefire/Free_Fire_World_Series/2026/Knockout_Stage/Phase_2",
+    "sources": [
+      {
+        "day": 1,
+        "date": "2026-11-19",
+        "url": "https://liquipedia.net/freefire/Free_Fire_World_Series/2026/Knockout_Stage/Phase_2"
+      },
+      {
+        "day": 2,
+        "date": "2026-11-20",
+        "url": "https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/global-2026/rounds/segundaFase-2.json",
+        "verification": "Conferido com a tabela oficial enviada pelo administrador: 12 equipes, pontos, abates, colocação e Booyahs."
+      }
+    ]
   },
   "final": {
     "finished": false,
