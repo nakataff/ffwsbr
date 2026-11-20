@@ -24,7 +24,7 @@ test('compact summaries derive from existing sources and retain all 24 teams and
   const home=output['home-resumo.json'];
   const latest=summary.tables[home.stage].days.filter(day=>day.rows.length).at(-1);
   assert.equal(home.date,latest.date);
-  assert.deepEqual(home.teams.map(({name,points})=>[name,points]),summary.tables[home.stage].rows.slice(0,6).map(({team,points})=>[team,points]));
+  assert.deepEqual(home.teams.map(({name,points})=>[name,points]),(home.stage==='segundaFase'?latest.rows:summary.tables[home.stage].rows).slice(0,6).map(({team,points})=>[team,points]));
   assert(Object.values(home.rankings).every(rows=>rows.length===6));
   assert(Buffer.byteLength(JSON.stringify(home))<5000);
 });

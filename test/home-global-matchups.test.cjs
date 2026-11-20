@@ -3,8 +3,9 @@ const {JSDOM}=require('jsdom');
 const read=file=>fs.readFileSync(file,'utf8');
 const calendar=JSON.parse(read('ffws-global-2026/dates.json')),teamData=JSON.parse(read('ffws-global-2026/teams.json')),groupData=JSON.parse(read('ffws-global-2026/groups.json'));
 const summary=JSON.parse(read('ffws-global-2026/inicio-resumo.json'));
+const beforePhaseTwo=structuredClone(summary);beforePhaseTwo.tables.segundaFase.days.forEach(day=>{day.rows=[];});
 const sleep=()=>new Promise(resolve=>setImmediate(resolve));
-async function mount(at,{mobile=false,offline=false,data=summary}={}){
+async function mount(at,{mobile=false,offline=false,data=beforePhaseTwo}={}){
  const dom=new JSDOM(read('index.html'),{url:'https://centralfreefire.com.br/',runScripts:'outside-only'});
  const w=dom.window,requests=[];let now=Date.parse(at),interval=null,boundary=null;
  Object.defineProperty(w.document,'hidden',{get:()=>false});
@@ -223,5 +224,19 @@ test('an outage during the round leaves the official stream available without a 
   assert.equal(x.hasClock(),false);
   assert.equal(clock.querySelector('a').href,'https://www.youtube.com/@ffesportsbr/live');
   assert(d.querySelector('.home-global-calendar-link'));
+ }finally{x.close();}
+});
+
+test('published day one separates the two finalists and prepares the actual day two lobby',async()=>{
+ const x=await mount('2026-11-20T08:00:00-03:00',{data:summary});
+ try{
+  const d=x.w.document,roster=d.querySelector('#home-global-upcoming-content > .home-global-single-roster');
+  const ids=[...roster.querySelectorAll('a')].map(a=>new URL(a.href).searchParams.get('time'));
+  assert.equal(ids.length,12);assert.equal(new Set(ids).size,12);
+  assert(ids.includes('resurrection-esports'));assert(ids.includes('gundynasty'));
+  assert(!ids.includes('p-esports'));assert(!ids.includes('ag-al'));
+  assert.match(d.querySelector('.home-global-match-head').textContent,/Dia 2/);
+  assert.match(d.querySelector('.home-global-match-head').textContent,/09:00/);
+  assert.deepEqual([...d.querySelectorAll('.home-global-finalists a')].map(a=>new URL(a.href).searchParams.get('time')),['p-esports','ag-al']);
  }finally{x.close();}
 });

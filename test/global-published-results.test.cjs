@@ -105,7 +105,7 @@ test('Classificatória and Stats share published scores, preserve session filter
    await api.loadLiveResults(true);
    const merged=api.stageEvents('classificatoria');
    assert.equal(merged.length,officialDrops);
-   assert.equal(api.stageEvents('segundaFase').length,1);
+   assert.equal(api.stageEvents('segundaFase').length,api.state.stages.segundaFase.rounds.length||1);
    api.renderPage('ffws-global-2026-segunda-fase');
    assert.match(d.querySelector('#ffws-global-2026-segunda-fase-content').textContent,/Equipes por rodada/);
    assert.equal(merged[0],archived);

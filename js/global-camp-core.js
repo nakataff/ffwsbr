@@ -64,6 +64,7 @@ function rank(records,meta,final=false){const map=new Map();for(const rec of rec
  for(const penalty of meta.penalties||[]){const row=map.get(penalty.teamId);if(row&&records.some(rec=>rec.key===penalty.roundKey&&rec.drops?.[penalty.afterDrop-1]?.points?.[penalty.teamId]!=null))row.points+=penalty.points;}
  const win=final?champion(records[0]||{},meta.championPoint):null;return [...map.values()].filter(r=>r.matches).sort((a,b)=>win&&(a.id===win||b.id===win)?(a.id===win?-1:1):b.points-a.points||b.booyahs-a.booyahs||b.kills-a.kills||a.lastPlace-b.lastPlace||a.name.localeCompare(b.name,'pt-BR'))}
 function entrants(key,records,meta){
+ records={...records};for(const [id,official]of Object.entries(meta.officialRounds||{}))if(!records[id]?.complete)records[id]=official;
  const round=meta.rounds.find(r=>r.key===key);if(!round)throw Error('Rodada inválida.');
  if(round.stage==='classificatoria')return round.groups.flatMap(g=>meta.groups[g]);
  const phase1=meta.rounds.filter(r=>r.stage==='classificatoria');
@@ -80,6 +81,7 @@ function entrants(key,records,meta){
  return [...[1,2,3,4].flatMap(day=>rank([records['segundaFase-'+day]],meta).slice(0,2).map(t=>t.id)),...rank([records['lastChance-1']],meta).slice(0,4).map(t=>t.id)];
 }
 function backup(template,meta,key,archive={},official=false){
+ archive={...meta.officialRounds,...archive};
  const round=meta.rounds.find(r=>r.key===key),saved=archive[key],ids=official&&saved?[...saved.participants]:entrants(key,archive,meta),codes=ids.map(id=>campCode(meta,id)),final=round.stage==='final',data=clone(template);
  data.teams=meta.teams.map(t=>`${t.name}, ${campCode(meta,t.id)}, ${t.abbreviation}`).join('\n');data.logos=meta.teams.map(t=>`${t.name}, /${t.logo.replace(/^\//,'')}`).join('\n');
  data.selectedTeams=codes;data.currentInputMode='detail-pos-kills';data.drops=saved?saved.drops.map(d=>nativeDrop(d,meta)):Array.from({length:round.matches||1},()=>emptyDrop(codes));while(data.drops.length<(round.matches||1))data.drops.push(emptyDrop(codes));data.startingPoints=Object.fromEntries(codes.map(code=>[code,0]));data.placementOverrides={};
