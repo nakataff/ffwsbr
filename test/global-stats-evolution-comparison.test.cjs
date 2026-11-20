@@ -51,7 +51,8 @@ function makeRuntime(){
   jsAttr:text=>String(text).replace(/'/g,"\\'"),
   s2StatsEvolutionPlayerOptions:[],
  };
- vm.runInNewContext(chosen+'\nthis.fn={s2StatsEvolutionTeamList,s2StatsEvolutionPlayerCatalog,s2StatsEvolutionPlayerSearchHtml,s2StatsEvolutionPlayerDayData,s2StatsEvolutionPlayerSeries};',mock);
+ const helpers=source.match(/^  const (?:nullableNumber|addKnown|formatKnown)=[^\n]+/gm).join('\n');
+ vm.runInNewContext(helpers+'\n'+chosen+'\nthis.fn={s2StatsEvolutionTeamList,s2StatsEvolutionPlayerCatalog,s2StatsEvolutionPlayerSearchHtml,s2StatsEvolutionPlayerDayData,s2StatsEvolutionPlayerSeries};',mock);
  return mock;
 }
 test('team comparison offers all 24 official participants even when just five have played',()=>{

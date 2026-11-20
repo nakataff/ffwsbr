@@ -23,7 +23,7 @@
   function load(key,config){
     if(!cache.has(key)){
       const base='/'+config.path+'/mvp-resumo.json';
-      const version=key==='global'?'20261115-fase1-final-v1':'20261106-shared-mvp-v1';
+      const version=key==='global'?'20261120-fase2-dia1-individuais-v1':'20261106-shared-mvp-v1';
       const parse=async(url,mode)=>{
         const response=await fetch(url,{cache:mode});
         if(!response.ok)throw Error('Ranking indisponível');
@@ -80,12 +80,12 @@
       if(!allows('stage',stage)||!allows('day',stage+':'+day)||!allows('round',stage+':'+round)||!allows('team',team)||
          !allows('role',role)||!allows('rookie',rookie)||!allows('country',country))continue;
       const row=totals.get(id)||{name,team,role,profile,kills:0,damage:0,assists:0,matches:0,mvps:0,best:null};
-      row.kills+=kills;row.damage+=damage;row.assists+=assists;row.matches+=matches;row.mvps+=mvps;
+      row.kills+=kills;row.damage=row.damage===null||damage===null?null:row.damage+damage;row.assists+=assists;row.matches+=matches;row.mvps+=mvps;
       if(best!==null)row.best=Math.max(row.best??0,best);
       totals.set(id,row);
     }
     const value=metrics[s.sort][2];
-    return [...totals.values()].sort((a,b)=>s.direction*(value(a)-value(b))||b.kills-a.kills||b.damage-a.damage||b.assists-a.assists||a.name.localeCompare(b.name,'pt-BR'));
+    return [...totals.values()].sort((a,b)=>(value(a)==null)-(value(b)==null)||s.direction*(value(a)-value(b))||b.kills-a.kills||b.damage-a.damage||b.assists-a.assists||a.name.localeCompare(b.name,'pt-BR'));
   }
   function header(s,key,extra=''){
     const [label,short]=metrics[key],active=key===s.sort;
@@ -107,7 +107,7 @@
       const [team,abbr,logo]=s.data.teams[r.team],rank=start+i+1,average=(r.kills/r.matches).toFixed(2);
       const playerUrl=world?'/ffws-global-2026/jogador?id='+encodeURIComponent(r.profile):'/jogador.html?'+new URLSearchParams({jogador:r.name,time:team});
       const position=esc(r.role||'—');
-      return `<tr class="${p}-mvp-main-row"><td class="${p}-rank ${p}-mvp-rank-col">${rank}º</td><td class="team-col ${p}-mvp-player-col"><a class="${p}-inline-link" href="${esc(playerUrl)}">${esc(r.name)}</a></td>${world?`<td class="hide-mobile cff-mvp-role-col">${position}</td>`:''}<td><span class="${p}-team-cell" title="${esc(team)}"><img src="${esc(asset(logo))}" data-team-logo="${esc(team)}" data-team-date="${c.date}" alt="${esc(abbr)}" loading="lazy" width="28" height="28"><span class="${p}-team-name">${esc(abbr)}</span></span></td><td>${r.kills}</td><td>${format.format(r.damage)}</td><td>${r.assists}</td><td>${r.matches}</td><td class="hide-mobile">${r.mvps}</td><td class="hide-mobile">${average}</td></tr>
+      return `<tr class="${p}-mvp-main-row"><td class="${p}-rank ${p}-mvp-rank-col">${rank}º</td><td class="team-col ${p}-mvp-player-col"><a class="${p}-inline-link" href="${esc(playerUrl)}">${esc(r.name)}</a></td>${world?`<td class="hide-mobile cff-mvp-role-col">${position}</td>`:''}<td><span class="${p}-team-cell" title="${esc(team)}"><img src="${esc(asset(logo))}" data-team-logo="${esc(team)}" data-team-date="${c.date}" alt="${esc(abbr)}" loading="lazy" width="28" height="28"><span class="${p}-team-name">${esc(abbr)}</span></span></td><td>${r.kills}</td><td>${(r.damage===null?'—':format.format(r.damage))}</td><td>${r.assists}</td><td>${r.matches}</td><td class="hide-mobile">${r.mvps}</td><td class="hide-mobile">${average}</td></tr>
       <tr class="${p}-mvp-details-row"><td colspan="${columns}"><div class="${p}-mvp-details-grid">${[[world?'Colocação':'Posição',rank+'º'],['MVP da queda',r.mvps],['Abates por queda',average],['Recorde em queda',r.best??'—']].map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong></div>`).join('')}${world?`<div class="cff-mvp-role-detail"><span>Posição</span><strong>${position}</strong></div>`:''}</div></td></tr>`;
     }).join('');
     root.innerHTML=`<div class="${p}-shell"><section class="${p}-hero">${s.data.edition==='global'?'<div class="ffws-global-brand"><img src="/ffws-global-2026/Free_Fire_World_Series_2021_icon_allmode.png" width="86" height="67" alt=""><div class="ffws-global-kicker">'+c.kicker+'</div></div>':'<div class="ffws-s2-kicker">'+c.kicker+'</div>'}<h1>Ranking MVP</h1><p>Classificação individual da ${c.title}</p>${s.data.edition==='global'?'<a class="ffws-global-pred-link" href="/interacoes.html#palpites">🎯 Fazer meus palpites ↗</a>':''}</section>

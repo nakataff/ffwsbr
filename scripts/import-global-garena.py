@@ -57,7 +57,8 @@ def integer(value):
     return int(value)
 
 
-def import_sheet(sheet, rounds, groups, teams, roster, identities):
+def import_sheet(sheet, rounds, groups, teams, roster, identities, stage=STAGE,
+                 expected_teams=None, allow_missing_damage=False):
     teams_by_name = {norm(t['name']): t for t in teams}
     codes = {t['abbreviation'].upper(): t['id'] for t in teams} | TEAM_CODES
     aliases = collections.defaultdict(set)
@@ -92,7 +93,8 @@ def import_sheet(sheet, rounds, groups, teams, roster, identities):
         raise ValueError(f'{sheet.title}: esperadas {expected} quedas completas')
     entries, events, offset = [], [], 0
     for round in rounds:
-        team_ids = {tid for group in round['groups'] for tid in groups[group]}
+        team_ids = (set(expected_teams) if expected_teams is not None else
+                    {tid for group in round['groups'] for tid in groups[group]})
         for n in range(1, round['matches'] + 1):
             drop = offset + n
             meta = dict(day=round['day'], round=round['round'], roundDrop=n, drop=drop, date=round['date'])
@@ -114,8 +116,9 @@ def import_sheet(sheet, rounds, groups, teams, roster, identities):
                 player_kills = integer(row['kills'])
                 count[team_id] += 1
                 kills[team_id] += player_kills
-                entries.append(dict(playerId=p['id'], name=p['name'], team=team['name'], stage=STAGE,
-                                    **meta, map=map_name, kills=player_kills, assists=integer(row['assists']), damage=integer(row['damage'])))
+                damage = None if allow_missing_damage and row['damage'] is None else integer(row['damage'])
+                entries.append(dict(playerId=p['id'], name=p['name'], team=team['name'], stage=stage,
+                                    **meta, map=map_name, kills=player_kills, assists=integer(row['assists']), damage=damage))
                 if row['rankingplacement'] is not None:
                     if team_id in results:
                         raise ValueError(f'{sheet.title} R{drop}: placar duplicado de {team_id}')
@@ -129,7 +132,7 @@ def import_sheet(sheet, rounds, groups, teams, roster, identities):
                     or len(maps) != 1 or sorted(r['position'] for r in results.values()) != list(range(1, 13))
                     or any(r['kills'] != kills[t] for t, r in results.items())):
                 raise ValueError(f'{sheet.title} R{drop}: placar, mapas ou abates dos jogadores não conferem')
-            events.append(dict(**meta, session=round['session'], groups=round['groups'], time=round['time'],
+            events.append(dict(**meta, **{k: round[k] for k in ('session', 'groups') if k in round}, time=round['time'],
                                map=next(iter(maps)), results=list(results.values())))
         offset += round['matches']
     return entries, events

@@ -44,7 +44,7 @@ function build({edition,stages,teams,roster,entries,periods=[]}){
   }
   const id=people.get(identity),key=[stage,day,round,id].join(':');
   const row=rows.get(key)||[stage,day,round,id,0,0,0,0,0,null];
-  row[4]+=numbers[0];row[5]+=numbers[1];row[6]+=numbers[2];row[7]+=matches;row[8]+=numbers[3];
+  row[4]+=numbers[0];row[5]=row[5]===null||(world&&(e.damage==null||e.damage===''))?null:row[5]+numbers[1];row[6]+=numbers[2];row[7]+=matches;row[8]+=numbers[3];
   if(matches===1&&drop>0)row[9]=Math.max(row[9]??0,numbers[0]);
   rows.set(key,row);
  }

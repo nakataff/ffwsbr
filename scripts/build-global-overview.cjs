@@ -6,6 +6,7 @@ const {build:buildMvp}=require('./build-mvp-summary.cjs');
 const BASE = path.join(__dirname, '..', 'ffws-global-2026');
 const keys = ['classificatoria', 'segundaFase', 'lastChance', 'final'];
 const num = v => Number(v) || 0;
+const addKnown=(sum,value)=>sum===null||value===null||value===undefined?null:sum+num(value);
 const norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
 function eventsFor(source, key) {
   const phase = source[key] || {};
@@ -92,7 +93,7 @@ function selectionSummary(roster, entries, metadata, schedule, fallback, stages)
     const rows = buckets.get(key).rows;
     if (!rows.has(p.id)) rows.set(p.id,[p.id,0,0,0,0]);
     const row = rows.get(p.id);
-    for (const [i,field] of ['kills','damage','assists'].entries()) row[i+1]+=num(e[field]);
+    for (const [i,field] of ['kills','damage','assists'].entries()) row[i+1]=addKnown(row[i+1],e[field]);
     row[4]+=num(e.matches)||1;
     played.add(p.id);
   }
@@ -148,7 +149,7 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
       const id=norm(e.name||e.player)+'__'+norm(e.team);
       if (!ranks.has(id)) ranks.set(id,{name:e.name||e.player,team:e.team,kills:0,damage:0,assists:0,matches:0});
       const r=ranks.get(id);
-      for (const field of ['kills','damage','assists']) r[field]+=num(e[field]);
+      for (const field of ['kills','damage','assists']) r[field]=addKnown(r[field],e[field]);
       r.matches+=num(e.matches)||1;
     }
     top10[key]=[...ranks.values()].sort((a,b)=>b.kills-a.kills||b.damage-a.damage||b.assists-a.assists).slice(0,10);
@@ -156,7 +157,7 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
   const squads=metadata.map(t=>({id:t.id,players:roster.filter(p=>norm(p.team)===norm(t.name)||norm(p.team)===norm(t.abbreviation)).sort((a,b)=>Number(!!b.starter)-Number(!!a.starter)||num(a.order)-num(b.order)).map(p=>({id:p.id||'',name:p.name,role:p.roleShort||p.role||'',country:p.country||p.flag||'',captain:!!p.captain,starter:!!p.starter}))}));
   const updatedAt=[stages.updatedAt,dates.updatedAt,teams.updatedAt,groups.updatedAt,players.updatedAt].filter(Boolean).sort().at(-1);
   // One small public snapshot: never fetch the complete players database on this page.
-  const sumEntries=entries=>entries.length ? entries.reduce((r,e)=>({kills:r.kills+num(e.kills),damage:r.damage+num(e.damage),assists:r.assists+num(e.assists),matches:r.matches+(num(e.matches)||1)}),{kills:0,damage:0,assists:0,matches:0}) : null;
+  const sumEntries=entries=>entries.length ? entries.reduce((r,e)=>({kills:r.kills+num(e.kills),damage:addKnown(r.damage,e.damage),assists:r.assists+num(e.assists),matches:r.matches+(num(e.matches)||1)}),{kills:0,damage:0,assists:0,matches:0}) : null;
   const teamProfiles=teams.teams.map(t=>{
     const members=roster.filter(p=>sameTeam(p.team,t));
     const statsByStage=Object.fromEntries(keys.map(key=>{

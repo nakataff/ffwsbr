@@ -3,8 +3,8 @@
 
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
-    stagesUrl: 'ffws-global-2026/stages.json?v=20261120-fase2-dia2-v1',
-    playersUrl: 'ffws-global-2026/players.json?v=20261115-fase1-final-v1',
+    stagesUrl: 'ffws-global-2026/stages.json?v=20261120-fase2-dia1-individuais-v1',
+    playersUrl: 'ffws-global-2026/players.json?v=20261120-fase2-dia1-individuais-v1',
     datesUrl: 'ffws-global-2026/dates.json?v=20261118-fase2-09h-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
@@ -67,6 +67,9 @@
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   const number = value => Number(value) || 0;
+  const nullableNumber=value=>value===null||value===undefined||value===''?null:number(value);
+  const addKnown=(sum,value)=>sum===null||nullableNumber(value)===null?null:sum+number(value);
+  const formatKnown=value=>value===null||value===undefined?'—':number(value).toLocaleString('pt-BR');
   const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toUpperCase();
   const jsAttr = value => String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
@@ -636,7 +639,7 @@
       if (!aggregate.has(key)) aggregate.set(key, { name, team, meta, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
       const row = aggregate.get(key);
       row.kills += number(entry.kills ?? entry.abates);
-      row.damage += number(entry.damage ?? entry.dano);
+      row.damage = addKnown(row.damage, entry.damage ?? entry.dano);
       row.assists += number(entry.assists ?? entry.assistencias);
       row.matches += number(entry.matches ?? entry.quedas) || 1;
       row.mvps += number(entry.mvp ?? entry.mvps);
@@ -707,7 +710,7 @@
       if (!aggregate.has(key)) aggregate.set(key, { name, team, meta, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
       const row = aggregate.get(key);
       row.kills += number(entry.kills ?? entry.abates);
-      row.damage += number(entry.damage ?? entry.dano);
+      row.damage = addKnown(row.damage, entry.damage ?? entry.dano);
       row.assists += number(entry.assists ?? entry.assistencias);
       row.matches += number(entry.matches ?? entry.quedas) || 1;
       row.mvps += number(entry.mvp ?? entry.mvps);
@@ -729,7 +732,7 @@
         if (!aggregate.has(key)) aggregate.set(key, { name, team, meta, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
         const row = aggregate.get(key);
         row.kills += number(entry.kills ?? entry.abates);
-        row.damage += number(entry.damage ?? entry.dano);
+        row.damage = addKnown(row.damage, entry.damage ?? entry.dano);
         row.assists += number(entry.assists ?? entry.assistencias);
         row.matches += number(entry.matches ?? entry.quedas) || 1;
         row.mvps += number(entry.mvp ?? entry.mvps);
@@ -884,7 +887,7 @@
         if (!aggregate.has(key)) aggregate.set(key, { name, team, meta: rosterPlayerByName(name, team), kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
         const row = aggregate.get(key);
         row.kills += number(entry.kills ?? entry.abates);
-        row.damage += number(entry.damage ?? entry.dano);
+        row.damage = addKnown(row.damage, entry.damage ?? entry.dano);
         row.assists += number(entry.assists ?? entry.assistencias);
         row.matches += number(entry.matches ?? entry.quedas) || 1;
         row.mvps += number(entry.mvp ?? entry.mvps);
@@ -968,9 +971,9 @@
       const key = `${normalize(entry.name)}__${normalize(entry.team)}`;
       if (!rows.has(key)) rows.set(key, { name: entry.name, team: entry.team, kills: 0, damage: 0, assists: 0, matches: 0, mvps: 0 });
       const row = rows.get(key);
-      row.kills += number(entry.kills); row.damage += number(entry.damage); row.assists += number(entry.assists); row.matches += 1; row.mvps += number(entry.mvp);
+      row.kills += number(entry.kills); row.damage = addKnown(row.damage, entry.damage); row.assists += number(entry.assists); row.matches += 1; row.mvps += number(entry.mvp);
     });
-    return [...rows.values()].map(row => ({ ...row, avgKills: row.matches ? row.kills / row.matches : 0, avgDamage: row.matches ? row.damage / row.matches : 0, avgAssists: row.matches ? row.assists / row.matches : 0 }));
+    return [...rows.values()].map(row => ({ ...row, avgKills: row.matches ? row.kills / row.matches : 0, avgDamage: row.damage===null?null:row.matches ? row.damage / row.matches : 0, avgAssists: row.matches ? row.assists / row.matches : 0 }));
   }
 
   function s2StatsPageState() {
@@ -1009,7 +1012,7 @@
   }
 
   function s2StatsTeamValueCard(key, rows, valueGetter, formatter, valueLabel) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.points - a.points);
+    const ordered = rows.filter(row=>valueGetter(row)!=null).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.points - a.points);
     const header = `<div style="display: grid; grid-template-columns: 1fr 0.5fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Equipe</div><div style="text-align: right;">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1fr 0.5fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div class="clickable" onclick="openFFWSGlobalTeam('${jsAttr(row.team)}')" style="display: flex; align-items: center; gap: 6px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" data-cff-global-team-logo="${escapeHtml(row.team)}" style="width:16px; height:16px; object-fit: contain;" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size: 0.95em; font-weight:bold;">${escapeHtml(abbreviation(row.team))}</span></div>
@@ -1037,7 +1040,7 @@
   }
 
   function s2StatsPlayerCard(key, rows, valueGetter, formatter, valueLabel) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.damage - a.damage);
+    const ordered = rows.filter(row=>valueGetter(row)!=null).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || b.kills - a.kills || b.damage - a.damage);
     const header = `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; padding: 0 10px 8px 10px; font-size: 0.7em; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;"><div>Jogador</div><div>Equipe</div><div style="text-align: right;">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display: grid; grid-template-columns: 1.2fr 1fr 0.7fr; align-items: center; margin-bottom: 6px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid ${s2StatsRankColor(rankIndex)}; font-size: 0.85em;">
                 <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span style="font-weight:bold; color: #555; margin-right: 4px;">${rankIndex + 1}º</span><span class="clickable" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div>
@@ -1083,7 +1086,7 @@
   }
 
   function s2StatsRecordPlayerCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
+    const ordered = rows.filter(row=>valueGetter(row)!=null).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.damage) - number(a.damage));
     const header = `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Jogador</div><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.58fr .72fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
       <div style="min-width:0"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><span class="clickable" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span></div><small style="display:block;color:#56606d;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
@@ -1093,7 +1096,7 @@
   }
 
   function s2StatsRecordTeamCard(key, rows, valueGetter, formatter, valueLabel, daily = false) {
-    const ordered = [...rows].sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.points) - number(a.points));
+    const ordered = rows.filter(row=>valueGetter(row)!=null).sort((a, b) => number(valueGetter(b)) - number(valueGetter(a)) || number(b.kills) - number(a.kills) || number(b.points) - number(a.points));
     const header = `<div style="display:grid;grid-template-columns:1.35fr .62fr;padding:0 10px 8px;font-size:.7em;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:1px"><div>Equipe</div><div style="text-align:right">${escapeHtml(valueLabel)}</div></div>`;
     return s2StatsPaginatedList(key, ordered, (row, rankIndex) => `<div style="display:grid;grid-template-columns:1.35fr .62fr;align-items:center;margin-bottom:6px;padding:8px 10px;background:rgba(255,255,255,.02);border-radius:4px;border-left:3px solid ${s2StatsRankColor(rankIndex)};font-size:.85em">
       <div class="clickable" onclick="openFFWSGlobalTeam('${jsAttr(row.team)}')" style="min-width:0"><div style="display:flex;align-items:center;gap:6px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:bold;color:#555;margin-right:4px">${rankIndex + 1}º</span><img src="${escapeHtml(logo(row.team))}" data-cff-global-team-logo="${escapeHtml(row.team)}" style="width:16px;height:16px;object-fit:contain" onerror="this.onerror=null;this.src='escudo.webp'"><span style="font-size:.95em;font-weight:bold">${escapeHtml(abbreviation(row.team))}</span></div><small style="display:block;color:#56606d;margin-top:3px;margin-left:26px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(s2StatsRecordContext(row, daily))}</small></div>
@@ -1108,7 +1111,7 @@
       return {
       name: entry.name, team: entry.team, stage: entry.stage || 'classificatoria', day: number(entry.day), drop: number(entry.drop), map: entry.map || '',
       roundDrop: event?.roundDrop, session: event?.session,
-      kills: number(entry.kills), damage: number(entry.damage), assists: number(entry.assists), matches: 1
+      kills: number(entry.kills), damage: nullableNumber(entry.damage), assists: number(entry.assists), matches: 1
     }; });
 
     const playerDayMap = new Map();
@@ -1116,14 +1119,14 @@
       const key = `${row.stage}:${row.day}:${normalize(row.name)}:${normalize(row.team)}`;
       if (!playerDayMap.has(key)) playerDayMap.set(key, { name: row.name, team: row.team, stage: row.stage, day: row.day, kills: 0, damage: 0, assists: 0, matches: 0 });
       const out = playerDayMap.get(key);
-      out.kills += row.kills; out.damage += row.damage; out.assists += row.assists; out.matches += 1;
+      out.kills += row.kills; out.damage = addKnown(out.damage, row.damage); out.assists += row.assists; out.matches += 1;
     });
 
     const damageByTeamDrop = new Map();
     playerDrop.forEach(row => {
       const key = `${row.stage}:${row.day}:${row.drop}:${normalize(row.team)}`;
       const totals = damageByTeamDrop.get(key) || { damage: 0, players: new Set() };
-      totals.damage += row.damage;
+      totals.damage = addKnown(totals.damage, row.damage);
       totals.players.add(normalize(row.name));
       damageByTeamDrop.set(key, totals);
     });
@@ -1203,7 +1206,7 @@
       && number(entry.drop) === drop)
       .map(entry => ({
         name: entry.name || entry.player || '—', team: entry.team || entry.equipe || '',
-        kills: number(entry.kills ?? entry.abates), damage: number(entry.damage ?? entry.dano),
+        kills: number(entry.kills ?? entry.abates), damage: nullableNumber(entry.damage ?? entry.dano),
         assists: number(entry.assists ?? entry.assistencias), mvp: number(entry.mvp ?? entry.mvps), matches: 1
       }));
     const playerTeamTotals = new Map();
@@ -1211,7 +1214,7 @@
       const teamKey = normalize(player.team);
       if (!playerTeamTotals.has(teamKey)) playerTeamTotals.set(teamKey, { damage: 0, assists: 0, playerKills: 0 });
       const out = playerTeamTotals.get(teamKey);
-      out.damage += player.damage; out.assists += player.assists; out.playerKills += player.kills;
+      out.damage = addKnown(out.damage, player.damage); out.assists += player.assists; out.playerKills += player.kills;
     });
     const teams = eventResults(event).map(result => {
       const team = result.team || result.equipe || '';
@@ -1228,14 +1231,14 @@
       note: calculateS2CffNote(player.kills, player.damage, player.assists, player.mvp, positionByTeam.get(normalize(player.team)) || 0)
     }));
     const booyah = teams.find(row => row.booyah || row.position === 1) || null;
-    const topBy = (rows, getter, asc = false) => [...rows].sort((a, b) => asc ? number(getter(a)) - number(getter(b)) : number(getter(b)) - number(getter(a)))[0] || null;
+    const topBy = (rows, getter, asc = false) => rows.filter(row=>getter(row)!=null).sort((a, b) => asc ? number(getter(a)) - number(getter(b)) : number(getter(b)) - number(getter(a)))[0] || null;
     const report = {
       mode: 'drop', key, event, stage, day, drop, map, roundDrop: event.roundDrop, session: event.session, maps: map ? [map] : [], dropsCount: 1, teams, players, booyah, booyahs: booyah ? [{ team: booyah.team, drop, map }] : [],
       totals: {
         kills: teams.reduce((sum, row) => sum + row.kills, 0),
         points: teams.reduce((sum, row) => sum + row.points, 0),
         placementPoints: teams.reduce((sum, row) => sum + row.placementPoints, 0),
-        damage: players.reduce((sum, row) => sum + row.damage, 0),
+        damage: players.reduce((sum, row) => addKnown(sum, row.damage), 0),
         assists: players.reduce((sum, row) => sum + row.assists, 0)
       },
       leaders: {
@@ -1261,27 +1264,27 @@
         const teamKey = normalize(row.team);
         if (!teamMap.has(teamKey)) teamMap.set(teamKey, { team: row.team, points: 0, placementPoints: 0, kills: 0, damage: 0, assists: 0, booyah: 0, matches: 0, position: 0 });
         const out = teamMap.get(teamKey);
-        out.points += row.points; out.placementPoints += row.placementPoints; out.kills += row.kills; out.damage += row.damage; out.assists += row.assists; out.booyah += row.booyah; out.matches += 1;
+        out.points += row.points; out.placementPoints += row.placementPoints; out.kills += row.kills; out.damage = addKnown(out.damage, row.damage); out.assists += row.assists; out.booyah += row.booyah; out.matches += 1;
       });
       report.players.forEach(row => {
         const playerKey = `${normalize(row.name)}__${normalize(row.team)}`;
         if (!playerMap.has(playerKey)) playerMap.set(playerKey, { name: row.name, team: row.team, kills: 0, damage: 0, assists: 0, mvp: 0, matches: 0, noteSum: 0 });
         const out = playerMap.get(playerKey);
-        out.kills += row.kills; out.damage += row.damage; out.assists += row.assists; out.mvp += row.mvp; out.matches += 1; out.noteSum += number(row.note);
+        out.kills += row.kills; out.damage = addKnown(out.damage, row.damage); out.assists += row.assists; out.mvp += row.mvp; out.matches += 1; out.noteSum += number(row.note);
       });
     });
     const rankedTeams = [...teamMap.values()].sort((a, b) => b.points - a.points || b.booyah - a.booyah || b.kills - a.kills || b.damage - a.damage || a.team.localeCompare(b.team, 'pt-BR'));
     rankedTeams.forEach((row, index) => { row.position = index + 1; });
     const minDailyMatches = Math.max(1, Math.ceil(reports.length / 2));
     const players = [...playerMap.values()].map(row => {
-      const dropAverageNote = row.matches ? row.noteSum / row.matches : 0;
+      const dropAverageNote = row.damage===null?null:row.matches ? row.noteSum / row.matches : 0;
       return {
         ...row,
         dropAverageNote,
-        note: row.matches >= minDailyMatches ? calculateS2DailyCffNote(row.kills, row.damage, row.mvp, row.matches, stage) : dropAverageNote
+        note: row.damage===null?null:row.matches >= minDailyMatches ? calculateS2DailyCffNote(row.kills, row.damage, row.mvp, row.matches, stage) : dropAverageNote
       };
     });
-    const topBy = (rows, getter) => [...rows].sort((a, b) => number(getter(b)) - number(getter(a)))[0] || null;
+    const topBy = (rows, getter) => rows.filter(row=>getter(row)!=null).sort((a, b) => number(getter(b)) - number(getter(a)))[0] || null;
     const maps = [];
     reports.forEach(report => { if (report.map && !maps.some(map => normalize(map) === normalize(report.map))) maps.push(report.map); });
     const booyahs = reports.map(report => report.booyah ? { team: report.booyah.team, drop: report.drop, map: report.map } : null).filter(Boolean);
@@ -1292,7 +1295,7 @@
         kills: reports.reduce((sum, row) => sum + row.totals.kills, 0),
         points: reports.reduce((sum, row) => sum + row.totals.points, 0),
         placementPoints: reports.reduce((sum, row) => sum + row.totals.placementPoints, 0),
-        damage: reports.reduce((sum, row) => sum + row.totals.damage, 0),
+        damage: reports.reduce((sum, row) => addKnown(sum, row.totals.damage), 0),
         assists: reports.reduce((sum, row) => sum + row.totals.assists, 0)
       },
       leaders: {
@@ -1376,7 +1379,7 @@
     const isDay = report.mode === 'day';
     const context = s2DropReportSplitContext(isDay ? 'day' : 'drop');
     const leaders = report.leaders;
-    const rankOf = (value, values) => report.isPartialDay ? 0 : s2DropReportRank(value, values);
+    const rankOf = (value, values) => report.isPartialDay||value==null ? 0 : s2DropReportRank(value, values);
     const period = isDay ? (report.isPartialDay ? 'no recorte do dia' : 'no dia') : 'na queda';
     const heroTitle = isDay ? `${report.dropsCount} quedas disputadas` : (report.map || 'Mapa não informado');
     const heroMeta = isDay ? `${s2StatsStageLabel(report.stage)} • Dia ${report.day}` : `${s2StatsStageLabel(report.stage)} • Dia ${report.day} • ${s2StatsDropLabel(report)}`;
@@ -1386,7 +1389,7 @@
       <div class="ffws-global-drop-summary-grid">
         ${s2DropReportMetricCard('Total de abates', report.totals.kills, period, rankOf(report.totals.kills, context.totalKills))}
         ${s2DropReportMetricCard('Total de pontos', report.totals.points, 'somando as equipes', rankOf(report.totals.points, context.totalPoints))}
-        ${report.players.length ? s2DropReportMetricCard('Dano total', report.totals.damage.toLocaleString('pt-BR'), 'dos jogadores', rankOf(report.totals.damage, context.totalDamage)) : ''}
+        ${report.players.length ? s2DropReportMetricCard('Dano total', formatKnown(report.totals.damage), 'dos jogadores', rankOf(report.totals.damage, context.totalDamage)) : ''}
         ${report.players.length ? s2DropReportMetricCard('Assistências', report.totals.assists, period) : ''}
         ${s2DropReportMetricCard('Equipes', report.teams.length, 'participantes')}
         ${s2DropReportMetricCard('Pontos de colocação', report.totals.placementPoints, 'distribuídos')}
@@ -1423,13 +1426,13 @@
         ${s2DropReportMetricCard('Pontos', team.points)}
         ${s2DropReportMetricCard('Pontos colocação', team.placementPoints)}
         ${s2DropReportMetricCard('Abates', team.kills)}
-        ${report.players.length ? s2DropReportMetricCard('Dano', team.damage.toLocaleString('pt-BR')) : ''}
+        ${report.players.length ? s2DropReportMetricCard('Dano', formatKnown(team.damage)) : ''}
         ${report.players.length ? s2DropReportMetricCard('Assistências', team.assists) : ''}
         ${s2DropReportMetricCard('Booyahs', team.booyah || 0)}
       </div>
       <div class="ffws-global-drop-report-subhead"><h4>Jogadores da equipe</h4><p>${players.length} jogadores com dados neste recorte.</p></div>
       <div class="ffws-global-team-detail-player-head"><span>JOGADOR</span><span>K</span><span>DANO</span><span>AST</span><span>CFF</span></div>
-      <div class="ffws-global-team-detail-players">${players.map(row => `<button type="button" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><strong>${escapeHtml(row.name)}</strong><b>${row.kills}</b><span>${row.damage.toLocaleString('pt-BR')}</span><span>${row.assists}</span><em class="ffws-global-note-badge ${noteBadgeClass(row.note)}">${number(row.note).toFixed(1)}</em></button>`).join('')}</div>
+      <div class="ffws-global-team-detail-players">${players.map(row => `<button type="button" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><strong>${escapeHtml(row.name)}</strong><b>${row.kills}</b><span>${formatKnown(row.damage)}</span><span>${row.assists}</span><em class="ffws-global-note-badge ${noteBadgeClass(row.note)}">${row.note===null?'—':number(row.note).toFixed(1)}</em></button>`).join('')}</div>
     </section>`;
   }
 
@@ -1445,8 +1448,8 @@
       <div class="ffws-global-drop-team-list">${rows.map(row => `<div class="ffws-global-drop-team-row place-${Math.min(row.position || 12,12)}">
         <span class="ffws-global-drop-place">${row.position || '—'}º</span>
         <button type="button" class="ffws-global-drop-team-name" onclick="showFFWSGlobalDropReportTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" data-cff-global-team-logo="${escapeHtml(row.team)}" onerror="this.onerror=null;this.src='escudo.webp'"><span><strong>${escapeHtml(abbreviation(row.team))}</strong><small>${escapeHtml(abbreviation(row.team))}</small></span></button>
-        <strong class="ffws-global-drop-primary">${row.points}</strong><span class="ffws-global-drop-desktop-stat">${row.placementPoints}</span><strong>${row.kills}</strong><span class="ffws-global-drop-desktop-stat">${report.players.length ? row.damage.toLocaleString('pt-BR') : '—'}</span><span class="ffws-global-drop-desktop-stat">${report.players.length ? row.assists : '—'}</span>
-        <div class="ffws-global-drop-mobile-extra"><span>PC <b>${row.placementPoints}</b></span>${report.players.length ? `<span>Dano <b>${row.damage.toLocaleString('pt-BR')}</b></span><span>Ast <b>${row.assists}</b></span>` : ''}${row.booyah ? `<span>B! <b>${row.booyah}</b></span>` : ''}</div>
+        <strong class="ffws-global-drop-primary">${row.points}</strong><span class="ffws-global-drop-desktop-stat">${row.placementPoints}</span><strong>${row.kills}</strong><span class="ffws-global-drop-desktop-stat">${report.players.length ? formatKnown(row.damage) : '—'}</span><span class="ffws-global-drop-desktop-stat">${report.players.length ? row.assists : '—'}</span>
+        <div class="ffws-global-drop-mobile-extra"><span>PC <b>${row.placementPoints}</b></span>${report.players.length ? `<span>Dano <b>${formatKnown(row.damage)}</b></span><span>Ast <b>${row.assists}</b></span>` : ''}${row.booyah ? `<span>B! <b>${row.booyah}</b></span>` : ''}</div>
       </div>`).join('')}</div></div>`;
   }
 
@@ -1480,7 +1483,7 @@
       <div class="ffws-global-drop-player-list">${rows.length ? rows.map((row,index) => `<div class="ffws-global-drop-player-row">
         <span class="ffws-global-drop-player-rank">${index + 1}º</span><button type="button" class="ffws-global-drop-player-name" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')"><strong>${escapeHtml(row.name)}</strong><small>${escapeHtml(abbreviation(row.team))}</small></button>
         <button type="button" class="ffws-global-drop-player-team" title="${escapeHtml(row.team)}" onclick="toggleFFWSGlobalDropReportPlayerTeam('${jsAttr(row.team)}')"><img src="${escapeHtml(logo(row.team))}" data-cff-global-team-logo="${escapeHtml(row.team)}" alt="${escapeHtml(abbreviation(row.team))}" onerror="this.onerror=null;this.src='escudo.webp'"></button>
-        <strong class="ffws-global-drop-primary ffws-global-drop-player-kills">${row.kills}</strong><span class="ffws-global-drop-player-assists">${row.assists}</span><span class="ffws-global-drop-player-damage"><span class="ffws-global-desktop">${row.damage.toLocaleString('pt-BR')}</span><span class="ffws-global-mobile">${s2DropReportCompactMetric(row.damage)}</span></span><span class="ffws-global-drop-player-cff"><em class="ffws-global-note-badge ${noteBadgeClass(row.note)}">${number(row.note).toFixed(1)}</em></span>
+        <strong class="ffws-global-drop-primary ffws-global-drop-player-kills">${row.kills}</strong><span class="ffws-global-drop-player-assists">${row.assists}</span><span class="ffws-global-drop-player-damage"><span class="ffws-global-desktop">${formatKnown(row.damage)}</span><span class="ffws-global-mobile">${s2DropReportCompactMetric(row.damage)}</span></span><span class="ffws-global-drop-player-cff"><em class="ffws-global-note-badge ${noteBadgeClass(row.note)}">${row.note===null?'—':number(row.note).toFixed(1)}</em></span>
       </div>`).join('') : '<div class="ffws-global-drop-filter-empty">Nenhum jogador das equipes selecionadas.</div>'}</div></div>`;
   }
 
@@ -1996,7 +1999,7 @@
   p.matches++;
   for(const metric of ['kills','damage','assists']){
    const value=number(entry[metric]);
-   p[metric]+=value;t[metric]+=value;
+   p[metric]=metric==='damage'?addKnown(p[metric],entry[metric]):p[metric]+value;t[metric]=metric==='damage'?addKnown(t[metric],entry[metric]):t[metric]+value;
   }
   p.mvps+=number(entry.mvp??entry.mvps);
  }
@@ -2010,12 +2013,12 @@
   if(['kills','damage','assists','mvps'].includes(metric))return row[metric];
   if(['avgKills','avgDamage','avgAssists'].includes(metric)){
    const source={avgKills:'kills',avgDamage:'damage',avgAssists:'assists'}[metric];
-   return row.matches?Number((row[source]/row.matches).toFixed(2)):null;
+   return row[source]!==null&&row.matches?Number((row[source]/row.matches).toFixed(2)):null;
   }
   const source={avgPartKills:'kills',avgPartDamage:'damage',avgPartAssists:'assists'}[metric];
   if(source){
    const total=day.teams.get(normalize(row.team))?.[source];
-   return total>0?Number((row[source]/total*100).toFixed(2)):null;
+   return row[source]!==null&&total>0?Number((row[source]/total*100).toFixed(2)):null;
   }
   return null;
  });
@@ -2151,14 +2154,14 @@
       if (!teamTotals.has(key)) teamTotals.set(key, { kills: 0, damage: 0, assists: 0 });
       const row = teamTotals.get(key);
       row.kills += number(entry.kills);
-      row.damage += number(entry.damage);
+      row.damage = addKnown(row.damage, entry.damage);
       row.assists += number(entry.assists);
     });
     const playerShareRows = players.filter(row => row.matches >= 3).map(row => {
       const total = teamTotals.get(normalize(row.team)) || { kills: 0, damage: 0, assists: 0 };
       return { ...row,
         avgPartKills: total.kills ? (row.kills / total.kills) * 100 : 0,
-        avgPartDamage: total.damage ? (row.damage / total.damage) * 100 : 0,
+        avgPartDamage: row.damage===null||total.damage===null?null:total.damage ? (row.damage / total.damage) * 100 : 0,
         avgPartAssists: total.assists ? (row.assists / total.assists) * 100 : 0
       };
     });
@@ -2296,6 +2299,7 @@
     requestAnimationFrame(() => { renderS2StatsEvolutionChart(); renderS2StatsEvolutionPlayerChart(); updateFFWSGlobalEvolutionTeamArrows(); updateGlobalStatsBackTopVisibility(); });
   }
   function calculateS2CffNote(kills, damage, assists, mvp, position) {
+    if(nullableNumber(damage)===null)return null;
     kills = number(kills); damage = number(damage); assists = number(assists); position = number(position);
     if (!(kills >= 1 || damage >= 200)) {
       if (damage === 0 && assists === 0) return 3;
@@ -2346,7 +2350,7 @@
       if (!daily.has(key)) daily.set(key, { kills: 0, damage: 0, mvp: 0, matches: 0 });
       const row = daily.get(key);
       row.kills += number(entry.kills);
-      row.damage += number(entry.damage);
+      row.damage = addKnown(row.damage, entry.damage);
       row.mvp += number(entry.mvp || entry.mvps);
       row.matches += number(entry.matches || 1);
     });
@@ -2369,6 +2373,7 @@
   }
 
   function calculateS2DailyCffNote(kills, damage, mvps, matches = 6, stage = 'classificatoria') {
+    if(nullableNumber(damage)===null)return null;
     kills = number(kills); damage = number(damage); mvps = number(mvps); matches = Math.max(1, number(matches) || 6);
     const context = s2DailyNoteContext(stage);
     const paceFactor = 6 / matches;
@@ -2497,7 +2502,7 @@
     if (!root) return;
     const f = state.notesFilters;
     const mode = f.mode === 'drop' ? 'drop' : 'day';
-    const entries = notesFilteredEntries();
+    const entries = notesFilteredEntries().filter(entry=>nullableNumber(entry.damage)!==null);
     const events = s2EventLookup();
     const detailed = entries.map(entry => {
       const event = events.get(`${entry.stage}:${number(entry.day)}:${number(entry.drop)}`);
@@ -2515,7 +2520,7 @@
       row.sum+=entry.note;
       row.bestDropNote=Math.max(row.bestDropNote,entry.note);
       row.kills+=number(entry.kills);
-      row.damage+=number(entry.damage);
+      row.damage = addKnown(row.damage, entry.damage);
       row.assists+=number(entry.assists);
       row.mvps+=number(entry.mvp);
       row.matches+=1;
@@ -2528,7 +2533,7 @@
       if (!dailyMap.has(key)) dailyMap.set(key,{key,playerKey,name:entry.name,team:entry.team,stage:entry.stage,day:number(entry.day),kills:0,damage:0,assists:0,mvp:0,notes:0,matches:0});
       const row=dailyMap.get(key);
       row.kills+=number(entry.kills);
-      row.damage+=number(entry.damage);
+      row.damage = addKnown(row.damage, entry.damage);
       row.assists+=number(entry.assists);
       row.mvp+=number(entry.mvp);
       row.notes+=entry.note;
@@ -2620,10 +2625,10 @@
 
     root.innerHTML = `<div class="ffws-global-shell">${hero('Notas CFF', 'Avaliações por queda e por dia da Central Free Fire')}
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Ranking de Notas</h2><p>${rankingDescription}</p></div><span class="ffws-global-badge">${visibleDetailed.length} atuações</span></div>
-      ${notesModeControl()}
+      ${notesFilteredEntries().some(entry=>nullableNumber(entry.damage)===null)?'<p class="ffws-global-timezone">As atuações sem dados de dano não recebem Nota CFF.</p>':''}${notesModeControl()}
       <div class="ffws-global-filters ffws-global-notes-filters">${notesMultiFilter('stage','Etapa',[{value:'classificatoria',label:'Knockout • Fase 1'},{value:'segundaFase',label:'Knockout • Fase 2'},{value:'lastChance',label:'Last Chance'},{value:'final',label:'Grande Final'}])}${notesMultiFilter('team','Equipe',teams.map(v=>({value:v,label:v})))}${notesMultiFilter('role','Posição',[{value:'RUSH',label:'Rush'},{value:'GRAN',label:'Granadeiro'},{value:'SUP',label:'Suporte'},{value:'3',label:'3º homem'}])}${notesMultiFilter('day','Dia',days.map(v=>({value:String(v),label:`Dia ${v}`})))}${notesMultiFilter('drop','Queda',drops.map(v=>({value:String(v),label:`Queda ${v}`})),{disabled:!f.day.length,title:'Escolha ao menos um dia para liberar o filtro de queda',disabledLabel:'Selecione um dia'})}${notesMultiFilter('map','Mapa',maps.map(v=>({value:v,label:v})))}${notesHalfMatchesControl()}</div>
-      ${rows.length?`<div class="ffws-global-table-wrap"><table class="ffws-global-table"><thead><tr><th>#</th><th>Jogador</th><th>Eqp</th><th>Nota</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Ast.</th><th>Q</th><th class="hide-mobile" title="${bestLabel}">${bestLabel}</th></tr></thead><tbody>${pageRows.map((row,index)=>`<tr><td class="ffws-global-rank">${pageStart+index+1}º</td><td><button type="button" class="ffws-global-inline-link" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-global-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</span></td><td>${row.kills}</td><td class="hide-mobile">${row.damage.toLocaleString('pt-BR')}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.best.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>${pager}`:'<div class="ffws-global-empty"><div><strong>Nenhuma nota neste recorte</strong>Altere os filtros para consultar as atuações disponíveis.</div></div>'}</div></section>
-      <section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte. Use as setas para ver as próximas posições.</p></div></div><div class="ffws-global-top-grid">${noteRecord('drops','Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`,row=>`openFFWSGlobalNoteDropReport('${jsAttr(row.stage)}',${number(row.day)},${number(row.drop)})`)}${noteRecord('days','Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${row.damage.toLocaleString('pt-BR')} dano`,row=>`openFFWSGlobalNoteDayReport('${jsAttr(row.stage)}',${number(row.day)})`)}${noteRecord('averages','Médias Gerais',generalAverageRows,row=>mode==='day'?`${row.dayCount} dia${row.dayCount===1?'':'s'} • ${row.matches} quedas`:`${row.matches} quedas • ${row.kills} K`,row=>`openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')`)}</div></div></section>
+      ${rows.length?`<div class="ffws-global-table-wrap"><table class="ffws-global-table"><thead><tr><th>#</th><th>Jogador</th><th>Eqp</th><th>Nota</th><th>K</th><th class="hide-mobile">Dano</th><th class="hide-mobile">Ast.</th><th>Q</th><th class="hide-mobile" title="${bestLabel}">${bestLabel}</th></tr></thead><tbody>${pageRows.map((row,index)=>`<tr><td class="ffws-global-rank">${pageStart+index+1}º</td><td><button type="button" class="ffws-global-inline-link" onclick="openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')">${escapeHtml(row.name)}</button></td>${teamCell(row.team)}<td><span class="ffws-global-note-badge ${noteBadgeClass(row.note)}">${row.note.toFixed(1)}</span></td><td>${row.kills}</td><td class="hide-mobile">${formatKnown(row.damage)}</td><td class="hide-mobile">${row.assists}</td><td>${row.matches}</td><td class="hide-mobile">${row.best.toFixed(1)}</td></tr>`).join('')}</tbody></table></div>${pager}`:'<div class="ffws-global-empty"><div><strong>Nenhuma nota neste recorte</strong>Altere os filtros para consultar as atuações disponíveis.</div></div>'}</div></section>
+      <section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Recordes de avaliação</h2><p>Melhores atuações individuais por queda, dia e média do recorte. Use as setas para ver as próximas posições.</p></div></div><div class="ffws-global-top-grid">${noteRecord('drops','Top Quedas',topDrops,row=>`Dia ${row.day} • Q${row.drop} • ${row.kills} K`,row=>`openFFWSGlobalNoteDropReport('${jsAttr(row.stage)}',${number(row.day)},${number(row.drop)})`)}${noteRecord('days','Top Dias',topDays,row=>`Dia ${row.day} • ${row.kills} K • ${formatKnown(row.damage)} dano`,row=>`openFFWSGlobalNoteDayReport('${jsAttr(row.stage)}',${number(row.day)})`)}${noteRecord('averages','Médias Gerais',generalAverageRows,row=>mode==='day'?`${row.dayCount} dia${row.dayCount===1?'':'s'} • ${row.matches} quedas`:`${row.matches} quedas • ${row.kills} K`,row=>`openFFWSGlobalPlayer('${jsAttr(row.name)}','${jsAttr(row.team)}')`)}</div></div></section>
       ${s2NotesBackTopButtonHtml()}
     </div>`;
     requestAnimationFrame(() => window.updateGlobalStatsBackTopVisibility?.());
@@ -2676,9 +2681,9 @@
     entries.forEach(entry => {
       const key = `${normalize(entry.name)}__${normalize(entry.team)}`;
       if (!rows.has(key)) rows.set(key,{key,name:entry.name,team:entry.team,kills:0,damage:0,assists:0,matches:0,mvps:0,bestDrop:0});
-      const row=rows.get(key);row.kills+=number(entry.kills);row.damage+=number(entry.damage);row.assists+=number(entry.assists);row.matches+=1;row.mvps+=number(entry.mvp);row.bestDrop=Math.max(row.bestDrop,number(entry.kills));
+      const row=rows.get(key);row.kills+=number(entry.kills);row.damage = addKnown(row.damage, entry.damage);row.assists+=number(entry.assists);row.matches+=1;row.mvps+=number(entry.mvp);row.bestDrop=Math.max(row.bestDrop,number(entry.kills));
     });
-    return [...rows.values()].map(row=>({...row,avgKills:row.matches?row.kills/row.matches:0,avgDamage:row.matches?row.damage/row.matches:0,avgAssists:row.matches?row.assists/row.matches:0})).sort((a,b)=>b.kills-a.kills||b.damage-a.damage);
+    return [...rows.values()].map(row=>({...row,avgKills:row.matches?row.kills/row.matches:0,avgDamage:row.damage===null?null:row.matches?row.damage/row.matches:0,avgAssists:row.matches?row.assists/row.matches:0})).sort((a,b)=>b.kills-a.kills||b.damage-a.damage);
   }
 
   function compareHero(row, side) {
@@ -2707,10 +2712,10 @@
 
   function compareMetrics() {
     return [
-      ['Abates','kills',v=>String(number(v))],['Dano','damage',v=>number(v).toLocaleString('pt-BR')],
+      ['Abates','kills',v=>String(number(v))],['Dano','damage',v=>formatKnown(v)],
       ['Assistências','assists',v=>String(number(v))],['Quedas','matches',v=>String(number(v))],
       ['MVPs','mvps',v=>String(number(v))],['K / queda','avgKills',v=>number(v).toFixed(2)],
-      ['Dano / queda','avgDamage',v=>Math.round(number(v)).toLocaleString('pt-BR')],
+      ['Dano / queda','avgDamage',v=>v==null?'—':Math.round(number(v)).toLocaleString('pt-BR')],
       ['Assist. / queda','avgAssists',v=>number(v).toFixed(2)],['Recorde em queda','bestDrop',v=>String(number(v))]
     ];
   }

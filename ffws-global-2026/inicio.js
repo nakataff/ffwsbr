@@ -3,13 +3,13 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261120-fase2-dia2-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261120-fase2-dia1-individuais-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
   const files={summary:'inicio-resumo.json',mvp:'inicio-mvp-top10.json',squads:'inicio-elencos.json'};
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const num=v=>Number(v)||0, fmt=v=>num(v).toLocaleString('pt-BR');
+  const num=v=>Number(v)||0, fmt=v=>v==null?'—':num(v).toLocaleString('pt-BR');
   const params=new URLSearchParams(location.search), validStage=k=>stages.some(s=>s[0]===k);
   const state={tab:tabs.some(t=>t[0]===params.get('aba'))?params.get('aba'):'tabela',stage:validStage(params.get('etapa'))?params.get('etapa'):'classificatoria',mvpStage:validStage(params.get('etapa'))?params.get('etapa'):'geral',day:params.get('dia')||'',group:['A','B','C','D'].includes(params.get('grupo'))?params.get('grupo'):''};
   const cache=new Map();

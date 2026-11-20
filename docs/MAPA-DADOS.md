@@ -140,6 +140,8 @@ O comando valida todas as quedas e confere os abates por equipe com os registros
 individuais. A partir da tabela final, grava os pools para a home, o calendário
 e o modelo do Camp ao Vivo.
 
+Os individuais do Dia 1 da Fase 2 (19/11) estão em `players.json`: 288 participações em seis quedas, de 51 jogadores (incluindo substituições), conferidas equipe a equipe com `stages.json`. Use `scripts/import-global-phase-two.py arquivo.xlsx --day 1` para a prévia e acrescente `--write` para importar. O comando lê somente `PHASE 2 - DAY 1`, preserva as outras fases e não altera os placares coletivos. A aba recebida tem ID sem cabeçalho e não tem dano: o importador corrige esse layout exato e grava `damage: null`. MVP, seleções, perfis, gráficos e relatórios mantêm esse campo indisponível, sem criar zero nem nota CFF baseada em dano ausente. Depois execute o preparo global acima. O XLSX permanece fora do repositório.
+
 Para MVP e Seleções, as posições da planilha `RUSHER`, `RIFLER` e `SUPPORT`
 contam como Rush, `BOMBER` como Granadeiro e `SNIPER` como Suporte. Joker
 (LYON), Joacozd, Bnlxxy e Stu têm a função corrigida para Sniper no cadastro

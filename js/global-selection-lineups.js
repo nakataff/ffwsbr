@@ -39,7 +39,7 @@ const url=v=>/^https:\/\//i.test(String(v||''))?String(v):'/'+String(v||'').repl
 const state={page:{tab:'semanal',mode:'day',day:'',week:''},home:{mode:'day',day:'',week:''},start:{mode:'day',day:'',week:''}};
 let DATA=null,playersPromise=null,officialRecords=null,staticDays=[],officialPromise=null,officialAt=0;
 let phaseCompletion={},publishedDays=[],homeSummary=null,homeSummaryAt=0,homeSummaryPromise=null;
-const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261116-punicao-gundynasty-v1';
+const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261120-fase2-dia1-individuais-v1';
 function setData(players,teams){
  if(!Array.isArray(players?.entries)||!Array.isArray(players?.players))return false;
  const list=Array.isArray(teams?.teams)?teams.teams:Array.isArray(teams)?teams:[];
@@ -181,7 +181,7 @@ function playerRankings(entries){
    team:meta.team,teamId:team?.id||'',teamLogo:team?.logo||'',photo:meta.photoLarge||meta.photo,photoSmall:meta.photo,
    kills:0,damage:0,assists:0,matches:0
   })}
-  const r=byKey.get(id);r.kills+=number(e.kills);r.damage+=number(e.damage);r.assists+=number(e.assists);r.matches+=number(e.matches)||1;
+  const r=byKey.get(id);r.kills+=number(e.kills);r.damage=r.damage===null||e.damage==null?null:r.damage+number(e.damage);r.assists+=number(e.assists);r.matches+=number(e.matches)||1;
  }
  return [...byKey.values()];
 }
@@ -222,7 +222,7 @@ function selectionCard(row,config,mini=false){
  const photo=row.photo?url(row.photo):'/silhueta.webp',logo=url(row.teamLogo||'/escudo.webp');
  const urlPlayer=coach?BASE+'equipe?time='+encodeURIComponent(row.teamId):BASE+'jogador?id='+encodeURIComponent(row.id);
  const stat=coach?[['PONTOS',fmt(row.points)],['ABATES',fmt(row.kills)],['BOOYAHS',fmt(row.booyahs)]]:
- [['KILLS',fmt(row.kills)],['DANO',(number(row.damage)/1000).toFixed(1)+'K'],['QUEDAS',fmt(row.matches)]];
+ [['KILLS',fmt(row.kills)],['DANO',row.damage===null?'—':(number(row.damage)/1000).toFixed(1)+'K'],['QUEDAS',fmt(row.matches)]];
  const headline=coach?(row.missingCoach?'COACH INDISPONÍVEL':'MELHOR TIME DO PERÍODO'):norm(row.role)==='sniper'?'SNIPER / SUPORTE':'';
  return '<a class="ffws-global-s1-selection-card cff-global-player-card'+(coach?' is-coach':'')+'" href="'+html(urlPlayer)+'" aria-label="'+html(row.slot+': '+row.name)+'">'+
  '<div class="cff-global-card-shape" style="--selection-accent:'+color+';--selection-glow:'+glow+'">'+
@@ -338,7 +338,7 @@ function miniCard(p,color){
  if(p.missing)return '<div class="cff-gsel-home-row"><b>'+html(p.slot)+'</b><span>'+html(p.reason||'Aguardando resultados')+'</span></div>';
  const link=p.coach?BASE+'equipe?time='+encodeURIComponent(p.teamId):BASE+'jogador?id='+encodeURIComponent(p.id);
  const detail=p.coach?'PONTOS '+fmt(p.points)+' · K '+fmt(p.kills)+' · B! '+fmt(p.booyahs):
-  'K '+fmt(p.kills)+' · DANO '+(p.damage/1000).toFixed(1)+'K · Q '+fmt(p.matches);
+  'K '+fmt(p.kills)+' · DANO '+(p.damage===null?'—':(p.damage/1000).toFixed(1)+'K')+' · Q '+fmt(p.matches);
  return '<a class="cff-gsel-home-row" href="'+html(link)+'" style="--selection-accent:'+color+'"><img src="'+html(url(p.photoSmall||p.photo||'/silhueta.webp'))+'" alt="" onerror="this.onerror=null;this.src=\'/silhueta.webp\'" loading="lazy">'+
  '<span><em>'+html(p.slot)+'</em><b>'+html(p.name)+'</b><small>'+html(p.team||'')+'</small></span><strong>'+html(detail)+'</strong></a>';
 }
@@ -389,8 +389,8 @@ async function getStandings(){
  return {teams:standings,stage,date,partial:latest===live&&!!homeSummary?.partial};
 }
 async function getHomeRankings(){
- await loadPlayers();const all=playerRankings(DATA.entries);const rank=metric=>[...all].sort((a,b)=>b[metric]-a[metric]||b.kills-a.kills).slice(0,6).map(p=>({
-  ...p,photo:url(DATA.players.find(x=>x.id===p.id)?.photo||p.photo),coverage:{kills:p.matches,damage:p.matches,assists:p.matches}
+ await loadPlayers();const all=playerRankings(DATA.entries);const rank=metric=>all.filter(row=>row[metric]!=null).sort((a,b)=>b[metric]-a[metric]||b.kills-a.kills).slice(0,6).map(p=>({
+  ...p,photo:url(DATA.players.find(x=>x.id===p.id)?.photo||p.photo),coverage:{kills:p.matches,damage:p.damage===null?0:p.matches,assists:p.matches}
  }));
  return {kills:rank('kills'),damage:rank('damage'),assists:rank('assists')};
 }
