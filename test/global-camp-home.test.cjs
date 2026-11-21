@@ -43,9 +43,24 @@ test('day two matches the official broadcast table and prepares day three with n
   ['los',74,42,1,32],['gundynasty',59,30,0,29],['bru',48,22,0,26],['resurrection-esports',40,33,0,7],['xprojekt',36,26,0,10],['onic',34,24,0,10]
  ]);
  assert.equal(record.drops[4].kills.bru,0);assert.equal(record.drops[4].kills.xprojekt,2);
- const next=C.backup(base,meta,'segundaFase-3'),ids=next.selectedTeams.map(id=>C.team(meta,id).id);
+ const historicalMeta=clone(meta);delete historicalMeta.officialRounds['segundaFase-3'];
+ const next=C.backup(base,historicalMeta,'segundaFase-3'),ids=next.selectedTeams.map(id=>C.team(meta,id).id);
  assert.equal(ids.length,12);assert.equal(new Set(ids).size,12);assert(ids.includes('btr'));assert(ids.includes('blue-cheese'));
  for(const id of ['p-esports','ag-al','fx','loud'])assert(!ids.includes(id));
  assert.equal(next.config.date,'2026-11-21');assert.equal(next.config.daySettings[0].time,'09:00');
  assert(next.drops.every(d=>Object.values(d.points).every(v=>v===null)));assert(Object.values(next.startingPoints).every(v=>v===0));
+});
+
+test('day three matches the broadcast, respects the Booyah tiebreak and prepares a blank day four',()=>{
+ const record=meta.officialRounds['segundaFase-3'];assert.equal(record.complete,true);assert.equal(record.drops.length,6);
+ assert.deepEqual(C.rank([record],meta).map(r=>[r.id,r.points,r.kills,r.booyahs,r.points-r.kills]),[
+  ['lyon',104,68,1,36],['team-flash',103,67,2,36],['los',96,52,1,44],['bru',88,58,0,30],['gundynasty',78,47,0,31],['btr',76,33,2,43],
+  ['onic',76,40,0,36],['xprojekt',67,43,0,24],['rrq',61,39,0,22],['resurrection-esports',54,34,0,20],['gow',44,34,0,10],['blue-cheese',29,19,0,10]
+ ]);
+ assert.deepEqual(record.drops.map(d=>[d.map,d.booyah]),[['Nexterra','team-flash'],['Bermuda','btr'],['Kalahari','lyon'],['Solara','btr'],['Purgatório','team-flash'],['Nexterra','los']]);
+ const next=C.backup(base,meta,'segundaFase-4'),ids=next.selectedTeams.map(id=>C.team(meta,id).id);
+ assert.deepEqual(ids,['los','bru','gundynasty','btr','onic','xprojekt','rrq','resurrection-esports','gow','blue-cheese','team-inf','tag']);
+ assert.equal(next.config.date,'2026-11-22');assert.equal(next.config.daySettings[0].time,'09:00');
+ assert(next.drops.every(d=>Object.values(d.points).every(v=>v===null)));assert(Object.values(next.startingPoints).every(v=>v===0));
+ assert.equal(next.config.cffGlobalArchive['segundaFase-3'].drops.length,6);
 });
