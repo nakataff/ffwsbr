@@ -2,11 +2,14 @@
 
 const {norm}=require('./build-mvp-summary.cjs');
 const FILE='ffws-global-2026/stats/raio-x/projecao.json';
-const MODEL=1, RUNS=20000;
+const MODEL=2, RUNS=20000;
 const PLACEMENT=[12,9,8,7,6,5,4,3,2,1,0,0];
 const LOBBY=PLACEMENT.length;
 const mean=values=>values.length?values.reduce((sum,value)=>sum+value,0)/values.length:0;
 const roundTo=(value,places=1)=>Number(value.toFixed(places));
+// Normalize within each team's history: six recent drops must not be drowned
+// out by its 36 phase-one drops. New entrants retain their phase-one prior.
+const phaseTwoShare=days=>days?Math.min(.75,.45+.1*days):0;
 
 function completeDrops(round){
  if(!round||!round.expected||Object.keys(round.teams).length!==LOBBY)return [];
@@ -21,7 +24,7 @@ function learn(analysis,batches,ranks){
  const samples=new Map([...ranks.keys()].map(id=>[id,[]]));
  const lobbyKills=[];
  const combat=[[],[],[]];
- for(const {round,drops,weight} of batches){
+ for(const {round,drops,weight,phaseTwo=false} of batches){
   const playersByTeam={};
   for(const [id,rows] of Object.entries(round.players)){
    const teamId=analysis.players[id]?.teamId;
@@ -41,7 +44,7 @@ function learn(analysis,batches,ranks){
     const lineup=playersByTeam[id]?.[index+1];
     const player=lineup?.length===4?[0,1,2].map(metric=>mean(lineup.map(row=>row[metric]))):null;
     if(player)player.forEach((value,i)=>combat[i].push(value));
-    samples.get(id).push({points,kills,booyah,opponents,weight,player});
+    samples.get(id).push({points,kills,booyah,opponents,weight,player,phaseTwo,day:round.day});
     totalKills+=kills;
    }
    lobbyKills.push(totalKills);
@@ -51,6 +54,13 @@ function learn(analysis,batches,ranks){
  const baseKills=mean(lobbyKills)/LOBBY;
  const basePlacement=mean(PLACEMENT);
  const skills=new Map([...samples].map(([id,rows])=>{
+  const prior=rows.filter(row=>!row.phaseTwo),recent=rows.filter(row=>row.phaseTwo);
+  const share=phaseTwoShare(new Set(recent.map(row=>row.day)).size);
+  const effective=rows.length;
+  for(const [group,fraction] of [[prior,1-share],[recent,share]]){
+   const total=group.reduce((sum,row)=>sum+row.weight,0);
+   for(const row of group)row.weight=row.weight/total*fraction*effective;
+  }
   const weight=rows.reduce((sum,row)=>sum+row.weight,0);
   const rate=estimate=>rows.reduce((sum,row)=>sum+row.weight*estimate(row),0)/weight;
   // Express historical rates against a neutral schedule before fitting the new lobby.
@@ -174,10 +184,19 @@ function build({data,overview,analysis,previous}){
   if(canPreserve){
    Object.assign(record,{forecast:archive.forecast,cutoff:archive.cutoff,basis:archive.basis,model:archive.model});
   }else{
-   const priorBatches=played.map(batch=>({...batch,weight:2.4*.75**(day-batch.round.day-1)}));
+   const priorBatches=played.map(batch=>({...batch,phaseTwo:true,weight:.75**(day-batch.round.day-1)}));
    const learned=learn(analysis,[...phaseOneBatches,...priorBatches],ranks);
    Object.assign(record,simulate(ids,matches,learned,day),{basis:started?'retrospective':'published',model:MODEL});
   }
+  record.form=Object.fromEntries(ids.map(id=>{
+   const results=days.flatMap(d=>d.result.filter(row=>row.id===id).map(row=>({...row,day:d.day})));
+   const last=results.at(-1),priorChance=prior?.forecast.find(row=>row.id===id)?.probability;
+   const chance=record.forecast.find(row=>row.id===id)?.probability;
+   return [id,{days:results.length,points:results.length?roundTo(mean(results.map(r=>r.points))):null,
+    lastPoints:last?.points??null,lastRank:last?.rank??null,
+    phaseTwoWeight:record.model===MODEL?roundTo(100*phaseTwoShare(results.length)):null,
+    previousChance:priorChance??null,change:priorChance!=null?roundTo(chance-priorChance,2):null}];
+  }));
   record.started=started;
   if(complete){
    record.result=actual.map((row,i)=>({id:actualIds[i],rank:row.position,points:row.points}));
@@ -189,4 +208,4 @@ function build({data,overview,analysis,previous}){
  return {model:MODEL,runs:RUNS,qualificationSlots:8,strengthOf,days,finalists};
 }
 
-module.exports={FILE,build};
+module.exports={FILE,build,learn,phaseTwoShare};

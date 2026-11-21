@@ -32,7 +32,7 @@ async function openPage(t,search=''){
  const {window}=dom,{document}=window;
  window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
  window.loadProjectionModule=()=>import(base+'projecao.mjs');
- window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=1')",'window.loadProjectionModule()'));
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
@@ -274,4 +274,49 @@ test('the Phase 2 forecast balances two slots, freezes a published day and refit
  assert.equal(container.querySelectorAll('.rx-projection-finalists li').length,8);
  renderProjection(container,finished,initial.teams,3,()=>{});
  assert.match(container.textContent,/Simulação retrospectiva/);
+});
+
+test('recent phase-two form has explicit per-team weights and changes strength without any future-day input',()=>{
+ const {learn,phaseTwoShare}=require('../scripts/build-global-projection.cjs');
+ assert.deepEqual([0,1,2,3,4].map(phaseTwoShare),[0,.55,.65,.75,.75]);
+ const ranks=new Map(Array.from({length:24},(_,i)=>['team'+i,i+1]));
+ const ids=[...ranks.keys()];
+ const batch=(day,value,phaseTwo=false)=>({phaseTwo,weight:1,round:{day,players:{}},drops:Array.from({length:phaseTwo?6:36},(_,i)=>Object.fromEntries(ids.map(id=>[id,[i+1,id==='team0'?value:10,id==='team0'?value/2:5,0]])))});
+ const analysis={players:{}};
+ const prior=batch(1,10);
+ const original=learn(analysis,[prior],ranks).skills;
+ const poor=learn(analysis,[prior,batch(1,2,true)],ranks).skills;
+ const strong=learn(analysis,[prior,batch(1,26,true)],ranks).skills;
+ assert(poor.get('team0').offense<original.get('team0').offense);
+ assert(poor.get('team0').placement<original.get('team0').placement);
+ assert(strong.get('team0').offense>original.get('team0').offense);
+ assert(strong.get('team0').placement>original.get('team0').placement);
+ // A new entrant has no phase-two games; its rating stays based on phase one.
+ const phaseTwo=batch(1,2,true);for(const drop of phaseTwo.drops)delete drop.team23;
+ const newcomer=learn(analysis,[prior,phaseTwo],ranks).skills.get('team23');
+ assert.equal(newcomer.placement,original.get('team23').placement);
+});
+
+test('published forecasts are immutable; review identifies every pick and trajectory keeps the pre-day snapshot',async t=>{
+ const projection=require(base+'projecao.json'),{renderProjection}=await import(base+'projecao.mjs');
+ const dom=new JSDOM('<main></main>',{runScripts:'outside-only'});t.after(()=>dom.window.close());
+ const container=dom.window.document.querySelector('main');
+ for(const [day,hits] of [[1,0],[2,1],[3,0]]){
+  renderProjection(container,projection,summary.teams,day,()=>{});
+  assert.match(container.querySelector('.rx-projection-review').textContent,new RegExp(hits+' de 2 favoritos'));
+  assert.equal(container.querySelectorAll('.rx-projection-picks article.is-hit').length,hits);
+  assert.equal(container.querySelectorAll('.rx-projection-picks article.is-miss').length,2-hits);
+  for(const row of projection.days[day-1].forecast.slice(0,2))assert(container.querySelector('.rx-projection-picks').textContent.includes(summary.teams[row.id].name));
+ }
+ renderProjection(container,projection,summary.teams,4,()=>{});
+ assert.match(container.querySelector('.rx-projection-score').textContent,/1 de 6 vagas previstas/);
+ const select=container.querySelector('#rx-projection-team');select.value='bru';select.dispatchEvent(new dom.window.Event('change'));
+ const history=container.querySelector('[data-projection-history]');
+ assert.match(history.textContent,/66 pts\/dia/);assert.match(history.textContent,/75% do peso/);
+ assert.equal(history.querySelectorAll('tbody tr').length,4);
+ assert.deepEqual([...history.querySelectorAll('tbody tr td:last-child')].map(td=>td.textContent),['9º · 62 pts','9º · 48 pts','4º · 88 pts','A disputar']);
+ assert.equal(projection.days[3].model,2);
+ assert(projection.days.slice(0,3).every(d=>d.model===1));
+ assert.equal(projection.days[3].form['team-inf'].phaseTwoWeight,0);
+ assert.equal(projection.days[3].form.bru.phaseTwoWeight,75);
 });

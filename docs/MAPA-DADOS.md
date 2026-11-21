@@ -209,7 +209,7 @@ e os recortes por queda para simular 20 mil lobbies de seis quedas por dia.
 O próximo dia só abre com 12 equipes definidas. Apenas dias anteriores completos
 entram no treino, e previsões já publicadas para o mesmo lobby são preservadas
 após as primeiras quedas. O preparo global atualiza o arquivo no mesmo commit dos
-resultados. Reconstituições sem previsão salva são identificadas como retrospectivas.
+resultados. Reconstituições sem previsão salva são identificadas como retrospectivas. O modelo 2 normaliza os pesos por equipe: a Fase 2 recebe 55%, 65% ou 75% após um, dois ou três dias completos da própria equipe, com decaimento de 25% por dia anterior. Estreantes usam apenas a Fase 1. O histórico de previsões iniciadas mantém a versão original; somente novas projeções recebem o modelo atualizado. A interface explicita os dois favoritos, o resultado de cada um e o total de vagas previstas, sem contar retrospectivas. A evolução compara chances pré-rodada, pontos projetados e placares reais; a mudança de lobby também afeta as probabilidades.
 
 ### Início do Mundial 2026
 
