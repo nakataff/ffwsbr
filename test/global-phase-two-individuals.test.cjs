@@ -17,7 +17,7 @@ test('MVP renders a dash for missing damage while retaining kills, assists and p
  const w=new JSDOM('<main id="ranking"></main>',{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}).window;
  try{
   w.eval(fs.readFileSync('js/mvp-ranking.js','utf8').replace('window.CFFMvpRanking={boot};','window.__mvp={setup,rowsOf,render,editions};window.CFFMvpRanking={boot};'));
-  const api=w.__mvp,s=api.setup('global',api.editions.global,read('mvp-resumo'));s.filters.stage=new w.Set(['1']);
+  const api=w.__mvp,s=api.setup('global',api.editions.global,read('mvp-resumo'));s.filters.stage=new w.Set(['1']);s.filters.day=new w.Set(['1:1']);
   const rows=api.rowsOf(s);assert.equal(rows.length,51);assert(rows.every(row=>row.damage===null));
   api.render(w.document.getElementById('ranking'),s);
   for(const tr of w.document.querySelectorAll('tr.ffws-global-mvp-main-row')){assert.equal(tr.children[5].textContent,'—');assert(Number(tr.children[4].textContent)>=0);}
@@ -56,4 +56,29 @@ test('daily selection keeps the half-drop minimum and renders missing damage wit
   w.document.querySelector('main').innerHTML=selected.map(p=>w.__selectionCard(p,{color:'#ff0000',short:'DIA'})).join('');
   assert(!w.document.body.textContent.includes('0.0K'));assert(w.document.body.textContent.includes('—'));
  }finally{w.close();}
+});
+
+test('phase-two days two and three retain real damage, reconcile every team/drop and expose both MVP filters',()=>{
+ const summary=read('mvp-resumo'),stage=summary.stages.indexOf('segundaFase');
+ for(const [day,count] of [[2,50],[3,48]]){
+  const rows=players.entries.filter(e=>e.stage==='segundaFase'&&e.day===day);
+  assert.equal(rows.length,288);assert.equal(new Set(rows.map(e=>e.playerId)).size,count);
+  assert(rows.every(e=>Number.isInteger(e.damage)&&e.damage>=0&&Number.isInteger(e.assists)&&e.assists>=0));
+  assert.equal(new Set(rows.map(e=>e.playerId+':'+e.roundDrop)).size,288);
+  for(const drop of read('stages').segundaFase.rounds.filter(e=>e.day===day))for(const team of drop.results){
+   const teamRows=rows.filter(e=>e.roundDrop===drop.roundDrop&&e.team===team.team);
+   assert.equal(teamRows.length,4);assert.equal(teamRows.reduce((sum,e)=>sum+e.kills,0),team.kills);
+   assert(teamRows.every(e=>e.map===drop.map));
+  }
+  const mvp=summary.rows.filter(row=>row[0]===stage&&row[1]===day);
+  assert.equal(mvp.length,count);assert(mvp.every(row=>row[5]!==null));
+  assert.equal(mvp.reduce((sum,row)=>sum+row[4],0),rows.reduce((sum,row)=>sum+row.kills,0));
+  assert.equal(mvp.reduce((sum,row)=>sum+row[5],0),rows.reduce((sum,row)=>sum+row.damage,0));
+  const selection=read('selecoes-resumo').days.find(d=>d.stage==='segundaFase'&&d.date==='2026-11-'+(18+day));
+  assert(selection);assert(selection.players.every(row=>row[2]!==null));
+ }
+ const yago=players.entries.find(e=>e.stage==='segundaFase'&&e.day===2&&e.roundDrop===1&&e.playerId==='los-yago');
+ assert.deepEqual([yago.kills,yago.assists,yago.damage],[1,4,2268]);
+ const mink=players.entries.find(e=>e.stage==='segundaFase'&&e.day===3&&e.roundDrop===1&&e.playerId==='team-flash-minkcuog');
+ assert.deepEqual([mink.kills,mink.assists,mink.damage],[3,2,590]);
 });

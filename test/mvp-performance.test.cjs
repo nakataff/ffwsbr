@@ -24,7 +24,8 @@ test('home waits for its route and uses two static summaries without Firebase',a
   assert.match(d.getElementById('home-tbody-players').textContent,/BuTziN/);
   assert.equal(d.querySelectorAll('.cff-gsel-home-row').length,5);
   const dailySelection=d.getElementById('global-selection-home-widget');
-  assert.match(dailySelection.textContent,/COACH.*HoangAnh.*P Esports.*101/iu);
+  const coach=[...dailySelection.querySelectorAll('.cff-gsel-home-row')].at(-1);
+  assert.match(coach.textContent,/COACH/);assert(coach.textContent.includes(summary.teams[0].name));assert(coach.textContent.includes(String(summary.teams[0].points)));
   assert(d.querySelector('.cff-gsel-home-row img[src*="/160/"]'));
   w.cffHomeRenderFinalStats();w.cffHomeRenderFinalStats();assert.equal(calls.length,2);
  }finally{w.close();}
