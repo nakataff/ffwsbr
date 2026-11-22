@@ -1,6 +1,6 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "updatedAt": "2026-11-21",
+  "updatedAt": "2026-11-22",
   "finished": false,
   "formatConfirmed": true,
   "format": {
@@ -8582,7 +8582,7 @@
     ]
   },
   "segundaFase": {
-    "finished": false,
+    "finished": true,
     "rounds": [
       {
         "day": 1,
@@ -10509,6 +10509,648 @@
             "booyah": 0
           }
         ]
+      },
+      {
+        "day": 4,
+        "round": 4,
+        "roundDrop": 1,
+        "drop": 1,
+        "date": "2026-11-22",
+        "time": "09h00",
+        "map": "Kalahari",
+        "results": [
+          {
+            "team": "GunDynasty",
+            "position": 1,
+            "kills": 16,
+            "points": 28,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 2,
+            "kills": 9,
+            "points": 18,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 3,
+            "kills": 7,
+            "points": 15,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 4,
+            "kills": 8,
+            "points": 15,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 5,
+            "kills": 4,
+            "points": 10,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 6,
+            "kills": 16,
+            "points": 21,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 7,
+            "kills": 1,
+            "points": 5,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 8,
+            "kills": 7,
+            "points": 10,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 9,
+            "kills": 9,
+            "points": 11,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 10,
+            "kills": 8,
+            "points": 9,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 11,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "round": 4,
+        "roundDrop": 2,
+        "drop": 2,
+        "date": "2026-11-22",
+        "time": "09h00",
+        "map": "Solara",
+        "results": [
+          {
+            "team": "RRQ",
+            "position": 1,
+            "kills": 11,
+            "points": 23,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "Team INF",
+            "position": 2,
+            "kills": 10,
+            "points": 19,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 3,
+            "kills": 11,
+            "points": 19,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 4,
+            "kills": 11,
+            "points": 18,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 5,
+            "kills": 13,
+            "points": 19,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 6,
+            "kills": 10,
+            "points": 15,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 7,
+            "kills": 4,
+            "points": 8,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 8,
+            "kills": 6,
+            "points": 9,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 9,
+            "kills": 4,
+            "points": 6,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 10,
+            "kills": 11,
+            "points": 12,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 11,
+            "kills": 6,
+            "points": 6,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 12,
+            "kills": 1,
+            "points": 1,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "round": 4,
+        "roundDrop": 3,
+        "drop": 3,
+        "date": "2026-11-22",
+        "time": "09h00",
+        "map": "Bermuda",
+        "results": [
+          {
+            "team": "RRQ",
+            "position": 1,
+            "kills": 13,
+            "points": 25,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "GunDynasty",
+            "position": 2,
+            "kills": 15,
+            "points": 24,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 3,
+            "kills": 1,
+            "points": 9,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 4,
+            "kills": 18,
+            "points": 25,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 5,
+            "kills": 6,
+            "points": 12,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 6,
+            "kills": 4,
+            "points": 9,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 7,
+            "kills": 5,
+            "points": 9,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 8,
+            "kills": 3,
+            "points": 6,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 9,
+            "kills": 8,
+            "points": 10,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 10,
+            "kills": 6,
+            "points": 7,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 11,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "round": 4,
+        "roundDrop": 4,
+        "drop": 4,
+        "date": "2026-11-22",
+        "time": "09h00",
+        "map": "Purgatório",
+        "results": [
+          {
+            "team": "Buriram United Esports",
+            "position": 1,
+            "kills": 20,
+            "points": 32,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "LOS",
+            "position": 2,
+            "kills": 4,
+            "points": 13,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 3,
+            "kills": 16,
+            "points": 24,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 4,
+            "kills": 7,
+            "points": 14,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 5,
+            "kills": 2,
+            "points": 8,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 6,
+            "kills": 10,
+            "points": 15,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 7,
+            "kills": 6,
+            "points": 10,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 8,
+            "kills": 6,
+            "points": 9,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 9,
+            "kills": 3,
+            "points": 5,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 10,
+            "kills": 10,
+            "points": 11,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 11,
+            "kills": 3,
+            "points": 3,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 12,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "round": 4,
+        "roundDrop": 5,
+        "drop": 5,
+        "date": "2026-11-22",
+        "time": "09h00",
+        "map": "Nexterra",
+        "results": [
+          {
+            "team": "GunDynasty",
+            "position": 1,
+            "kills": 15,
+            "points": 27,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "ONIC",
+            "position": 2,
+            "kills": 25,
+            "points": 34,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "Buriram United Esports",
+            "position": 3,
+            "kills": 10,
+            "points": 18,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 4,
+            "kills": 8,
+            "points": 15,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 5,
+            "kills": 13,
+            "points": 19,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 6,
+            "kills": 10,
+            "points": 15,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 7,
+            "kills": 11,
+            "points": 15,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 8,
+            "kills": 13,
+            "points": 16,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 9,
+            "kills": 7,
+            "points": 9,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 10,
+            "kills": 6,
+            "points": 7,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 11,
+            "kills": 2,
+            "points": 2,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 12,
+            "kills": 7,
+            "points": 7,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "round": 4,
+        "roundDrop": 6,
+        "drop": 6,
+        "date": "2026-11-22",
+        "time": "09h00",
+        "map": "Kalahari",
+        "results": [
+          {
+            "team": "Buriram United Esports",
+            "position": 1,
+            "kills": 12,
+            "points": 24,
+            "placementPoints": 12,
+            "booyah": 1
+          },
+          {
+            "team": "Resurrection Esports",
+            "position": 2,
+            "kills": 10,
+            "points": 19,
+            "placementPoints": 9,
+            "booyah": 0
+          },
+          {
+            "team": "LOS",
+            "position": 3,
+            "kills": 18,
+            "points": 26,
+            "placementPoints": 8,
+            "booyah": 0
+          },
+          {
+            "team": "GunDynasty",
+            "position": 4,
+            "kills": 6,
+            "points": 13,
+            "placementPoints": 7,
+            "booyah": 0
+          },
+          {
+            "team": "RRQ",
+            "position": 5,
+            "kills": 10,
+            "points": 16,
+            "placementPoints": 6,
+            "booyah": 0
+          },
+          {
+            "team": "GOW",
+            "position": 6,
+            "kills": 16,
+            "points": 21,
+            "placementPoints": 5,
+            "booyah": 0
+          },
+          {
+            "team": "Team Apex Gaming",
+            "position": 7,
+            "kills": 11,
+            "points": 15,
+            "placementPoints": 4,
+            "booyah": 0
+          },
+          {
+            "team": "Bigetron by Vitality",
+            "position": 8,
+            "kills": 5,
+            "points": 8,
+            "placementPoints": 3,
+            "booyah": 0
+          },
+          {
+            "team": "ONIC",
+            "position": 9,
+            "kills": 5,
+            "points": 7,
+            "placementPoints": 2,
+            "booyah": 0
+          },
+          {
+            "team": "Blue Cheese",
+            "position": 10,
+            "kills": 6,
+            "points": 7,
+            "placementPoints": 1,
+            "booyah": 0
+          },
+          {
+            "team": "xProjekt",
+            "position": 11,
+            "kills": 0,
+            "points": 0,
+            "placementPoints": 0,
+            "booyah": 0
+          },
+          {
+            "team": "Team INF",
+            "position": 12,
+            "kills": 1,
+            "points": 1,
+            "placementPoints": 0,
+            "booyah": 0
+          }
+        ]
       }
     ],
     "rows": [],
@@ -10530,6 +11172,12 @@
         "date": "2026-11-21",
         "url": "https://liquipedia.net/freefire/Free_Fire_World_Series/2026/Knockout_Stage/Phase_2",
         "verification": "Seis quedas conferidas com a tabela oficial enviada pelo administrador: 12 equipes, pontos, abates, colocação, Booyahs e ordem dos mapas."
+      },
+      {
+        "day": 4,
+        "date": "2026-11-22",
+        "url": "https://central-free-fire-default-rtdb.firebaseio.com/ffwsLive/global-2026/rounds/segundaFase-4.json",
+        "verification": "Seis quedas completas publicadas no Camp ao Vivo, conferidas com o resumo público do mesmo fechamento. Apenas estatísticas coletivas."
       }
     ]
   },

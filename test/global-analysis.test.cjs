@@ -32,7 +32,8 @@ async function openPage(t,search=''){
  const {window}=dom,{document}=window;
  window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
  window.loadProjectionModule=()=>import(base+'projecao.mjs');
- window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()'));
+ window.loadBetweenModule=()=>import(base+'entre-fases.mjs');
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=1')",'window.loadBetweenModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
@@ -298,7 +299,7 @@ test('recent phase-two form has explicit per-team weights and changes strength w
 });
 
 test('published forecasts are immutable; review identifies every pick and trajectory keeps the pre-day snapshot',async t=>{
- const projection=require(base+'projecao.json'),{renderProjection}=await import(base+'projecao.mjs');
+ const projection=structuredClone(require(base+'projecao.json'));projection.days[3].result=[];projection.finalists=projection.finalists.filter(f=>f.day<4);const {renderProjection}=await import(base+'projecao.mjs');
  const dom=new JSDOM('<main></main>',{runScripts:'outside-only'});t.after(()=>dom.window.close());
  const container=dom.window.document.querySelector('main');
  for(const [day,hits] of [[1,0],[2,1],[3,0]]){
@@ -319,4 +320,16 @@ test('published forecasts are immutable; review identifies every pick and trajec
  assert(projection.days.slice(0,3).every(d=>d.model===1));
  assert.equal(projection.days[3].form['team-inf'].phaseTwoWeight,0);
  assert.equal(projection.days[3].form.bru.phaseTwoWeight,75);
+});
+
+test('Entre fases deep link reuses the existing summary, switches teams and keeps a shareable URL',async t=>{
+ const {window,document}=await openPage(t,'?visao=fases&id=los');
+ for(let i=0;i<30&&!document.querySelector('#rx-between-team');i++)await new Promise(resolve=>setTimeout(resolve,10));
+ assert.equal(document.querySelector('[data-view="fases"]').getAttribute('aria-selected'),'true');
+ assert.equal(document.querySelector('#rx-between-team').value,'los');
+ assert(document.querySelector('.rx-search').hidden);assert.match(document.querySelector('h2').textContent,/LOS/);
+ const select=document.querySelector('#rx-between-team');select.value='gundynasty';select.dispatchEvent(new window.Event('change'));
+ assert.equal(new URL(window.location.href).searchParams.get('id'),'gundynasty');
+ assert.equal(document.activeElement.id,'rx-between-team');assert.match(document.querySelector('h2').textContent,/GunDynasty/);
+ document.querySelector('[data-view="media"]').click();assert.equal(document.querySelector('.rx-search').hidden,false);
 });

@@ -58,7 +58,8 @@ test('day three matches the broadcast, respects the Booyah tiebreak and prepares
   ['onic',76,40,0,36],['xprojekt',67,43,0,24],['rrq',61,39,0,22],['resurrection-esports',54,34,0,20],['gow',44,34,0,10],['blue-cheese',29,19,0,10]
  ]);
  assert.deepEqual(record.drops.map(d=>[d.map,d.booyah]),[['Nexterra','team-flash'],['Bermuda','btr'],['Kalahari','lyon'],['Solara','btr'],['Purgatório','team-flash'],['Nexterra','los']]);
- const next=C.backup(base,meta,'segundaFase-4'),ids=next.selectedTeams.map(id=>C.team(meta,id).id);
+ const historicalMeta=clone(meta);delete historicalMeta.officialRounds['segundaFase-4'];
+ const next=C.backup(base,historicalMeta,'segundaFase-4'),ids=next.selectedTeams.map(id=>C.team(meta,id).id);
  assert.deepEqual(ids,['los','bru','gundynasty','btr','onic','xprojekt','rrq','resurrection-esports','gow','blue-cheese','team-inf','tag']);
  assert.equal(next.config.date,'2026-11-22');assert.equal(next.config.daySettings[0].time,'09:00');
  assert(next.drops.every(d=>Object.values(d.points).every(v=>v===null)));assert(Object.values(next.startingPoints).every(v=>v===0));

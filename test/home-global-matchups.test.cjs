@@ -256,7 +256,8 @@ test('published day two displays four finalists and the next two newcomers in da
 });
 
 test('published day three separates six finalists and shows all twelve day four teams',async()=>{
- const x=await mount('2026-11-21T16:00:00-03:00',{data:summary});
+ const dayThreeOnly=structuredClone(summary);dayThreeOnly.tables.segundaFase.days[3].rows=[];
+ const x=await mount('2026-11-21T16:00:00-03:00',{data:dayThreeOnly});
  try{
   const d=x.w.document,roster=d.querySelector('#home-global-upcoming-content > .home-global-single-roster');
   const ids=[...roster.querySelectorAll('a')].map(a=>new URL(a.href).searchParams.get('time'));
@@ -267,5 +268,26 @@ test('published day three separates six finalists and shows all twelve day four 
   assert.match(d.querySelector('.home-global-match-head').textContent,/22\/11\/2026/);
   assert.match(d.querySelector('.home-global-match-head').textContent,/09:00/);
   assert.deepEqual([...d.querySelectorAll('.home-global-finalists a')].map(a=>new URL(a.href).searchParams.get('time')),finalists);
+ }finally{x.close();}
+});
+
+test('published day four prepares twelve Last Chance teams and shows all eight direct finalists',async()=>{
+ const x=await mount('2026-11-22T16:00:00-03:00',{data:summary});
+ try{
+  const d=x.w.document,ids=[...d.querySelectorAll('#home-global-upcoming-content > .home-global-single-roster a')].map(a=>new URL(a.href).searchParams.get('time'));
+  assert.equal(new Set(ids).size,12);assert(ids.includes('horaa-esports'));assert(ids.includes('stellar-esport'));assert(ids.includes('los'));assert(!ids.includes('gundynasty'));assert(!ids.includes('bru'));
+  assert.equal(d.querySelectorAll('.home-global-finalists a').length,8);assert.match(d.querySelector('.home-global-match-head').textContent,/REPESCAGEM/);
+ }finally{x.close();}
+});
+
+test('a newly published compact result advances the old calendar without another fetch or losing earlier finalists',async()=>{
+ const old=structuredClone(summary);old.tables.segundaFase.days[3].rows=[];
+ const x=await mount('2026-11-22T12:00:00-03:00',{data:old});
+ try{
+  const teams=new Map(summary.teams.map(t=>[t.name,t.id]));
+  const publication={partial:false,dailyTeams:[{stage:'segundaFase',date:'2026-11-22',teams:summary.tables.segundaFase.days[3].rows.map(r=>[teams.get(r.team),r.points,r.kills,r.booyahs,r.matches,r.lastPlace])}]};
+  x.w.dispatchEvent(new x.w.CustomEvent('cff:global-published-summary',{detail:publication}));
+  assert.equal(x.w.document.querySelectorAll('.home-global-finalists a').length,8);
+  assert.match(x.w.document.querySelector('.home-global-match-head').textContent,/REPESCAGEM/);assert.equal(x.requests.length,1);
  }finally{x.close();}
 });

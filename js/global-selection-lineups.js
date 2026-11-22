@@ -39,7 +39,7 @@ const url=v=>/^https:\/\//i.test(String(v||''))?String(v):'/'+String(v||'').repl
 const state={page:{tab:'semanal',mode:'day',day:'',week:''},home:{mode:'day',day:'',week:''},start:{mode:'day',day:'',week:''}};
 let DATA=null,playersPromise=null,officialRecords=null,staticDays=[],officialPromise=null,officialAt=0;
 let phaseCompletion={},publishedDays=[],homeSummary=null,homeSummaryAt=0,homeSummaryPromise=null;
-const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261121-fase2-dia23-individuais-v1';
+const SUMMARY_URL=BASE+'selecoes-resumo.json?v=20261122-fase2-fechada-v1';
 function setData(players,teams){
  if(!Array.isArray(players?.entries)||!Array.isArray(players?.players))return false;
  const list=Array.isArray(teams?.teams)?teams.teams:Array.isArray(teams)?teams:[];
@@ -298,7 +298,7 @@ function renderPage(root,players,teams,stages){
     tab.name;
  const status=progress&&progress.count?
    '<span class="cff-global-phase-status '+(progress.completed?'is-complete':'is-running')+'" role="status">'+
-   (progress.completed?'ENCERRADA':'EM ANDAMENTO')+'</span>':'';
+   (progress.completed?(progress.count<progress.total?'ENCERRADA · DADOS PARCIAIS':'ENCERRADA'):'EM ANDAMENTO')+'</span>':'';
  const cards=hasEntries?selectLineup(selection).map(p=>selectionCard(p,cardConfig)).join(''):
   '<div class="season-selection-empty" style="--selection-color:'+tab.color+'"><p>Esta seleção ainda não tem resultados individuais publicados.</p></div>';
  root.innerHTML='<div class="ffws-global-selection-page cff-global-selections-page">'+

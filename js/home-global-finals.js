@@ -210,6 +210,21 @@
   document.addEventListener('visibilitychange',resume);
   window.addEventListener('hashchange',resume);
   window.addEventListener('cff:pretty-route',resume);
+  function acceptPublication(summary){
+    if(!loaded||summary?.partial||!Array.isArray(summary?.dailyTeams))return;
+    let changed=false;
+    for(const day of summary.dailyTeams){
+      const round=rounds.find(r=>r.stage===day.stage&&r.date===day.date);
+      if(!round||completed.has(round.key)||!round.matches||day.teams?.length!==lobbySize)continue;
+      const rows=day.teams;
+      if(rows.some(row=>!teams.has(row[0])||row[4]!==round.matches)||new Set(rows.map(row=>row[0])).size!==lobbySize)continue;
+      const expected=matchRoster(round).ids;
+      if(expected.length!==lobbySize||rows.some(row=>!expected.includes(row[0])))continue;
+      completed.set(round.key,rows.map(row=>row[0]));changed=true;
+    }
+    if(changed){lastRoundKey='';renderUpcoming();resume();}
+  }
+  window.addEventListener('cff:global-published-summary',event=>acceptPublication(event.detail));
   resume();
 
   async function loadSchedule(){
@@ -237,6 +252,7 @@
         if(ordered.every((row,index)=>row.position===index+1&&row.matches===round.matches))completed.set(round.key,ids);
       }
       groups=groupList;teams=teamList;rounds=upcoming;loaded=true;
+      acceptPublication(window.CFF_GLOBAL_HOME_PUBLICATION);
       renderUpcoming();resume();
     }catch(error){
       output.innerHTML='<p class="home-global-error">Não foi possível carregar os próximos confrontos agora. O calendário completo continua disponível.</p><a class="home-global-calendar-link" href="/ffws-global-2026/datas">CONSULTAR DATAS DO MUNDIAL →</a>';

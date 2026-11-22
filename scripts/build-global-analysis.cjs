@@ -50,7 +50,8 @@ function build({players,stages,dates,teams},profileSummary){
   }
   phases[stage].rounds.push(round);
  }
- return {updatedAt:[players.updatedAt,stages.updatedAt].filter(Boolean).sort().at(-1)||'',players:people,teams:clubs,phases};
+ const phaseOneRanks=Object.fromEntries((stages.classificatoria?.rows||[]).map(row=>[teamIds.get(norm(row.team)),Number(row.position)]).filter(([id,rank])=>id&&rank>0));
+ return {updatedAt:[players.updatedAt,stages.updatedAt].filter(Boolean).sort().at(-1)||'',players:people,teams:clubs,phases,phaseOneRanks};
 }
 
 module.exports={build,FILE};

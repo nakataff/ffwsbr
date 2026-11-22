@@ -1,5 +1,5 @@
 const BASE='/ffws-global-2026/';
-const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes',projecao:'Projeção da Fase 2'};
+const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes',projecao:'Projeção da Fase 2',fases:'Entre fases'};
 const compareLimit=4;
 const phaseLabels={classificatoria:'Fase 1',segundaFase:'Fase 2',lastChance:'Repescagem',final:'Grande Final'};
 const metrics={
@@ -68,7 +68,7 @@ function boot(data){
  const state={};
  const catalog=searchCatalog(data);
  const primarySearch=document.getElementById('rx-search');
- let projection,projectionLoad;
+ let projection,projectionLoad,betweenModule,betweenLoad;
  const meta=id=>data[state.tipo][id];
  const team=id=>data.teams[state.tipo==='teams'?id:meta(id).teamId];
  const emblem=(id,className='rx-shield')=>team(id)?.logo?`<span class="${className}"><img src="${esc(path(team(id).logo))}" alt="" loading="lazy"></span>`:'';
@@ -134,11 +134,29 @@ function boot(data){
   });
  }
 
+ function showBetween(focus=false){
+  if(betweenModule){
+   state.tipo='teams';
+   state.id=betweenModule.renderBetweenPhases(story,data,state.id,id=>{state.id=id;updateUrl();showBetween(true);})||state.id;
+   updateUrl();announce.textContent='Entre fases · '+(data.teams[state.id]?.name||'Equipes');
+   if(focus)story.querySelector('#rx-between-team')?.focus({preventScroll:true});
+   return;
+  }
+  story.innerHTML='<div class="rx-empty"><h1 id="rx-headline">Entre fases</h1><p role="status">Carregando a comparação…</p></div>';
+  betweenLoad??=import('./entre-fases.mjs?v=1');
+  betweenLoad.then(module=>{betweenModule=module;if(state.visao==='fases')showBetween();}).catch(()=>{
+   betweenLoad=null;if(state.visao!=='fases')return;
+   story.innerHTML='<div class="rx-empty"><h1>Entre fases</h1><p>Não foi possível carregar a comparação.</p><button type="button">Tentar de novo</button></div>';
+   story.querySelector('button').addEventListener('click',()=>showBetween());
+  });
+ }
+
  function render(writeUrl=false){
   const isProjection=state.visao==='projecao';
-  primarySearch.closest('.rx-search').hidden=isProjection;
-  filterToggle.hidden=isProjection;
-  filterFields.hidden=isProjection||filterToggle.getAttribute('aria-expanded')!=='true';
+  const isBetween=state.visao==='fases';
+  primarySearch.closest('.rx-search').hidden=isProjection||isBetween;
+  filterToggle.hidden=isProjection||isBetween;
+  filterFields.hidden=isProjection||isBetween||filterToggle.getAttribute('aria-expanded')!=='true';
   for(const tab of tabs){
    const active=tab.dataset.view===state.visao;
    tab.setAttribute('aria-selected',String(active));
@@ -150,6 +168,7 @@ function boot(data){
    showProjection();
    return;
   }
+  if(isBetween){if(writeUrl)updateUrl();showBetween();return;}
   const phase=data.phases[state.fase],metric=metrics[state.tipo][state.metrica];
   const byRound=state.visao==='rodada',evolution=state.visao==='evolucao';
   const pool=comparison(phase,state.tipo,state.metrica,state.visao,state.quedas);

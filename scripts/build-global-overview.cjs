@@ -43,7 +43,7 @@ function aggregate(events, penalties = []) {
 function compactRows(rows) {
   return rows.filter(r => !r.placeholder && num(r.matches) > 0).map((r,i) => ({team:r.team, position:num(r.position)||i+1, points:num(r.points), kills:num(r.kills), booyahs:num(r.booyahs), matches:num(r.matches)}));
 }
-function homeSummary(tables, teams, roster, entries) {
+function homeSummary(tables, teams, roster, entries, stages, calendar) {
   const latest = keys.flatMap(stage => tables[stage].days.filter(day => day.rows.length).map(day => ({stage, ...day})))
     .sort((a, b) => a.date.localeCompare(b.date)).at(-1);
   if (!latest) return null;
@@ -72,7 +72,12 @@ function homeSummary(tables, teams, roster, entries) {
   const ranking = metric => [...totals.values()].filter(row => row.coverage[metric] > 0)
     .sort((a, b) => b[metric] - a[metric] || b.kills - a.kills || b.damage - a.damage || b.assists - a.assists || a.name.localeCompare(b.name, 'pt-BR'))
     .slice(0, 6);
-  return {updatedAt:date, source:'Resultados oficiais do Mundial', stage, date, partial:false,
+  const pendingSessions=calendar.filter(round=>{
+    if(stages[round.stage]?.finished)return false;
+    const drops=stages[round.stage]?.rounds?.filter(drop=>drop.round===round.round&&drop.date===round.date)||[];
+    return !round.matches||drops.length<round.matches;
+  }).map(round=>({stage:round.stage,date:round.date,startAt:round.date+'T'+round.time24+':00-03:00'}));
+  return {updatedAt:date, source:'Resultados oficiais do Mundial', stage, date, day:latest.day, partial:false,pendingSessions,
     teams:table.slice(0, 6).map(({team, points, kills, booyahs, matches}) => {
       const {id, name, logo} = teamsByName.get(norm(team));
       return {id, name, logo, points, kills, booyahs, matches};
@@ -171,7 +176,7 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
         statsByStage:Object.fromEntries(['geral',...keys].map(key=>[key,sumEntries(entries.filter(e=>sameTeam(e.team,t)&&norm(e.name||e.player)===norm(p.name)&&(key==='geral'?keys.includes(e.stage):e.stage===key)))]))})),
       fixtures:dates.rounds.filter(r=>r.stage==='classificatoria'&&r.groups?.includes(groupById.get(t.id))).map(r=>({date:r.date,time:r.time24,label:r.label,groups:r.groups}))};
   });
-  const home=homeSummary(tables,metadata,roster,entries);
+  const home=homeSummary(tables,metadata,roster,entries,stages,dates.rounds);
   return {
     ...(home?{'home-resumo.json':home}:{}),
     'equipes-resumo.json':{updatedAt,teams:teamProfiles},

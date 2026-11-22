@@ -211,6 +211,10 @@ entram no treino, e previsões já publicadas para o mesmo lobby são preservada
 após as primeiras quedas. O preparo global atualiza o arquivo no mesmo commit dos
 resultados. Reconstituições sem previsão salva são identificadas como retrospectivas. O modelo 2 normaliza os pesos por equipe: a Fase 2 recebe 55%, 65% ou 75% após um, dois ou três dias completos da própria equipe, com decaimento de 25% por dia anterior. Estreantes usam apenas a Fase 1. O histórico de previsões iniciadas mantém a versão original; somente novas projeções recebem o modelo atualizado. A interface explicita os dois favoritos, o resultado de cada um e o total de vagas previstas, sem contar retrospectivas. A evolução compara chances pré-rodada, pontos projetados e placares reais; a mudança de lobby também afeta as probabilidades.
 
+A aba **Entre fases** carrega `stats/raio-x/entre-fases.mjs` sob demanda e reutiliza `resumo.json`. Mostra pontos, abates e pontos de colocação por queda, Booyahs, amostras por mapa e posição média dos 11 adversários pela classificação oficial da Fase 1 (`phaseOneRanks`, incluindo penalidades). Usa somente rodadas coletivas completas; não cria um ranking acumulado da Fase 2 nem completa dados individuais ausentes.
+
+A home recebe `pendingSessions` no resumo leve. Consulta somente `ffwsLive/global-2026/home.json`, com cache de cinco minutos, no dia e após o horário de uma sessão ainda não consolidada no Git. Preserva os rankings individuais estáticos ao receber só placares coletivos. A mesma publicação compacta atualiza os classificados e a próxima rodada; dados coletivos encerrados continuam servidos por JSON estático.
+
 ### Início do Mundial 2026
 
 Entrada pública: `/ffws-global-2026/inicio` (também no atalho Mundial do menu).

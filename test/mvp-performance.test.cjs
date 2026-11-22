@@ -25,7 +25,9 @@ test('home waits for its route and uses two static summaries without Firebase',a
   assert.equal(d.querySelectorAll('.cff-gsel-home-row').length,5);
   const dailySelection=d.getElementById('global-selection-home-widget');
   const coach=[...dailySelection.querySelectorAll('.cff-gsel-home-row')].at(-1);
-  assert.match(coach.textContent,/COACH/);assert(coach.textContent.includes(summary.teams[0].name));assert(coach.textContent.includes(String(summary.teams[0].points)));
+  assert.match(coach.textContent,/COACH/);const lastIndividual=read('ffws-global-2026/selecoes-resumo.json').days.at(-1);
+  const individualLeader=read('ffws-global-2026/inicio-resumo.json').tables[lastIndividual.stage].days.find(day=>day.date===lastIndividual.date).rows[0];
+  assert(coach.textContent.includes(individualLeader.team));assert(coach.textContent.includes(String(individualLeader.points)));
   assert(d.querySelector('.cff-gsel-home-row img[src*="/160/"]'));
   w.cffHomeRenderFinalStats();w.cffHomeRenderFinalStats();assert.equal(calls.length,2);
  }finally{w.close();}
