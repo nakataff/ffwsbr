@@ -143,7 +143,7 @@ function boot(data){
    return;
   }
   story.innerHTML='<div class="rx-empty"><h1 id="rx-headline">Entre fases</h1><p role="status">Carregando a comparação…</p></div>';
-  betweenLoad??=import('./entre-fases.mjs?v=1');
+  betweenLoad??=import('./entre-fases.mjs?v=2');
   betweenLoad.then(module=>{betweenModule=module;if(state.visao==='fases')showBetween();}).catch(()=>{
    betweenLoad=null;if(state.visao!=='fases')return;
    story.innerHTML='<div class="rx-empty"><h1>Entre fases</h1><p>Não foi possível carregar a comparação.</p><button type="button">Tentar de novo</button></div>';

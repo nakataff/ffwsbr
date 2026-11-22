@@ -33,7 +33,7 @@ async function openPage(t,search=''){
  window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
  window.loadProjectionModule=()=>import(base+'projecao.mjs');
  window.loadBetweenModule=()=>import(base+'entre-fases.mjs');
- window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=1')",'window.loadBetweenModule()'));
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=2')",'window.loadBetweenModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
