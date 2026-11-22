@@ -85,7 +85,8 @@ function boot(data){
   state.comparar=params.getAll('comparar');
   state.rodada=Number(params.get('rodada'))||null;
   state.quedas=Number(params.get('quedas'))||null;
-  state.projectionDay=Number(params.get('dia'))||null;
+  state.projectionDay=state.visao==='projecao'?Number(params.get('dia'))||null:null;
+  state.betweenDay=state.visao==='fases'?Number(params.get('dia'))||null:null;
  };
 
  function updateUrl(){
@@ -99,6 +100,7 @@ function boot(data){
    for(const id of state.comparar)next.searchParams.append('comparar',id);
   }
   if(state.visao==='projecao'&&state.projectionDay)next.searchParams.set('dia',state.projectionDay);
+  else if(state.visao==='fases'&&state.betweenDay)next.searchParams.set('dia',state.betweenDay);
   else next.searchParams.delete('dia');
   history.replaceState(history.state,'',next);
  }
@@ -134,16 +136,17 @@ function boot(data){
   });
  }
 
- function showBetween(focus=false){
+ function showBetween(focusControl=''){
   if(betweenModule){
    state.tipo='teams';
-   state.id=betweenModule.renderBetweenPhases(story,data,state.id,id=>{state.id=id;updateUrl();showBetween(true);})||state.id;
-   updateUrl();announce.textContent='Entre fases · '+(data.teams[state.id]?.name||'Equipes');
-   if(focus)story.querySelector('#rx-between-team')?.focus({preventScroll:true});
+   const selected=betweenModule.renderBetweenPhases(story,data,state.id,(id,day,control)=>{state.id=id;state.betweenDay=day;updateUrl();showBetween(control);},state.betweenDay);
+   if(selected){state.id=selected.id;state.betweenDay=selected.day;}
+   updateUrl();announce.textContent='Entre fases · '+(data.teams[state.id]?.name||'Equipes')+' · '+(state.betweenDay?'Dia '+state.betweenDay:'Fase 2 inteira');
+   if(focusControl)story.querySelector('#'+focusControl)?.focus({preventScroll:true});
    return;
   }
   story.innerHTML='<div class="rx-empty"><h1 id="rx-headline">Entre fases</h1><p role="status">Carregando a comparação…</p></div>';
-  betweenLoad??=import('./entre-fases.mjs?v=2');
+  betweenLoad??=import('./entre-fases.mjs?v=3');
   betweenLoad.then(module=>{betweenModule=module;if(state.visao==='fases')showBetween();}).catch(()=>{
    betweenLoad=null;if(state.visao!=='fases')return;
    story.innerHTML='<div class="rx-empty"><h1>Entre fases</h1><p>Não foi possível carregar a comparação.</p><button type="button">Tentar de novo</button></div>';

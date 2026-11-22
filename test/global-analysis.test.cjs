@@ -33,7 +33,7 @@ async function openPage(t,search=''){
  window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
  window.loadProjectionModule=()=>import(base+'projecao.mjs');
  window.loadBetweenModule=()=>import(base+'entre-fases.mjs');
- window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=2')",'window.loadBetweenModule()'));
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=3')",'window.loadBetweenModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
@@ -332,4 +332,15 @@ test('Entre fases deep link reuses the existing summary, switches teams and keep
  assert.equal(new URL(window.location.href).searchParams.get('id'),'gundynasty');
  assert.equal(document.activeElement.id,'rx-between-team');assert.match(document.querySelector('h2').textContent,/GunDynasty/);
  document.querySelector('[data-view="media"]').click();assert.equal(document.querySelector('.rx-search').hidden,false);
+});
+
+test('Entre fases shares the day cut and normalizes it when a team did not play that day',async t=>{
+ const {window,document}=await openPage(t,'?visao=fases&id=fx&dia=2');
+ for(let i=0;i<30&&!document.querySelector('#rx-between-day');i++)await new Promise(resolve=>setTimeout(resolve,10));
+ assert.equal(document.querySelector('#rx-between-day').value,'2');assert.match(document.querySelector('.rx-between-team').textContent,/106 pontos/);
+ const day=document.querySelector('#rx-between-day');day.value='1';day.dispatchEvent(new window.Event('change'));
+ assert.equal(new URL(window.location.href).searchParams.get('dia'),'1');assert.match(document.querySelector('.rx-between-team').textContent,/45 pontos/);
+ assert.equal(document.activeElement.id,'rx-between-day');
+ const team=document.querySelector('#rx-between-team');team.value='gundynasty';team.dispatchEvent(new window.Event('change'));
+ assert.equal(document.querySelector('#rx-between-day').value,'all');assert.equal(new URL(window.location.href).searchParams.get('dia'),null);
 });

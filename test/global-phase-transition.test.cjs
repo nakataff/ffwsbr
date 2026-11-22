@@ -39,9 +39,9 @@ test('between-phase view changes team locally, preserves focus and exposes count
  try{
   const render=id=>renderBetweenPhases(root,data,id,next=>{render(next);root.querySelector('select').focus();});
   render('los');assert.match(root.textContent,/36 quedas.*24 quedas/s);assert.match(root.textContent,/Adversários mais fortes/);
-  assert.equal(root.querySelectorAll('.rx-between-metrics section').length,3);assert.equal(root.querySelector('details').open,false);
+  assert.equal(root.querySelectorAll('.rx-between-metrics section').length,4);assert.equal(root.querySelector('details').open,false);
   const select=root.querySelector('select');select.value='p-esports';select.dispatchEvent(new w.Event('change'));
-  assert.equal(root.querySelector('h2').textContent,'P Esports');assert.match(root.textContent,/Fase 2: 6 quedas/);assert.equal(w.document.activeElement.id,'rx-between-team');
+  assert.equal(root.querySelector('h2').textContent,'P Esports');assert.match(root.textContent,/Fase 2 inteira: 6 quedas/);assert.equal(w.document.activeElement.id,'rx-between-team');
   assert(root.querySelector('tbody').textContent.includes('quedas'));assert(!root.textContent.includes('NaN'));
  }finally{w.close();}
 });
@@ -68,3 +68,54 @@ for(const [at,expectedLive] of [['2026-11-22T08:59:00-03:00',0],['2026-11-22T15:
   }finally{w.close();}
  });
 }
+
+test('phase-two day slices isolate Fluxo recovery and use only that day for maps, opponents and averages',async()=>{
+ const {phaseTeam,comparePhases}=await import('../ffws-global-2026/stats/raio-x/entre-fases.mjs'),data=read('stats/raio-x/resumo');
+ const first=comparePhases(data,'fx',1),next=comparePhases(data,'fx',2),all=comparePhases(data,'fx');
+ assert.equal(first.second.totalPoints,45);assert.equal(next.second.totalPoints,106);assert.equal(all.second.totalPoints,151);
+ assert.equal(first.second.matches,6);assert.equal(next.second.matches,6);assert.equal(all.second.matches,12);
+ assert(first.metrics.points.change<0);assert(next.metrics.points.change>0);
+ assert.equal(first.second.booyahs,0);assert.equal(next.second.booyahs,1);assert.equal(next.second.booyahRate,100/6);
+ assert.equal(next.metrics.booyahRate.change,next.second.booyahRate-next.first.booyahRate);
+ assert.equal(phaseTeam(data,'segundaFase','fx',3),null);
+ const round=data.phases.segundaFase.rounds.find(r=>r.day===2);
+ assert.equal(next.second.halves.start.points,round.teams.fx.slice(0,3).reduce((s,r)=>s+r[1],0)/3);
+ assert.equal(next.second.halves.end.points,round.teams.fx.slice(3).reduce((s,r)=>s+r[1],0)/3);
+ assert.equal(Object.values(next.second.maps).reduce((s,m)=>s+m.matches,0),6);
+ assert.equal(next.second.withoutBooyah.matches,5);
+ assert.equal(next.second.withoutBooyah.totalPoints,round.teams.fx.filter(r=>!r[3]).reduce((s,r)=>s+r[1],0));
+ const lobby=Object.keys(data.teams).map(id=>phaseTeam(data,'segundaFase',id,2)).filter(Boolean);
+ assert.equal(lobby.length,12);assert.equal(lobby.reduce((s,t)=>s+t.matches,0),72);
+});
+
+test('day filter shows only played days, changes every panel locally and retains expanded details',async()=>{
+ const {renderBetweenPhases}=await import('../ffws-global-2026/stats/raio-x/entre-fases.mjs'),data=read('stats/raio-x/resumo');
+ const w=new JSDOM('<main></main>').window,root=w.document.querySelector('main');
+ try{
+  const render=(id,day=null,control)=>{const selected=renderBetweenPhases(root,data,id,render,day);if(control)root.querySelector('#'+control).focus();return selected;};
+  render('fx');assert.deepEqual([...root.querySelector('#rx-between-day').options].map(o=>o.value),['all','1','2']);
+  root.querySelector('#rx-between-details').open=true;
+  root.querySelector('.rx-between-maps').open=true;
+  const picker=root.querySelector('#rx-between-day');picker.value='2';picker.dispatchEvent(new w.Event('change'));
+  assert.equal(root.querySelector('#rx-between-day').value,'2');assert.equal(w.document.activeElement.id,'rx-between-day');
+  assert(root.querySelector('#rx-between-details').open);assert(root.querySelector('.rx-between-maps').open);
+  assert.match(root.textContent,/106 pontos no recorte/);assert.match(root.textContent,/Média do lobby do Dia 2/);
+  assert.match(root.querySelector('.rx-between-metrics section:last-child').textContent,/Booyahs/);
+  const normalized=render('p-esports',2);assert.equal(normalized.day,null);assert.equal(root.querySelector('#rx-between-day').value,'all');
+  assert.deepEqual([...root.querySelector('#rx-between-day').options].map(o=>o.value),['all','1']);
+ }finally{w.close();}
+});
+
+test('zero points, zero wins and all-win samples never produce fake missing statistics or division errors',async()=>{
+ const {phaseTeam,renderBetweenPhases}=await import('../ffws-global-2026/stats/raio-x/entre-fases.mjs');
+ const round=win=>({expected:6,day:1,drops:{1:'A',2:'A',3:'A',4:'A',5:'A',6:'A'},teams:{a:Array.from({length:6},(_,i)=>[i+1,win?12:0,0,win?1:0])}});
+ const fixture={teams:{a:{name:'A'}},phaseOneRanks:{},phases:{classificatoria:{rounds:[round(false)]},segundaFase:{rounds:[round(true)]}}};
+ const stats=phaseTeam(fixture,'segundaFase','a',1);assert.equal(stats.booyahRate,100);assert.equal(stats.top3,6);assert.equal(stats.zeroPoints,0);assert.equal(stats.withoutBooyah.points,null);
+ const w=new JSDOM('<main></main>').window,root=w.document.querySelector('main');
+ try{
+  renderBetweenPhases(root,fixture,'a',()=>{},1);assert.match(root.textContent,/Não houve quedas sem vitória/);assert(!/NaN|Infinity/.test(root.textContent));
+  fixture.phases.segundaFase.rounds=[round(false)];
+  const zero=phaseTeam(fixture,'segundaFase','a',1);assert.equal(zero.zeroPoints,6);assert.equal(zero.withoutBooyah.points,0);
+  renderBetweenPhases(root,fixture,'a',()=>{},1);assert(!/NaN|Infinity/.test(root.textContent));
+ }finally{w.close();}
+});
