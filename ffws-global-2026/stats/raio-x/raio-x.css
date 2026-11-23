@@ -718,3 +718,11 @@
 .rx-between-details .rx-between-insights { margin-top: 16px; }
 @media(min-width:1100px) { .rx-between-metrics { grid-template-columns: repeat(4,minmax(0,1fr)); } }
 @media(max-width:720px) { .rx-between-filters { grid-template-columns: minmax(0,1fr); } }
+
+/* One projection area, with the completed phase preserved beside Last Chance. */
+.rx-projection-stages { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.rx-projection-stages button { flex: 1; min-width: 130px; min-height: 44px; border: 1px solid var(--rx-rule); border-radius: 8px; background: #121f34; color: var(--rx-ink); padding: 10px 12px; font: inherit; font-size: .875rem; cursor: pointer; }
+.rx-projection-stages button[aria-pressed="true"] { border-color: var(--rx-accent); background: #16334b; color: var(--rx-accent); }
+.rx-projection-coverage, .rx-projection-note { color: var(--rx-muted); font-size: .8125rem; line-height: 1.5; margin: 8px 0 12px; }
+.rx-projection-table .is-cutoff > * { border-bottom: 2px solid #3c91ae; }
+.rx-projection-finalists li small b { color: var(--rx-accent); font-size: .9rem; }

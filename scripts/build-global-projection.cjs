@@ -95,7 +95,7 @@ function percentile(histogram,p){
  return 0;
 }
 
-function simulate(ids,matches,learned,day){
+function simulate(ids,matches,learned,day,slots=2){
  const random=randomFrom(20261119+day);
  const logOpen=()=>-Math.log(Math.max(Number.EPSILON,random()));
  const skills=ids.map(id=>learned.skills.get(id));
@@ -127,10 +127,10 @@ function simulate(ids,matches,learned,day){
    for(const team of field)team.points+=team.lastPoints;
   }
   field.sort((a,b)=>b.points-a.points||b.booyahs-a.booyahs||b.kills-a.kills||a.lastPlace-b.lastPlace||b.lastPoints-a.lastPoints);
-  cutoff[field[1].points]++;
+  cutoff[field[slots-1].points]++;
   for(const [position,team] of field.entries()){
    const mark=marks[team.index];
-   mark.qualifies+=Number(position<2);
+   mark.qualifies+=Number(position<slots);
    mark.points+=team.points;
    mark.histogram[team.points]++;
   }
@@ -205,7 +205,42 @@ function build({data,overview,analysis,previous}){
   }
   days.push(record);
  }
- return {model:MODEL,runs:RUNS,qualificationSlots:8,strengthOf,days,finalists};
+ const fixture=data.dates.rounds.find(round=>round.stage==='lastChance');
+ let lastChance=null;
+ if(fixture){
+  const newcomers=fixture.seededTeams||[];
+  lastChance={date:fixture.date,time:fixture.time24,matches:fixture.matches,slots:4,newcomers,forecast:[],result:[]};
+  const ids=[...new Set([...newcomers,...(days.at(-1)?.result.slice(2).map(row=>row.id)||[])])];
+  if(ready&&days.length===4&&days.every(day=>day.result.length===LOBBY)&&ids.length===LOBBY&&ids.every(id=>ranks.has(id))){
+   const round=analysis.phases.lastChance?.rounds[0],drops=completeDrops(round);
+   const actual=overview.tables.lastChance?.days?.[0]?.rows||overview.tables.lastChance?.rows||[];
+   const actualIds=actual.map(row=>idOf(row.team));
+   const complete=drops.length===fixture.matches&&actual.length===LOBBY&&new Set(actualIds).size===LOBBY&&
+    actualIds.every(id=>ids.includes(id))&&actual.every((row,i)=>row.position===i+1&&row.matches===fixture.matches);
+   const started=Boolean(round?.teams&&Object.keys(round.teams).length);
+   const archive=previous?.lastChance;
+   const preserve=started&&archive?.forecast.length===LOBBY&&new Set(archive.forecast.map(row=>row.id)).size===LOBBY&&archive.forecast.every(row=>ids.includes(row.id))&&archive.matches===fixture.matches&&archive.slots===4;
+   if(preserve){
+    for(const key of ['forecast','cutoff','basis','model','form','coverage'])lastChance[key]=archive[key];
+   }else{
+    const lastDay=days.at(-1).day;
+    const recent=played.map(batch=>({...batch,phaseTwo:true,weight:.75**(lastDay-batch.round.day)}));
+    const batches=[...phaseOneBatches,...recent];
+    Object.assign(lastChance,simulate(ids,fixture.matches,learn(analysis,batches,ranks),8,4),{basis:started?'retrospective':'published',model:MODEL});
+    lastChance.form=Object.fromEntries(ids.map(id=>{
+     const results=days.flatMap(day=>day.result.filter(row=>row.id===id));
+     const last=results.at(-1);
+     return [id,{days:results.length,matches:results.length*6,points:results.length?roundTo(mean(results.map(row=>row.points))):null,
+      lastPoints:last?.points??null,lastRank:last?.rank??null,phaseTwoWeight:roundTo(100*phaseTwoShare(results.length))}];
+    }));
+    const individual=batches.filter(({round})=>Object.values(round.players).some(rows=>rows.some(row=>row.slice(1).every(Number.isFinite))));
+    lastChance.coverage={collectiveThrough:played.at(-1).round.date,individualThrough:individual.map(({round})=>round.date).sort().at(-1)||null};
+   }
+   lastChance.started=started;
+   if(complete)lastChance.result=actual.map((row,i)=>({id:actualIds[i],rank:row.position,points:row.points}));
+  }
+ }
+ return {model:MODEL,runs:RUNS,qualificationSlots:8,strengthOf,days,finalists,lastChance};
 }
 
 module.exports={FILE,build,learn,phaseTwoShare};

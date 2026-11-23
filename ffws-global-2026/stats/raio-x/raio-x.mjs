@@ -1,5 +1,5 @@
 const BASE='/ffws-global-2026/';
-const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes',projecao:'Projeção da Fase 2',fases:'Entre fases'};
+const views={media:'Campanha',evolucao:'Evolução',rodada:'Recordes',projecao:'Projeções',fases:'Entre fases'};
 const compareLimit=4;
 const phaseLabels={classificatoria:'Fase 1',segundaFase:'Fase 2',lastChance:'Repescagem',final:'Grande Final'};
 const metrics={
@@ -86,6 +86,7 @@ function boot(data){
   state.rodada=Number(params.get('rodada'))||null;
   state.quedas=Number(params.get('quedas'))||null;
   state.projectionDay=state.visao==='projecao'?Number(params.get('dia'))||null:null;
+  state.projectionStage=state.visao==='projecao'&&['lastChance','segundaFase'].includes(params.get('etapa'))?params.get('etapa'):null;
   state.betweenDay=state.visao==='fases'?Number(params.get('dia'))||null:null;
  };
 
@@ -99,6 +100,8 @@ function boot(data){
   if(state.visao==='evolucao'){
    for(const id of state.comparar)next.searchParams.append('comparar',id);
   }
+  if(state.visao==='projecao'&&state.projectionStage)next.searchParams.set('etapa',state.projectionStage);
+  else next.searchParams.delete('etapa');
   if(state.visao==='projecao'&&state.projectionDay)next.searchParams.set('dia',state.projectionDay);
   else if(state.visao==='fases'&&state.betweenDay)next.searchParams.set('dia',state.betweenDay);
   else next.searchParams.delete('dia');
@@ -108,18 +111,25 @@ function boot(data){
  function showProjection(focusDay=false){
   if(projection){
    const {renderProjection,results}=projection;
-   const day=renderProjection(story,results,data.teams,state.projectionDay,selected=>{
+   const day=renderProjection(story,results,data.teams,state.projectionDay,(selected,stage)=>{
     state.projectionDay=selected;
+    state.projectionStage=stage;
     updateUrl();
     showProjection(true);
-   });
-   if(focusDay)story.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});
-   announce.textContent=day?`Projeção da Fase 2 · Dia ${day}`:'Projeção da Fase 2';
+   },state.projectionStage);
+   state.projectionStage=day==='lastChance'?'lastChance':'segundaFase';
+   state.projectionDay=day==='lastChance'?null:day;
+   updateUrl();
+   if(focusDay){
+    const control=story.querySelector('.rx-projection-days [aria-pressed="true"]')||story.querySelector('.rx-projection-stages [aria-pressed="true"]');
+    control?.focus({preventScroll:true});
+   }
+   announce.textContent=day==='lastChance'?'Projeção da repescagem · Top 4':day?`Projeção da Fase 2 · Dia ${day}`:'Projeções';
    return;
   }
-  story.innerHTML='<div class="rx-empty" data-rx-projection-loading><h1 id="rx-headline">Projeção da Fase 2</h1><p role="status">Carregando as chances de classificação…</p></div>';
+  story.innerHTML='<div class="rx-empty" data-rx-projection-loading><h1 id="rx-headline">Projeções</h1><p role="status">Carregando as chances de classificação…</p></div>';
   projectionLoad??=Promise.all([
-   import('./projecao.mjs?v=2'),
+   import('./projecao.mjs?v=3'),
    fetch(new URL('./projecao.json',import.meta.url),{cache:'no-cache'}).then(response=>{
     if(!response.ok)throw Error('Projeções indisponíveis');
     return response.json();
@@ -131,7 +141,7 @@ function boot(data){
   }).catch(()=>{
    projectionLoad=null;
    if(state.visao!=='projecao'||!story.querySelector('[data-rx-projection-loading]'))return;
-   story.innerHTML='<div class="rx-empty"><h1 id="rx-headline">Projeção da Fase 2</h1><p>Não foi possível carregar as projeções.</p><button type="button" class="rx-empty-record">Tentar de novo</button></div>';
+   story.innerHTML='<div class="rx-empty"><h1 id="rx-headline">Projeções</h1><p>Não foi possível carregar as projeções.</p><button type="button" class="rx-empty-record">Tentar de novo</button></div>';
    story.querySelector('button').addEventListener('click',()=>showProjection());
   });
  }

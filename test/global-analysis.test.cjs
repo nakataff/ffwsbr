@@ -33,7 +33,7 @@ async function openPage(t,search=''){
  window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
  window.loadProjectionModule=()=>import(base+'projecao.mjs');
  window.loadBetweenModule=()=>import(base+'entre-fases.mjs');
- window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=2')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=3')",'window.loadBetweenModule()'));
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=3')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=3')",'window.loadBetweenModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
@@ -343,4 +343,85 @@ test('Entre fases shares the day cut and normalizes it when a team did not play 
  assert.equal(document.activeElement.id,'rx-between-day');
  const team=document.querySelector('#rx-between-team');team.value='gundynasty';team.dispatchEvent(new window.Event('change'));
  assert.equal(document.querySelector('#rx-between-day').value,'all');assert.equal(new URL(window.location.href).searchParams.get('dia'),null);
+});
+
+test('Last Chance simulates exactly four slots across ten drops and waits for the full Phase 2 lobby',()=>{
+ const {build}=require('../scripts/build-global-projection.cjs');
+ const published=require(base+'projecao.json');
+ const overview=require('../ffws-global-2026/inicio-resumo.json');
+ const data={teams:require('../ffws-global-2026/teams.json'),dates:require('../ffws-global-2026/dates.json')};
+ const current=build({data,overview,analysis:summary,previous:published});
+ assert.deepEqual(current,published);
+ assert.deepEqual(current.days,published.days); // Historic top-two forecasts stay unchanged.
+ const lc=current.lastChance;
+ assert.equal(lc.matches,10);assert.equal(lc.slots,4);assert.equal(lc.started,false);
+ const core=require('../js/global-camp-core.js'),meta=require('../ffws-global-2026/camp-model.json');
+ assert.deepEqual(lc.forecast.map(row=>row.id).sort(),core.entrants('lastChance-1',{},meta).sort());
+ assert(lc.forecast.every(row=>!current.finalists.some(finalist=>finalist.id===row.id)));
+ assert(Math.abs(lc.forecast.reduce((sum,row)=>sum+row.probability,0)-400)<.1);
+ assert(lc.forecast.every(row=>row.probability>=0&&row.probability<=100&&row.low<row.points&&row.points<row.high));
+ assert(lc.cutoff>0);assert.equal(lc.form.los.phaseTwoWeight,75);assert.equal(lc.form.los.matches,24);
+ assert.equal(lc.form['horaa-esports'].phaseTwoWeight,0);assert.equal(lc.form['stellar-esport'].matches,0);
+ assert.deepEqual(lc.coverage,{collectiveThrough:'2026-11-22',individualThrough:'2026-11-21'});
+ const partial=structuredClone(summary);partial.phases.segundaFase.rounds.at(-1).teams.rrq.pop();
+ assert.equal(build({data,overview,analysis:partial,previous:published}).lastChance.forecast.length,0);
+});
+
+test('Last Chance freezes its pre-start forecast, waits for ten drops and reviews the actual four qualifiers',async t=>{
+ const {build}=require('../scripts/build-global-projection.cjs');
+ const published=require(base+'projecao.json'),analysis=structuredClone(summary);
+ const overview=structuredClone(require('../ffws-global-2026/inicio-resumo.json'));
+ const data={teams:require('../ffws-global-2026/teams.json'),dates:require('../ffws-global-2026/dates.json')};
+ const ids=published.lastChance.forecast.map(row=>row.id).reverse();
+ const round={day:1,date:'2026-11-27',expected:10,players:{},teams:Object.fromEntries(ids.map((id,index)=>[id,Array.from({length:10},(_,i)=>[i+1,12-index/2,6,index===0?1:0])]))};
+ analysis.phases.lastChance.rounds=[round];
+ overview.tables.lastChance.days[0].rows=ids.map((id,index)=>({team:summary.teams[id].name,position:index+1,points:120-index*5,matches:10}));
+ round.teams[ids[0]].pop();
+ const partial=build({data,overview,analysis,previous:published});
+ assert.deepEqual(partial.lastChance.forecast,published.lastChance.forecast);
+ assert.equal(partial.lastChance.result.length,0);assert.equal(partial.lastChance.started,true);
+ assert.deepEqual(partial.lastChance.coverage,published.lastChance.coverage);
+ round.teams[ids[0]].push([10,12,6,1]);
+ const finished=build({data,overview,analysis,previous:published});
+ assert.deepEqual(finished.lastChance.forecast,published.lastChance.forecast);
+ assert.equal(finished.lastChance.basis,'published');assert.equal(finished.lastChance.result.length,12);
+ const {renderProjection}=await import(base+'projecao.mjs');
+ const dom=new JSDOM('<main></main>');t.after(()=>dom.window.close());
+ const container=dom.window.document.querySelector('main');
+ renderProjection(container,finished,summary.teams,null,()=>{},'lastChance');
+ assert.match(container.querySelector('.rx-projection-review').textContent,/0 de 4 favoritos se classificaram/);
+ assert.equal(container.querySelectorAll('.rx-projection-finalists li').length,4);
+ assert.equal(container.querySelectorAll('tr.is-finalist').length,4);
+ const retrospective=build({data,overview,analysis,previous:{...published,lastChance:null}});
+ assert.equal(retrospective.lastChance.basis,'retrospective');
+ assert.deepEqual(retrospective.lastChance.forecast,published.lastChance.forecast); // Future Last Chance scores cannot enter training.
+});
+
+test('Projections opens Last Chance, shares its URL and preserves old Phase 2 links and keyboard focus',async t=>{
+ const {window,document}=await openPage(t,'?visao=projecao');
+ for(let i=0;i<30&&!document.querySelector('[data-projection-stage]');i++)await new Promise(resolve=>setTimeout(resolve,10));
+ const params=()=>new URL(window.location.href).searchParams;
+ assert.equal(document.querySelector('h1').textContent,'Projeção da repescagem');
+ assert.equal(params().get('etapa'),'lastChance');assert.equal(params().get('dia'),null);
+ assert.equal(document.querySelectorAll('.rx-projection-table tbody tr').length,12);
+ assert.equal(document.querySelectorAll('tr.is-favorite').length,4);
+ assert.equal(document.querySelectorAll('.rx-projection-finalists li').length,4);
+ assert.match(document.querySelector('.rx-projection-cutoff').textContent,/4ª vaga/);
+ assert.match(document.querySelector('.rx-projection-coverage').textContent,/22\/11.*21\/11/);
+ assert.equal(document.querySelector('#rx-projection-team'),null);
+ assert.equal(document.querySelectorAll('.rx-projection-days').length,0);
+ assert.equal(document.querySelector('.rx-projection-method').open,false);
+ document.querySelector('[data-projection-stage="segundaFase"]').click();
+ assert.equal(params().get('etapa'),'segundaFase');assert.equal(params().get('dia'),'4');
+ assert.equal(document.activeElement.dataset.projectionDay,'4');
+ document.querySelector('[data-projection-day="2"]').click();
+ assert.equal(document.activeElement.dataset.projectionDay,'2');assert.equal(params().get('dia'),'2');
+ document.querySelector('[data-projection-stage="lastChance"]').click();
+ assert.equal(document.activeElement.dataset.projectionStage,'lastChance');assert.equal(params().get('dia'),null);
+ document.querySelector('[data-view="media"]').click();assert.equal(params().get('etapa'),null);
+ const direct=await openPage(t,'?visao=projecao&etapa=lastChance&dia=2');
+ assert.match(direct.document.querySelector('h1').textContent,/repescagem/);
+ assert.equal(new URL(direct.window.location.href).searchParams.get('dia'),null);
+ const legacy=await openPage(t,'?visao=projecao&dia=2');
+ assert.equal(legacy.document.querySelector('#rx-projection-day-title').textContent,'Dia 2');
 });
