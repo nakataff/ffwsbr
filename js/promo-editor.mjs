@@ -1,0 +1,38 @@
+import {normalize,cardHtml,esc,MAX_CARDS} from './home-promos-model.mjs?v=20261123-admin-v1';
+export function mountPromoEditor({root,store,valid=()=>true}){
+ let config,selected=0,busy=false,disposed=false,dirty=false;
+ const alive=()=>!disposed&&valid();
+ root.innerHTML=`<div class="publi-toolbar"><button type="button" class="admin-btn admin-btn-primary" data-save>Publicar na home</button><button type="button" class="admin-btn admin-btn-ghost" data-load>Recarregar publicados</button><label>Troca no celular<input data-interval type="number" min="4" max="30" value="6"> segundos</label><p class="publi-status" role="status">Carregando cards…</p></div><div class="publi-layout"><div class="publi-list" role="group" aria-label="Cards da home"></div><div class="publi-form-panel"></div></div>`;
+ const q=s=>root.querySelector(s),status=text=>{if(alive())q('.publi-status').textContent=text;};
+ function lock(value){busy=value;root.querySelectorAll('[data-save],[data-load],[data-interval],fieldset').forEach(e=>e.disabled=value);}
+ function list(){q('.publi-list').innerHTML=config.cards.map((c,i)=>`<button type="button" data-card="${i}" aria-pressed="${i===selected}"><strong>${esc(c.title)}</strong><small>${c.enabled?'Visível':'Oculto'} · Posição ${i+1}</small></button>`).join('')+`<button type="button" data-add ${config.cards.length>=MAX_CARDS?'disabled':''}>Adicionar card</button>`;}
+ function preview(){const card=config.cards[selected];q('[data-preview]').innerHTML=cardHtml(normalize({...config,cards:[card]}).cards[0]);}
+ function draw(){
+  if(!alive()||!config)return;selected=Math.min(selected,config.cards.length-1);list();const c=config.cards[selected];q('[data-interval]').value=config.interval;
+  q('.publi-form-panel').innerHTML=`<h2>Editar card ${selected+1}</h2><fieldset><form class="publi-form"><label class="wide">Título<input name="title" maxlength="60" value="${esc(c.title)}" required></label><label>Texto acima do título<input name="kicker" maxlength="48" value="${esc(c.kicker)}" required></label><label>Chamada da ação<input name="action" maxlength="40" value="${esc(c.action)}" required></label><label class="wide">Link de destino<input name="href" type="url" value="${esc(c.href)}" required></label><label>Cor dos textos de destaque<input name="color" type="color" value="${c.color}"></label><label>Cor de fundo<input name="tint" type="color" value="${c.tint}"></label><label class="wide">Link da arte (opcional)<input name="image" type="url" placeholder="https://…" value="${esc(c.image.startsWith('data:')?'':c.image)}"></label><label class="wide">Ou enviar uma arte<input data-art type="file" accept="image/png,image/jpeg,image/webp,image/avif"></label><label class="check wide"><input name="enabled" type="checkbox" ${c.enabled?'checked':''}>Exibir este card na home</label></form><div class="publi-actions"><button type="button" class="admin-btn admin-btn-ghost" data-move="-1" ${selected===0?'disabled':''}>Mover antes</button><button type="button" class="admin-btn admin-btn-ghost" data-move="1" ${selected===config.cards.length-1?'disabled':''}>Mover depois</button><button type="button" class="admin-btn admin-btn-ghost" data-clear>Remover arte</button><button type="button" class="admin-btn admin-btn-ghost" data-remove ${config.cards.length===1?'disabled':''}>Remover card</button></div></fieldset><div class="publi-preview"><p>Prévia · padrão 1200 × 400 px (3:1), igual no PC e celular. A arte ocupa todo o card; o título identifica o anúncio para leitores de tela.</p><div id="home"><div data-preview></div></div></div>`;
+  preview();
+ }
+ async function load(){if(busy)return;lock(true);try{const value=await store.load();if(!alive())return;config=value;selected=0;dirty=false;draw();status('Cards publicados carregados. As edições só aparecem no site depois de publicar.');}catch{status('Não foi possível carregar os cards. Confira sua conexão e use Recarregar publicados.');}finally{if(alive())lock(false);}}
+ async function save(){if(busy||!config)return;let clean;try{clean=normalize(config);}catch(error){status(error.message);return;}lock(true);try{const next=await store.save(clean);if(!alive())return;config=next;dirty=false;draw();try{sessionStorage.removeItem('cff-home-promotions-v1');}catch{}status('Publicado. Na home, atualize a página; outras sessões podem levar até 5 minutos para renovar os cards.');}catch(error){status(error.code==='PERMISSION_DENIED'?'Sem permissão para publicar. Entre com a conta administrativa.':error.message||'Não foi possível publicar. Suas edições continuam aqui.');}finally{if(alive())lock(false);}}
+ function click(event){
+  const button=event.target.closest('button');if(!button||busy)return;
+  if(button.hasAttribute('data-load'))return load();if(button.hasAttribute('data-save'))return save();if(!config)return;
+  if(button.hasAttribute('data-card')){selected=Number(button.dataset.card);draw();return;}
+  if(button.hasAttribute('data-add')&&config.cards.length<MAX_CARDS){config.cards.push({...config.cards[0],id:'card-'+Date.now().toString(36),title:'Divulgue aqui',image:'',enabled:true});selected=config.cards.length-1;}
+  else if(button.hasAttribute('data-move')){const next=selected+Number(button.dataset.move);if(next<0||next>=config.cards.length)return;[config.cards[selected],config.cards[next]]=[config.cards[next],config.cards[selected]];selected=next;}
+  else if(button.hasAttribute('data-clear'))config.cards[selected].image='';
+  else if(button.hasAttribute('data-remove')&&config.cards.length>1)config.cards.splice(selected,1);
+  else return;dirty=true;draw();status('Alterações ainda não publicadas.');
+ }
+ function input(event){if(!config||busy)return;const el=event.target;if(el.hasAttribute('data-interval'))config.interval=Number(el.value);else if(el.name&&el.type!=='file'){config.cards[selected][el.name]=el.type==='checkbox'?el.checked:el.value;}else return;dirty=true;try{preview();status('Alterações ainda não publicadas.');}catch(error){status(error.message);}}
+ async function upload(event){const file=event.target.files?.[0];if(!event.target.hasAttribute('data-art')||!file||busy)return;const id=config.cards[selected].id;lock(true);let bitmap;try{
+  if(file.size>8*1024*1024)throw Error('Envie uma imagem de até 8 MB.');bitmap=await createImageBitmap(file);
+  const canvas=document.createElement('canvas');canvas.width=1200;canvas.height=400;const ctx=canvas.getContext('2d'),scale=Math.min(1200/bitmap.width,400/bitmap.height),width=bitmap.width*scale,height=bitmap.height*scale;
+  ctx.drawImage(bitmap,(1200-width)/2,(400-height)/2,width,height);let image='';for(const quality of [.82,.68,.54,.40]){image=canvas.toDataURL('image/webp',quality);if(image.length<=180000)break;}
+  if(!/^data:image\/webp;base64,/.test(image)||image.length>180000)throw Error('A arte ficou muito pesada. Envie uma versão mais leve.');
+  if(!alive())return;const card=config.cards.find(c=>c.id===id);if(card)card.image=image;dirty=true;draw();status('Arte preparada. Clique em Publicar na home para aplicar.');
+ }catch(error){status(error.message||'Não foi possível abrir a imagem.');}finally{bitmap?.close();if(alive())lock(false);}}
+ const unload=event=>{if(dirty){event.preventDefault();event.returnValue='';}};
+ root.addEventListener('click',click);root.addEventListener('input',input);root.addEventListener('change',upload);root.addEventListener('submit',event=>event.preventDefault());window.addEventListener('beforeunload',unload);
+ load();return()=>{disposed=true;root.removeEventListener('click',click);root.removeEventListener('input',input);root.removeEventListener('change',upload);window.removeEventListener('beforeunload',unload);root.innerHTML='';};
+}

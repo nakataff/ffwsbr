@@ -1,7 +1,7 @@
 (() => {
   'use strict';
-  const card = document.querySelector('#home [data-home-support-card]');
-  if (!card || window.__cffSupportReady) return;
+  const getCard=()=>document.querySelector('#home [data-home-support-card]');
+  if (!getCard() || window.__cffSupportReady) return;
   window.__cffSupportReady = true;
   const KEY = 'cff-support-hidden-until-v1';
   const SESSION = 'cff-support-seen-v1';
@@ -14,9 +14,10 @@
   let dialog;
   const snooze = () => write('localStorage', KEY, Date.now() + DAY);
   // Following the permanent card also silences the invitation.
-  card.querySelector('[data-support-link]')?.addEventListener('click', () => { snooze(); dialog?.close(); });
+  document.getElementById('home-promos')?.addEventListener('click',event=>{if(event.target.closest('[data-home-support-card]')){snooze();dialog?.close();}});
 
   function show() {
+    const card=getCard();if(!card)return;
     if (suppressed() || document.hidden || !document.getElementById('home')?.classList.contains('active')) return;
     // Never queue another invitation behind a welcome or other open overlay.
     if (document.querySelector('dialog[open],.modal-overlay.active,#sidebar-panel.active,.cff-quiz-invite')) return;
@@ -29,11 +30,11 @@
     dialog.setAttribute('aria-describedby', 'cff-support-dialog-description');
     dialog.innerHTML = `
       <button type="button" class="cff-support-close" data-support-dismiss aria-label="Fechar aviso por 1 dia" autofocus><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
-      <span class="home-support-icon" aria-hidden="true">${card.querySelector('.home-support-icon').innerHTML}</span>
+      <span class="home-support-icon" aria-hidden="true">${card.querySelector('.home-support-icon')?.innerHTML||'♡'}</span>
       <span class="cff-support-kicker">Apoio ao projeto</span>
       <h2 id="cff-support-dialog-title">Apoie a Central Free Fire</h2>
       <p id="cff-support-dialog-description">Se a Central Free Fire faz parte do seu dia, você pode ajudar a manter o site e a produção de conteúdo. Qualquer contribuição é bem-vinda.</p>
-      ${card.querySelector('[data-support-link]').outerHTML}
+      <a class="home-support-link" href="${card.getAttribute('href').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" target="_blank" rel="noopener noreferrer">Contribuir via LivePix</a>
       <button type="button" class="cff-support-later" data-support-dismiss>Agora não</button>
       <small class="cff-support-note">Ao fechar, este aviso fica oculto por 1 dia neste navegador.</small>`;
     const dismiss = () => { snooze(); dialog.close(); };

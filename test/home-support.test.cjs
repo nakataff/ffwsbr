@@ -43,7 +43,7 @@ test('the promo strip stays below news and outside both Mundial columns on deskt
 test('invitation opens with safe campaign link and dismisses for exactly 24 hours',()=>{
   const x=setup();
   try {
-    const before=x.w.document.querySelector('[data-home-support-card] [data-support-link]');before.focus();
+    const before=x.w.document.querySelector('[data-home-support-card][data-support-link]');before.focus();
     x.show();const d=x.dialog();assert(d?.open);
     assert.equal(d.querySelector('a').href,'https://livepix.gg/nakataff');
     assert.equal(d.querySelector('a').target,'_blank');
@@ -79,7 +79,7 @@ test('dismissal survives reload; a session expires after one day instead of bloc
 });
 test('clicking the card silences the invitation and cross-tab dismissal closes an open one',()=>{
   const x=setup();try{
-    x.w.document.querySelector('[data-home-support-card] [data-support-link]').dispatchEvent(new x.w.MouseEvent('click',{cancelable:true}));
+    x.w.document.querySelector('[data-home-support-card][data-support-link]').dispatchEvent(new x.w.MouseEvent('click',{cancelable:true,bubbles:true}));
     x.show();assert(!x.dialog());
     x.advance(DAY+1);x.show();assert(x.dialog()?.open);
     x.w.dispatchEvent(new x.w.StorageEvent('storage',{key:'cff-support-hidden-until-v1',newValue:String(2000000000000+3*DAY)}));

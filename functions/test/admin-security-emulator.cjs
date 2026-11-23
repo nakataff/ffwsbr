@@ -18,6 +18,15 @@ async function expect(status,path,auth,body,method){const response=await request
   const admin=token('real-admin'),fake=token('impostor','admin@centralfreefire.com.br',true),alice=token('alice','alice@example.test');
   await expect(200,'adminTasks',admin);
   for(const auth of [fake,alice,null]){await expect(401,'adminTasks',auth);await expect(401,'adminTasks/injected',auth,{});}
+  const card={id:'test',kicker:'Publicidade',title:'Teste de card',action:'Abrir',href:'https://example.test/',color:'#abcdef',tint:'#102030',image:'',enabled:true};
+  const promotions={revision:1,interval:6,updatedAt:Date.now(),cards:[card]};
+  await expect(200,'homePromotions',null);
+  for(const auth of [fake,alice,null])await expect(401,'homePromotions',auth,promotions);
+  await expect(200,'homePromotions',admin,promotions);
+  await expect(401,'homePromotions',admin,promotions);
+  await expect(401,'homePromotions',admin,{...promotions,revision:2,cards:[{...card,href:'javascript:alert(1)'}]});
+  await expect(401,'homePromotions',admin,{...promotions,revision:2,cards:Array.from({length:9},()=>card)});
+  await expect(200,'homePromotions',admin,{...promotions,revision:2,cards:[{...card,enabled:false}]});
   const camp={revision:'01234567-0123-0123-0123-0123456789ab',updatedAt:1,json:'{"kills":{"ag.al":3}}'};
   await expect(200,'adminCampDraft/current',admin,camp);
   await expect(200,'adminCampDraft/current',admin);

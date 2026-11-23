@@ -347,3 +347,10 @@
 @media(prefers-reduced-motion:reduce){
   body .cff-bottom-navigation,body button.cff-bottom-navigation-toggle svg{transition:none!important}
 }
+
+/* A sidebar or full-screen navigation takes priority over the bottom dock control. */
+body:has(#sidebar-panel.active) .cff-bottom-navigation-toggle,
+body:has(#sidebar-panel.open) .cff-bottom-navigation-toggle,
+body:has(#cff-public-sidebar.is-open) .cff-bottom-navigation-toggle,
+body:has(#sidebar-overlay.active) .cff-bottom-navigation-toggle,
+body:has(.cff-public-overlay.is-open) .cff-bottom-navigation-toggle { display:none!important; }

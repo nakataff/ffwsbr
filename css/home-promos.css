@@ -1,9 +1,9 @@
 /* Standard artwork slot: 1200 × 400 (3:1), shared by desktop and mobile. */
-#home .home-promos { margin: 0 0 24px; min-width: 0; }
+#home .home-promos { width: min(98%,1320px); margin: 0 auto 24px; min-width: 0; }
 .home-promo-track { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; min-width: 0; }
 #home .home-promo-card {
   --promo-color: #c7a3d6; --promo-tint: #1c1729;
-  position: relative; display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; display: flex; color: #edf2f8; text-decoration: none; overflow: hidden; flex-direction: column; justify-content: space-between;
   aspect-ratio: 3 / 1; min-width: 0; box-sizing: border-box; gap: 6px;
   padding: 12px 14px; border: 1px solid color-mix(in srgb,var(--promo-color) 26%,#18222c);
   border-radius: 11px; background: linear-gradient(115deg,var(--promo-tint),#101722);
@@ -46,3 +46,12 @@
   #home .home-promo-actions a { font-size: .8125rem; }
 }
 @media (prefers-reduced-motion:reduce) { .home-promo-track { scroll-behavior: auto; } }
+
+#home .home-promos[hidden] { display: none; }
+#home a.home-promo-card { cursor: pointer; }
+#home a.home-promo-card:hover { border-color: var(--promo-color); }
+#home a.home-promo-card:focus-visible { outline: 2px solid #b7e5f9; outline-offset: 3px; }
+#home .home-promo-action { display: block; color: var(--promo-color); font-size: .875rem; font-weight: 600; line-height: 1.35; }
+#home .home-promo-card.has-art { padding: 0; }
+#home .home-promo-card.has-art .home-promo-art { position: absolute; inset: 0; }
+@media(max-width:900px) { #home .home-promos { width: 100%; } }

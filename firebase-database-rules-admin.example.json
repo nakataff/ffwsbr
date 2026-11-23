@@ -162,6 +162,59 @@
     "serverSecurity": {
       ".read": false,
       ".write": false
+    },
+    "homePromotions": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email == 'admin@centralfreefire.com.br' && auth.uid == root.child('serverSecurity').child('adminUid').val())",
+      ".validate": "newData.hasChildren(['revision','interval','cards','updatedAt']) && newData.child('revision').isNumber() && newData.child('revision').val() == (data.exists() ? data.child('revision').val() + 1 : 1) && newData.child('interval').isNumber() && newData.child('interval').val() >= 4 && newData.child('interval').val() <= 30 && newData.child('updatedAt').isNumber()",
+      "revision": {
+        ".validate": "newData.val() % 1 == 0"
+      },
+      "interval": {
+        ".validate": "newData.val() % 1 == 0"
+      },
+      "updatedAt": {
+        ".validate": "newData.val() <= now"
+      },
+      "cards": {
+        ".validate": "newData.numChildren() >= 1 && newData.numChildren() <= 8",
+        "$index": {
+          ".validate": "$index.matches(/^[0-7]$/) && newData.hasChildren(['id','kicker','title','action','href','color','tint','image','enabled'])",
+          "id": {
+            ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9-]{1,40}$/)"
+          },
+          "kicker": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 48"
+          },
+          "title": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 60"
+          },
+          "action": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40"
+          },
+          "href": {
+            ".validate": "newData.isString() && newData.val().length <= 1000 && newData.val().beginsWith('https://')"
+          },
+          "color": {
+            ".validate": "newData.isString() && newData.val().matches(/^#[a-fA-F0-9]{6}$/)"
+          },
+          "tint": {
+            ".validate": "newData.isString() && newData.val().matches(/^#[a-fA-F0-9]{6}$/)"
+          },
+          "image": {
+            ".validate": "newData.isString() && newData.val().length <= 180000 && (newData.val() == '' || newData.val().beginsWith('https://') || newData.val().matches(/^data:image\\/webp;base64,[A-Za-z0-9+\\/=]+$/))"
+          },
+          "enabled": {
+            ".validate": "newData.isBoolean()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "$other": {
+        ".validate": false
+      }
     }
   }
 }

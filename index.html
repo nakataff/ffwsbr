@@ -59,7 +59,7 @@
 <link rel="stylesheet" href="css/bundle.min.css?v=20260904-sidebar-nested-v22">
 <link rel="stylesheet" href="css/team-standard.css?v=20260608-team-standard-v5" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/home-ffws-s2.css?v=20261028-live-green-v1">
-<link rel="stylesheet" href="css/home-promos.css?v=20261123-compact-v1">
+<link rel="stylesheet" href="css/home-promos.css?v=20261123-admin-v1">
 <link rel="stylesheet" href="css/creator-about.css?v=20261028-creator-v2">
 <link rel="stylesheet" href="/css/home-share-cards.css?v=20261020-feed-stories-v1">
 <link rel="stylesheet" href="css/site-nav-freeze.css?v=20260901-nav-unified-v11">
@@ -569,7 +569,7 @@
 #home .home-s2-world-confirmed img{object-fit:contain}
 @media(max-width:600px){#home .home-s2-champion-banner{grid-template-columns:64px minmax(0,1fr);gap:14px;padding:18px}#home .home-s2-champion-logo{width:64px;height:64px}#home .home-s2-champion-copy .home-s2-broadcast-kicker{font-size:.64rem;line-height:1.5}#home .home-s2-champion-copy h2{font-size:1.45rem}#home .home-s2-champion-copy p{font-size:.82rem}#home .home-s2-world-confirmed span{gap:5px;padding:7px 8px;font-size:.7rem}#home .home-s2-world-confirmed>div{gap:7px}}
 </style>
-<link rel="stylesheet" href="/css/shared-navigation.css?v=20261123-dock-edge-v1"><link rel="stylesheet" href="css/home-global-finals.css?v=20261118-rodadas-v1">
+<link rel="stylesheet" href="/css/shared-navigation.css?v=20261123-dock-sidebar-v2"><link rel="stylesheet" href="css/home-global-finals.css?v=20261118-rodadas-v1">
 <link rel="stylesheet" href="/css/quiz-invite.css?v=20261019-quiz-invite-v2"><script defer src="/js/quiz-invite.js?v=20261019-mixed-challenges-v1"></script><link rel="stylesheet" href="/css/home-live-tournaments.css?v=20261019-tournaments-v1">
 <link rel="stylesheet" href="css/interaction-guide.css?v=20261029-interaction-guide-v1">
 <script defer src="js/interaction-guide.js?v=20261101-code-policy-v1"></script>
@@ -662,24 +662,14 @@
 
     <section class="home-promos" id="home-promos" aria-label="Apoio e divulgação">
         <div class="home-promo-track" id="home-promo-track">
-            <article class="home-promo-card home-promo-instagram" data-promo-label="Divulgação no Instagram">
-                <small>Divulgação no Instagram</small>
-                <h2>Divulgue no @nakataff</h2>
-                <div class="home-promo-actions"><a href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=5521994480776&amp;text=Oi%2C%20quero%20saber%20a%20tabela%20de%20pre%C3%A7os%20de%20divulga%C3%A7%C3%A3o%20no%20Instagram%20%40nakataff&amp;type=phone_number" target="_blank" rel="noopener noreferrer">Consultar valores</a><a class="home-promo-secondary" href="https://www.instagram.com/nakataff/" target="_blank" rel="noopener noreferrer">Ver perfil</a></div>
-            </article>
-            <article class="home-promo-card home-promo-support" data-home-support-card data-promo-label="Apoie a Central Free Fire">
-                <small><span class="home-support-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0l-1 1-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></span>Apoio ao projeto</small>
-                <h2>Apoie a Central Free Fire</h2>
-                <div class="home-promo-actions"><a class="home-support-link" data-support-link href="https://livepix.gg/nakataff" target="_blank" rel="noopener noreferrer">Contribuir via LivePix</a></div>
-            </article>
-            <article class="home-promo-card home-promo-space-blue" data-promo-label="Espaço para divulgação">
-                <small>Espaço disponível</small><h2>Divulgue aqui</h2>
-                <div class="home-promo-actions"><a href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=5521994480776&amp;text=Oi%2C%20quero%20saber%20a%20tabela%20de%20pre%C3%A7os%20de%20divulga%C3%A7%C3%A3o%20no%20Instagram%20%40nakataff&amp;type=phone_number" target="_blank" rel="noopener noreferrer" aria-label="Anunciar neste espaço pelo WhatsApp">Anunciar meu projeto</a></div>
-            </article>
-            <article class="home-promo-card home-promo-space-gold" data-promo-label="Divulgação de marcas e campeonatos">
-                <small>Marcas e campeonatos</small><h2>Divulgue aqui</h2>
-                <div class="home-promo-actions"><a href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=5521994480776&amp;text=Oi%2C%20quero%20saber%20a%20tabela%20de%20pre%C3%A7os%20de%20divulga%C3%A7%C3%A3o%20no%20Instagram%20%40nakataff&amp;type=phone_number" target="_blank" rel="noopener noreferrer" aria-label="Consultar divulgação de marcas e campeonatos pelo WhatsApp">Conhecer os espaços</a></div>
-            </article>
+<a class="home-promo-card" href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=5521994480776&amp;text=Oi%2C%20quero%20saber%20a%20tabela%20de%20pre%C3%A7os%20de%20divulga%C3%A7%C3%A3o%20no%20Instagram%20%40nakataff&amp;type=phone_number" target="_blank" rel="noopener noreferrer" data-promo-label="Divulgue no @nakataff" aria-label="Divulgue no @nakataff — Consultar valores" style="--promo-color:#c7a3d6;--promo-tint:#1c1729" >
+ <small>Divulgação no Instagram</small><h2>Divulgue no @nakataff</h2><span class="home-promo-action">Consultar valores</span></a>
+<a class="home-promo-card home-promo-support" href="https://livepix.gg/nakataff" target="_blank" rel="noopener noreferrer" data-promo-label="Apoie a Central Free Fire" aria-label="Apoie a Central Free Fire — Contribuir via LivePix" style="--promo-color:#9ad8c3;--promo-tint:#132c29" data-home-support-card data-support-link>
+ <small><span class="home-support-icon" aria-hidden="true">♡</span>Apoio ao projeto</small><h2>Apoie a Central Free Fire</h2><span class="home-promo-action">Contribuir via LivePix</span></a>
+<a class="home-promo-card" href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=5521994480776&amp;text=Oi%2C%20quero%20saber%20a%20tabela%20de%20pre%C3%A7os%20de%20divulga%C3%A7%C3%A3o%20no%20Instagram%20%40nakataff&amp;type=phone_number" target="_blank" rel="noopener noreferrer" data-promo-label="Divulgue aqui" aria-label="Divulgue aqui — Anunciar meu projeto" style="--promo-color:#94c4dd;--promo-tint:#142430" >
+ <small>Espaço disponível</small><h2>Divulgue aqui</h2><span class="home-promo-action">Anunciar meu projeto</span></a>
+<a class="home-promo-card" href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=5521994480776&amp;text=Oi%2C%20quero%20saber%20a%20tabela%20de%20pre%C3%A7os%20de%20divulga%C3%A7%C3%A3o%20no%20Instagram%20%40nakataff&amp;type=phone_number" target="_blank" rel="noopener noreferrer" data-promo-label="Divulgue aqui" aria-label="Divulgue aqui — Conhecer os espaços" style="--promo-color:#d7c39a;--promo-tint:#2b261b" >
+ <small>Marcas e campeonatos</small><h2>Divulgue aqui</h2><span class="home-promo-action">Conhecer os espaços</span></a>
         </div>
         <div class="home-promo-controls" hidden>
             <div class="home-promo-dots" role="group" aria-label="Escolher card"></div>
@@ -1926,7 +1916,7 @@
 
 
 <script defer src="js/player-photo-resolver.min.js?v=20261029-laff-photos-v1"></script>
-<script defer src="/js/shared-navigation.js?v=20261123-dock-edge-v1"></script>
+<script defer src="/js/shared-navigation.js?v=20261123-dock-sidebar-v2"></script>
 <script defer src="js/site-shell-fast.min.js?v=20261122-fase2-fechada-v1"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
@@ -1951,8 +1941,9 @@
 <script type="module" src="/js/public-account.js?v=20261111-account-on-demand-v1"></script>
 <script defer src="js/notas-cff-info.js?v=20261012-global-v1"></script>
 <script defer src="js/home-global-finals.js?v=20261123-promos-v1"></script>
-<script defer src="js/home-promos.js?v=20261123-compact-v1"></script>
-<script defer src="js/home-support.js?v=20261123-livepix-v1"></script>
+<script defer src="js/home-promos.js?v=20261123-admin-v1"></script>
+<script type="module" src="js/home-promos-public.mjs?v=20261123-admin-v1"></script>
+<script defer src="js/home-support.js?v=20261123-publi-v1"></script>
 <button id="home-chat-launch" type="button" aria-label="Abrir chat global" hidden>Chat global</button>
 <script type="module" src="/js/home-chat-launch.mjs?v=20261111-home-v1"></script><script type="module" src="/js/career-public.js?v=20261021-tournament-assets-v1"></script>
 </body>

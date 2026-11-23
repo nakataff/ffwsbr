@@ -16,7 +16,7 @@ function fixture({mobile=true,reduced=false,collapsed=false}={}){
 }
 test('compact promos use four unique themes, correct destinations and do not contact any service',()=>{
  const f=fixture({mobile:false});try{
-  assert.equal(f.cards.length,4);assert.equal(new Set(f.cards.map(c=>c.className)).size,4);
+  assert.equal(f.cards.length,4);assert.equal(new Set(f.cards.map(c=>c.getAttribute('style'))).size,4);
   const support=f.host.querySelector('[data-support-link]');assert.equal(support.href,'https://livepix.gg/nakataff');
   for(const a of f.host.querySelectorAll('a[href*="whatsapp"]')){const u=new URL(a.href);assert.equal(u.searchParams.get('phone'),'5521994480776');assert.match(u.searchParams.get('text'),/Instagram @nakataff/);assert(a.relList.contains('noopener'));}
   assert.equal(f.timers.size,0);assert(f.cards.every(card=>!card.inert&&!card.hasAttribute('aria-hidden')));
@@ -57,4 +57,14 @@ test('bottom dock keeps its five links and stored preference with an icon-only, 
    assert.equal(toggle.getAttribute('aria-controls'),nav.id);assert.match(toggle.getAttribute('aria-label'),/menu inferior/);
   }finally{w.close();}
  }
+});
+
+test('publishing a new set remounts the carousel without stacking timers and every card is a single direct link',()=>{
+ const f=fixture();try{
+  assert(f.cards.every(card=>card.tagName==='A'&&card.href.startsWith('https://')&&!card.querySelector('a')));
+  assert.equal(f.host.querySelectorAll('a').length,4);assert.equal(f.cards[0].querySelector('.home-promo-action').textContent,'Consultar valores');
+  for(let i=0;i<5;i++)f.host.dispatchEvent(new f.w.Event('cff:promos-updated'));
+  assert.equal(f.timers.size,1);assert.equal(f.host.querySelectorAll('[data-promo-index]').length,4);
+  f.track.innerHTML='';f.host.hidden=true;f.host.dispatchEvent(new f.w.Event('cff:promos-updated'));assert.equal(f.timers.size,0);
+ }finally{f.close();}
 });
