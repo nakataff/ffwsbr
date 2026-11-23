@@ -1336,7 +1336,7 @@
         ".validate": "newData.val() <= now"
       },
       "cards": {
-        ".validate": "newData.numChildren() >= 1 && newData.numChildren() <= 8",
+        ".validate": "newData.hasChild('0')",
         "$index": {
           ".validate": "$index.matches(/^[0-7]$/) && newData.hasChildren(['id','kicker','title','action','href','color','tint','image','enabled'])",
           "id": {

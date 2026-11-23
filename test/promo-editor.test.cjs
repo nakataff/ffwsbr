@@ -35,5 +35,5 @@ test('editor previews changes, reorders, hides and saves actual data while prese
 test('the admin policy exposes only promotions publicly and pins writes to the existing owner UID in both rule files',()=>{
  const rules=JSON.parse(fs.readFileSync('database.rules.json')).rules.homePromotions,example=JSON.parse(fs.readFileSync('firebase-database-rules-admin.example.json')).rules.homePromotions;
  assert.deepEqual(rules,example);assert.equal(rules['.read'],true);assert.match(rules['.write'],/auth.uid == root.child\('serverSecurity'\).child\('adminUid'\).val\(\)/);
- assert.equal(rules.$other['.validate'],false);assert.match(rules.cards['.validate'],/<= 8/);assert.match(rules.cards.$index.href['.validate'],/https/);
+ assert.equal(rules.$other['.validate'],false);assert.match(rules.cards.$index['.validate'],/0-7/);assert.match(rules.cards.$index.href['.validate'],/https/);
 });
