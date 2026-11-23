@@ -23,27 +23,29 @@ function setup({hidden=false, blocked=false, local={}, session={}, unavailable=f
   run();
   return {w,dom,run,advance:ms=>now+=ms,show:()=>timer?.(),dialog:()=>w.document.getElementById('cff-support-dialog')};
 }
-test('the Mundial stays above support on desktop, mobile and resize',()=>{
+test('the promo strip stays below news and outside both Mundial columns on desktop and mobile',()=>{
   const x=setup();
   try {
     let mobile=false,change;
     x.w.matchMedia=()=>({get matches(){return mobile;},addEventListener:(_,fn)=>change=fn});
     x.w.setInterval=()=>1;x.w.clearInterval=()=>{};
     vm.runInContext(fs.readFileSync('js/home-global-finals.js','utf8'),x.dom.getInternalVMContext());
-    const card=x.w.document.querySelector('.home-support'),board=x.w.document.querySelector('#home-global-classified');
-    for (const value of [false,true,false]) {
+    const strip=x.w.document.getElementById('home-promos'),board=x.w.document.getElementById('home-global-classified');
+    for(const value of [false,true,false]){
       mobile=value;change();
-      assert.equal(board.nextElementSibling,card);
-      assert(card.parentElement.matches(mobile?'.home-left-rail':'.home-center-column'));
+      assert.equal(strip.previousElementSibling.id,'news-hero-container');
+      assert(strip.nextElementSibling.classList.contains('home-main-layout'));
+      assert(board.parentElement.matches(mobile?'.home-left-rail':'.home-center-column'));
+      assert.equal(x.w.document.querySelectorAll('[data-home-support-card]').length,1);
     }
-  } finally {x.w.close();}
+  }finally{x.w.close();}
 });
 test('invitation opens with safe campaign link and dismisses for exactly 24 hours',()=>{
   const x=setup();
   try {
-    const before=x.w.document.querySelector('.home-support a');before.focus();
+    const before=x.w.document.querySelector('[data-home-support-card] [data-support-link]');before.focus();
     x.show();const d=x.dialog();assert(d?.open);
-    assert.equal(d.querySelector('a').href,'https://vaquinha.livepix.gg/central-free-fire');
+    assert.equal(d.querySelector('a').href,'https://livepix.gg/nakataff');
     assert.equal(d.querySelector('a').target,'_blank');
     assert(d.querySelector('a').relList.contains('noopener'));
     assert(d.textContent.includes('por 1 dia'));assert(!d.textContent.includes('7 dias'));
@@ -77,7 +79,7 @@ test('dismissal survives reload; a session expires after one day instead of bloc
 });
 test('clicking the card silences the invitation and cross-tab dismissal closes an open one',()=>{
   const x=setup();try{
-    x.w.document.querySelector('.home-support a').dispatchEvent(new x.w.MouseEvent('click',{cancelable:true}));
+    x.w.document.querySelector('[data-home-support-card] [data-support-link]').dispatchEvent(new x.w.MouseEvent('click',{cancelable:true}));
     x.show();assert(!x.dialog());
     x.advance(DAY+1);x.show();assert(x.dialog()?.open);
     x.w.dispatchEvent(new x.w.StorageEvent('storage',{key:'cff-support-hidden-until-v1',newValue:String(2000000000000+3*DAY)}));

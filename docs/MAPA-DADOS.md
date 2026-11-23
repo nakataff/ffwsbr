@@ -723,11 +723,10 @@ metodologia independente.
   por data de apoio e depois por cadastro. Só publica ID, nome público e data.
   A memória do serviço, o navegador e a borda reutilizam cache de 60 segundos;
   edição pode levar até dois minutos para aparecer. Não lê pessoas ou carteiras.
-- `js/home-supporters.js` e o bloco `data-home-supporters` em `index.html`:
-  nomes dentro do card da vaquinha, carregados uma vez ao ficar visível na home.
-  Sem polling, lista completa ou dependência da LivePix durante a visita.
-  Nenhum exemplo de teste é gravado no mural público. Na ausência de cadastros,
-  fica uma mensagem de agradecimento e o link para contribuir continua ativo.
+- A faixa compacta de apoio substituiu o mural público da home em 23/11/2026.
+  `index.html` não inclui mais `data-home-supporters` nem carrega
+  `js/home-supporters.js`. O endpoint e os registros administrativos permanecem;
+  a visita à home não consulta os apoiadores.
 - Testes: `functions/test/community-supporters.test.cjs` (autorização, cache,
   publicação limitada, ocultação e retries idempotentes) e
   `test/community-supporters-ui.test.cjs` (home, painel e limpeza ao sair).
@@ -753,7 +752,7 @@ metodologia independente.
   comprovantes, nomes dos doadores, textos de mensagens ou registros brutos.
 - O vínculo dos apoios de vaquinha à API e as preferências de anonimato ainda
   precisam ser validados com registros reais. **Publicação automática desativada**.
-  O mural público e o cadastro manual continuam funcionando como antes.
+  O cadastro manual permanece disponível; o mural não é mais exibido na home.
 - Fontes: `https://docs.livepix.gg/api`,
   `https://api.livepix.gg/open-api.json` e
   `https://vaquinha.livepix.gg/central-free-fire` (consulta pública em 23/10/2026).
@@ -853,3 +852,11 @@ O painel sincroniza somente o rascunho no Firebase privado `adminCampDraft/curre
 - Recuperação: não apagar/recriar a conta administrativa sem atualizar o UID por um operador com IAM do Firebase e republicar os dois Workers. Uma mudança detectada interrompe o deploy em vez de conceder acesso à conta nova.
 
 O endpoint legado `campGithubBackup` retornou 404 nesta revisão. O código de validação por UID está preparado em `functions/index.js`; o deploy das regras não cria nem ativa essa função. Sua ativação continua no workflow manual de backup e depende das permissões/APIs do Google Cloud. A publicação de regras e dos Workers é independente desse serviço.
+
+### Faixa de apoio e divulgação da home
+
+`index.html` monta quatro cards estáticos logo após `#news-hero-container`, fora das colunas do Mundial. `css/home-promos.css` mantém o padrão de arte **1200 × 400 px (3:1)**: quatro colunas em telas largas, duas em telas intermediárias e um card por vez no celular. As cores são discretas e distintas. `js/home-promos.js` alterna a cada seis segundos somente no mobile; permite deslizar, escolher um card e pausar. Interação, foco, aba oculta, saída da home, card fora da tela e movimento reduzido suspendem a troca automática. Não usa API, cookies ou novos dados remotos.
+
+A contribuição usa `https://livepix.gg/nakataff`, inclusive no convite existente. O reconhecimento público de apoiadores saiu da home junto com a consulta `home-supporters.js`; o cadastro e o histórico administrativo continuam intactos. Divulgação e espaços disponíveis usam o WhatsApp de contato já informado. As artes futuras devem usar a mesma proporção e conter pouco texto.
+
+`js/shared-navigation.js` e `css/shared-navigation.css` controlam a barra inferior pública. A aba lateral de 44 × 44 px, sem texto visual, usa chevrons opostos para abrir/fechar, cerca de 10% da altura da tela acima da posição anterior. Mantém os cinco atalhos, rótulos acessíveis e a preferência local existente. Os consumidores dos dois arquivos recebem a mesma versão de cache.

@@ -6,9 +6,7 @@
   const mobile=window.matchMedia('(max-width: 900px)');
   function place(){
     const target=mobile.matches?rail:center;
-    const support=document.querySelector('#home .home-support');
     target.insertBefore(board,target.firstElementChild);
-    if(support)board.after(support);
   }
   place();
   mobile.addEventListener('change',place);
