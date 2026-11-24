@@ -87,6 +87,7 @@
  .hall-tool-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .hall-tool-control{flex:auto}.hall-tool-control:first-child{grid-column:1/-1}
  .hall-tool-check{grid-column:1/-1;min-height:33px}
+ #hall-evolutions-section>.table-container{display:none}
  .hall-evo-table{display:none}.hall-evo-mobile{display:grid;gap:8px}
  #hall-export-people{grid-template-columns:1fr 1fr}
  #hall-export-fields{grid-template-columns:1fr 1fr}
