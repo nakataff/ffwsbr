@@ -11,15 +11,9 @@ const fieldDefs=Object.freeze([
  {key:'name',label:'Jogador',width:23},{key:'team',label:'Equipe',width:25},
  {key:'kills',label:'Abates',width:12},{key:'matches',label:'Quedas',width:12},
  {key:'avg',label:'Média',width:13},{key:'edition',label:'Edição',width:18},
- {key:'year',label:'Ano',width:12},{key:'position',label:'Posição no torneio',width:22},
- {key:'allTeams',label:'Todas equipes',width:34,career:true},
- {key:'careerMatches',label:'Quedas na carreira',width:20,career:true},
- {key:'careerAvg',label:'Média da carreira',width:21,career:true},
- {key:'careerEditions',label:'Edições jogadas',width:19,career:true},
- {key:'careerYears',label:'Anos de atuação',width:28,career:true},
- {key:'careerTitles',label:'Títulos',width:13,career:true}
+ {key:'year',label:'Ano',width:12},{key:'position',label:'Posição no torneio',width:22}
 ]);
-const state={ready:false,bootPromise:null,rows:[],players:new Map(),editions:[],maxMatches:new Map(),evoMetric:'avg',evoMin:true,evoSearch:'',evoPage:0,evoSize:10,chosen:new Set(),filteredName:'',chosenEditions:new Set(),fields:fieldDefs.map(f=>({...f,active:!f.career})),sort:'player-asc',layout:'single',placements:{},champions:{},career:new Map(),aliasKeys:new Map(),positionSources:{},previewPage:0,previewSize:10,exportBusy:false};
+const state={ready:false,bootPromise:null,rows:[],players:new Map(),editions:[],maxMatches:new Map(),evoMetric:'avg',evoMin:true,evoSearch:'',evoPage:0,evoSize:10,chosen:new Set(),filteredName:'',chosenEditions:new Set(),fields:fieldDefs.map(f=>({...f,active:true})),includeCareerSummary:true,sort:'player-asc',layout:'single',placements:{},champions:{},career:new Map(),aliasKeys:new Map(),positionSources:{},previewPage:0,previewSize:10,exportBusy:false};
 const numFmt=value=>num(value).toLocaleString('pt-BR');
 const avgFmt=value=>num(value).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 function setNote(id,message,error=false){const el=$(id);if(el){el.textContent=message;el.classList.toggle('is-error',error);}}
@@ -71,7 +65,7 @@ function rebuildCareer(){
   if(state.champions[row.edition]&&teamMatch(row.team,state.champions[row.edition]))item.titles++;
  }
  state.career=new Map([...grouped].map(([key,item])=>[key,{
-  allTeams:[...item.teams.values()].join(' · '),careerMatches:item.matches,
+  allTeams:[...item.teams.values()].join(' · '),careerKills:item.kills,careerMatches:item.matches,
   careerAvg:item.matches?item.kills/item.matches:0,careerEditions:item.editions.size,
   careerYears:[...item.years].sort((a,b)=>a-b).join(', '),
   careerTitles:item.titles
@@ -141,12 +135,7 @@ function renderPeople(){
  $('hall-export-csv').disabled=state.exportBusy||!state.chosen.size;
 }
 function renderFields(){
- const careerPreset=$('hall-export-career-all');
- if(careerPreset){
-  const career=state.fields.filter(f=>f.career);
-  careerPreset.checked=career.every(f=>f.active);
-  careerPreset.indeterminate=career.some(f=>f.active)&&!careerPreset.checked;
- }
+ $('hall-export-career-all').checked=state.includeCareerSummary;
  $('hall-export-fields').innerHTML=state.fields.map((field,i)=>'<div class="hall-export-field-row"><label><input type="checkbox" data-hall-field="'+field.key+'" '+(field.active?'checked':'')+'><span>'+esc(field.label)+'</span></label>'+
  '<div><button type="button" title="Subir coluna" aria-label="Mover '+esc(field.label)+' para cima" data-hall-move="'+field.key+'" data-step="-1" '+(i===0?'disabled':'')+'>↑</button>'+
  '<button type="button" title="Descer coluna" aria-label="Mover '+esc(field.label)+' para baixo" data-hall-move="'+field.key+'" data-step="1" '+(i===state.fields.length-1?'disabled':'')+'>↓</button></div></div>').join('');
@@ -167,6 +156,18 @@ function rankFor(row){
  return Number.isInteger(place)&&place>0?place:null;
 }
 function recordValue(row,key){
+ if(row.isCareerSummary){
+  const career=state.career.get(row.key)||{};
+  if(key==='name')return row.name;
+  if(key==='team')return career.allTeams||'—';
+  if(key==='kills')return career.careerKills??0;
+  if(key==='matches')return career.careerMatches??0;
+  if(key==='avg')return Math.round((career.careerAvg??0)*10000)/10000;
+  if(key==='edition')return 'RESUMO DA CARREIRA · '+(career.careerEditions??0)+' edições';
+  if(key==='year')return career.careerYears||'—';
+  if(key==='position')return (career.careerTitles??0)+' título(s)';
+  return null;
+ }
  if(key==='position')return rankFor(row);
  if(key==='name')return row.name;
  if(key==='team')return row.team;
@@ -175,9 +176,7 @@ function recordValue(row,key){
  if(key==='avg')return Math.round(row.avg*10000)/10000;
  if(key==='edition')return row.edition;
  if(key==='year')return row.year||null;
- const career=state.career.get(row.key)||{};
- if(key==='careerAvg')return career.careerAvg===undefined?null:Math.round(career.careerAvg*10000)/10000;
- return career[key]??null;
+ return null;
 }
 function sortedRows(){
  const rows=state.rows.filter(row=>state.chosen.has(row.key)&&state.chosenEditions.has(row.edition));
@@ -194,18 +193,38 @@ function sortedRows(){
  });
  return rows;
 }
+// Cada jogador recebe uma linha extra após sua última edição exibida.
+// Os totais vêm do histórico completo, mesmo quando o filtro mostra menos edições.
+function withCareerSummaries(records){
+ if(!state.includeCareerSummary||!records.length)return records.slice();
+ const groups=new Map();
+ for(const row of records){
+  const group=groups.get(row.key)||[];
+  group.push(row);
+  groups.set(row.key,group);
+ }
+ const output=[];
+ for(const group of groups.values()){
+  group.sort((a,b)=>a.order-b.order||compare(a.edition,b.edition));
+  output.push(...group);
+  const last=group[group.length-1];
+  output.push({...last,isCareerSummary:true});
+ }
+ return output;
+}
+function exportedRows(){return withCareerSummaries(sortedRows());}
 function pickedFields(){return state.fields.filter(field=>field.active);}
 function renderPreview(){
  if(!state.ready)return;
- const cols=pickedFields(),rows=sortedRows(),head=$('hall-export-preview-head'),body=$('hall-export-preview-body');
+ const cols=pickedFields(),rows=exportedRows(),head=$('hall-export-preview-head'),body=$('hall-export-preview-body');
  const pages=Math.max(1,Math.ceil(rows.length/state.previewSize));
  state.previewPage=Math.max(0,Math.min(state.previewPage,pages-1));
  const start=state.previewPage*state.previewSize,shown=rows.slice(start,start+state.previewSize);
  head.innerHTML=cols.map(c=>'<th>'+esc(c.label)+'</th>').join('');
- body.innerHTML=shown.map(row=>'<tr>'+cols.map(c=>{
+ body.innerHTML=shown.map(row=>'<tr'+(row.isCareerSummary?' class="hall-export-summary-row" title="Resumo de todas as edições disponíveis na carreira"':'')+'>'+cols.map(c=>{
   const v=recordValue(row,c.key);
   const label=v===null?'—':['avg','careerAvg'].includes(c.key)?avgFmt(v):v;
-  const tip=c.key==='position'&&state.positionSources[row.edition]?' title="'+esc(state.positionSources[row.edition])+'"':'';
+  const tip=!row.isCareerSummary&&c.key==='position'&&state.positionSources[row.edition]?' title="'+esc(state.positionSources[row.edition])+'"':'';
   return '<td'+tip+'>'+esc(label)+'</td>';
  }).join('')+'</tr>').join('')||'<tr><td class="hall-tool-empty" colspan="'+Math.max(1,cols.length)+'">Selecione jogadores e edições para visualizar a planilha.</td></tr>';
  $('hall-export-preview-info').textContent=rows.length+' linha(s) · '+cols.length+' coluna(s) · '+state.chosen.size+' jogador(es)';
@@ -226,16 +245,31 @@ function sheetName(raw,used){
 function workbookGroups(records,layout=state.layout){
  const groups=[],used=new Set();
  const add=(label,rows)=>groups.push({name:sheetName(label,used),rows});
- if(layout==='single')add('Dados',records);
- else if(layout==='chunks'){for(let i=0;i<records.length;i+=100)add('Dados '+(Math.floor(i/100)+1),records.slice(i,i+100));}
- else{
-  const map=new Map();
-  for(const r of records){
-   const label=layout==='player'?r.name:layout==='edition'?r.edition:layout==='year'?(r.year||'Sem ano').toString():'Dados';
-   if(!map.has(label))map.set(label,[]);
-   map.get(label).push(r);
+ if(layout==='chunks'&&state.includeCareerSummary&&records.some(r=>r.key)){
+  // Não separar a última edição de seu resumo entre duas abas de 100 linhas.
+  const people=[...new Map(records.map(r=>[r.key,r.name])).keys()];
+  const sections=new Map(people.map(key=>[key,records.filter(r=>r.key===key)]));
+  let current=[];
+  for(const entries of sections.values()){
+   const block=withCareerSummaries(entries);
+   if(current.length&&current.length+block.length>100){add('Dados '+(groups.length+1),current);current=[];}
+   current.push(...block);
   }
-  for(const [label,rows] of map)add(label,rows);
+  if(current.length)add('Dados '+(groups.length+1),current);
+ }else{
+  const all=withCareerSummaries(records);
+  if(layout==='single')add('Dados',all);
+  else if(layout==='chunks'){for(let i=0;i<all.length;i+=100)add('Dados '+(Math.floor(i/100)+1),all.slice(i,i+100));}
+  else{
+   const map=new Map();
+   for(const r of all){
+    // O resumo vai somente para a aba da última edição exibida do jogador.
+    const label=layout==='player'?r.name:layout==='edition'?r.edition:layout==='year'?(r.year||'Sem ano').toString():'Dados';
+    if(!map.has(label))map.set(label,[]);
+    map.get(label).push(r);
+   }
+   for(const [label,rows] of map)add(label,rows);
+  }
  }
  return groups;
 }
@@ -251,12 +285,12 @@ function worksheetXml(rows,fields){
   const cells=fields.map((field,index)=>{
    const ref=colName(index)+r,value=recordValue(row,field.key);
    const numeric=value!==null&&typeof value==='number'&&Number.isFinite(value);
-   const style=['avg','careerAvg'].includes(field.key)?(alternate?4:3):(alternate?2:0);
+   const style=row.isCareerSummary?(field.key==='avg'?6:5):field.key==='avg'?(alternate?4:3):(alternate?2:0);
    if(value===null||value==='')return '<c r="'+ref+'" s="'+style+'"/>';
    return numeric?'<c r="'+ref+'" t="n" s="'+style+'"><v>'+value+'</v></c>':
     '<c r="'+ref+'" t="inlineStr" s="'+style+'"><is><t>'+xml(value)+'</t></is></c>';
   }).join('');
-  return '<row r="'+r+'">'+cells+'</row>';
+  return '<row r="'+r+'"'+(row.isCareerSummary?' ht="33" customHeight="1"':'')+'>'+cells+'</row>';
  }).join('');
  const cols=widths.map((n,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+n+'" customWidth="1"/>').join('');
  const end=colName(fields.length-1)+(rows.length+1);
@@ -266,17 +300,20 @@ function worksheetXml(rows,fields){
  '<autoFilter ref="A1:'+end+'"/></worksheet>';
 }
 const stylesXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
- '<fonts count="2"><font><sz val="10"/><color rgb="FF20324B"/><name val="Aptos"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Aptos"/></font></fonts>'+
- '<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+
+ '<fonts count="3"><font><sz val="10"/><color rgb="FF20324B"/><name val="Aptos"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Aptos"/></font><font><b/><sz val="10"/><color rgb="FF046EA5"/><name val="Aptos"/></font></fonts>'+
+ '<fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+
  '<fill><patternFill patternType="solid"><fgColor rgb="FF006DB2"/><bgColor indexed="64"/></patternFill></fill>'+
- '<fill><patternFill patternType="solid"><fgColor rgb="FFEDF6FC"/><bgColor indexed="64"/></patternFill></fill></fills>'+
+ '<fill><patternFill patternType="solid"><fgColor rgb="FFEDF6FC"/><bgColor indexed="64"/></patternFill></fill>'+ 
+ '<fill><patternFill patternType="solid"><fgColor rgb="FFD9F3FE"/><bgColor indexed="64"/></patternFill></fill></fills>'+
  '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'+
  '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
- '<cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
+ '<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
  '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'+
  '<xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/>'+
  '<xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'+
- '<xf numFmtId="2" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1" applyNumberFormat="1"/></cellXfs></styleSheet>';
+ '<xf numFmtId="2" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1" applyNumberFormat="1"/>'+ 
+ '<xf numFmtId="0" fontId="2" fillId="4" borderId="0" xfId="0" applyFill="1" applyFont="1"><alignment vertical="center" wrapText="1"/></xf>'+ 
+ '<xf numFmtId="2" fontId="2" fillId="4" borderId="0" xfId="0" applyNumberFormat="1" applyFill="1" applyFont="1"><alignment vertical="center" wrapText="1"/></xf></cellXfs></styleSheet>';
 const crcTable=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let v=n;for(let i=0;i<8;i++)v=(v&1)?(0xEDB88320^(v>>>1)):(v>>>1);t[n]=v>>>0;}return t;})();
 function checksum(data){let v=0xFFFFFFFF;for(const b of data)v=crcTable[(v^b)&255]^(v>>>8);return(v^0xFFFFFFFF)>>>0;}
 function zipStored(entries){
@@ -340,8 +377,8 @@ async function exportFile(type){
    download(output.blob,'central-free-fire-jogadores.xlsx');
    setNote('hall-export-status','Planilha gerada: '+output.rows+' linhas em '+output.sheets+' aba(s).');
   }else{
-   download(csvBlob(rows,fields),'central-free-fire-jogadores.csv');
-   setNote('hall-export-status','CSV gerado: '+rows.length+' linhas. A divisão por abas está disponível no Excel (.xlsx).');
+   download(csvBlob(exportedRows(),fields),'central-free-fire-jogadores.csv');
+   setNote('hall-export-status','CSV gerado: '+exportedRows().length+' linhas. A divisão por abas está disponível no Excel (.xlsx).');
   }
  }catch(error){setNote('hall-export-status','Erro ao preparar a planilha: '+(error.message||error),true);}
  finally{state.exportBusy=false;renderPreview();}
@@ -359,7 +396,7 @@ function initEvents(){
  $('hall-export-all-players').addEventListener('click',()=>{for(const key of state.players.keys())state.chosen.add(key);renderPeople();state.previewPage=0;renderPreview();});
  $('hall-export-clear').addEventListener('click',()=>{state.chosen.clear();renderPeople();state.previewPage=0;renderPreview();});
  $('hall-export-career-all').addEventListener('change',e=>{
-  state.fields.filter(f=>f.career).forEach(f=>{f.active=e.target.checked;});
+  state.includeCareerSummary=e.target.checked;
   state.previewPage=0;renderFields();renderPreview();
  });
  $('hall-export-fields').addEventListener('change',e=>{const key=e.target?.dataset?.hallField;if(!key)return;const field=state.fields.find(f=>f.key===key);if(field){field.active=e.target.checked;state.previewPage=0;renderFields();renderPreview();}});
@@ -377,7 +414,7 @@ function initEvents(){
 }
 async function boot(){
  if(!document.querySelector('link[data-hall-export-style]')){
-  const link=document.createElement('link');link.rel='stylesheet';link.href='css/hall-evolution-export.css?v=20261124-v3';link.dataset.hallExportStyle='1';document.head.appendChild(link);
+  const link=document.createElement('link');link.rel='stylesheet';link.href='css/hall-evolution-export.css?v=20261124-v4';link.dataset.hallExportStyle='1';document.head.appendChild(link);
  }
  if(state.ready)return state;
  if(state.bootPromise)return state.bootPromise;
@@ -402,5 +439,5 @@ async function boot(){
  }).finally(()=>{state.bootPromise=null;});
  return state.bootPromise;
 }
-window.CFFHallTools={boot,progressionRows,sortedRows,workbookGroups,xlsxBlob,csvBlob,recordValue,yearOf,orderEdition,renderPreview,_state:state};
+window.CFFHallTools={boot,progressionRows,sortedRows,exportedRows,withCareerSummaries,workbookGroups,xlsxBlob,csvBlob,recordValue,yearOf,orderEdition,renderPreview,_state:state};
 })();
