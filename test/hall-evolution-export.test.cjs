@@ -53,7 +53,7 @@ test('new sections follow Líderes por Equipe and use the Hall-only lazy loader'
  const loader=fs.readFileSync('js/site-shell-fast.min.js','utf8');
  assert.match(loader,/hallTools:'js\/hall-evolution-export\.js/);
  assert.match(loader,/await seq\(\['hallExtras','hall','hallTools'\]\)/);
- assert.match(source,/js\/site-shell-fast\.min\.js\?v=20261124-hall-evolution-export-v1/);
+ assert.match(source,/js\/site-shell-fast\.min\.js\?v=20261124-hall-evolution-export-v2/);
 });
 test('maiores evoluções usa splits consecutivos por jogador, com uma melhor evolução e filtro mínimo',async()=>{
  const a=await setup();
