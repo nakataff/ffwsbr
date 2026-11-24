@@ -257,7 +257,7 @@ function xlsxBlob(records,fields,layout){
 function csvBlob(records,fields){
  const clean=value=>{let s=String(value??'');if(/^[\s]*[=+@-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
  const lines=[fields.map(f=>clean(f.label)).join(';')];
- for(const r of records)lines.push(fields.map(f=>clean(recordValue(r,f.key)??'')).join(';'));
+ for(const r of records)lines.push(fields.map(f=>{const value=recordValue(r,f.key);return clean(f.key==='avg'&&typeof value==='number'?value.toFixed(2).replace('.',','):value??'');}).join(';'));
  return new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
 }
 function download(blob,name){
