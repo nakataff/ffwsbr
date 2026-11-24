@@ -1811,6 +1811,10 @@
                 <div class="hall-export-panel">
                     <h3>2. Dados e organização</h3>
                     <p class="hall-export-hint">Marque as colunas desejadas. Use as setas para mudar a ordem em que aparecerão na planilha.</p>
+                    <label class="hall-export-career-preset" for="hall-export-career-all">
+                        <input type="checkbox" id="hall-export-career-all">
+                        <span><strong>Incluir resumo da carreira</strong><small>Equipes, quedas totais, média geral, edições, anos e títulos. Você também pode marcar essas colunas separadamente.</small></span>
+                    </label>
                     <div id="hall-export-fields" aria-label="Colunas da planilha"></div>
                     <details class="hall-export-editions-wrap" id="hall-export-editions-wrap">
                         <summary>Filtrar edições · <span id="hall-export-editions-count">Todas</span></summary>
@@ -1844,7 +1848,7 @@
                             </select>
                         </label>
                     </div>
-                    <p class="hall-export-hint">A posição no torneio é a colocação final da equipe quando cadastrada. Caso não esteja confirmada na base, a célula fica vazia.</p>
+                    <p class="hall-export-hint">Posição no torneio: usa a Final para finalistas e a classificação para equipes eliminadas. Na WB 2024, F1 usa a Classificatória (Fase 1) e F2 usa exclusivamente a Grande Final. Títulos são contados pelas edições registradas em que o jogador atuou pela equipe campeã.</p>
                 </div>
             </div>
             <div class="hall-export-preview">
@@ -1857,6 +1861,16 @@
                         <thead><tr id="hall-export-preview-head"></tr></thead>
                         <tbody id="hall-export-preview-body"></tbody>
                     </table>
+                </div>
+                <div class="hall-export-preview-pagination" aria-label="Navegação da prévia">
+                    <label for="hall-export-preview-page-size">Linhas por página
+                        <select id="hall-export-preview-page-size"><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select>
+                    </label>
+                    <nav class="hall-tool-page" aria-label="Páginas da prévia">
+                        <button type="button" id="hall-export-preview-prev" disabled aria-label="Página anterior da prévia">‹</button>
+                        <span id="hall-export-preview-page">Nenhuma linha</span>
+                        <button type="button" id="hall-export-preview-next" disabled aria-label="Próxima página da prévia">›</button>
+                    </nav>
                 </div>
             </div>
             <div class="hall-export-bottom">
@@ -2031,7 +2045,7 @@
 
 <script defer src="js/player-photo-resolver.min.js?v=20261029-laff-photos-v1"></script>
 <script defer src="/js/shared-navigation.js?v=20261123-dock-sidebar-v2"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261124-hall-evolution-export-v2"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261124-hall-evolution-export-v3"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>
