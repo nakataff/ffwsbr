@@ -305,6 +305,9 @@ function initEvents(){
  $('hall-export-csv').addEventListener('click',()=>exportFile('csv'));
 }
 async function boot(){
+ if(!document.querySelector('link[data-hall-export-style]')){
+  const link=document.createElement('link');link.rel='stylesheet';link.href='css/hall-evolution-export.css?v=20261124-v1';link.dataset.hallExportStyle='1';document.head.appendChild(link);
+ }
  if(state.ready)return state;
  if(state.bootPromise)return state.bootPromise;
  if(!$('hall-evolution-results')||!$('hall-export-people'))return null;
