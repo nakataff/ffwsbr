@@ -11,9 +11,15 @@ const fieldDefs=Object.freeze([
  {key:'name',label:'Jogador',width:23},{key:'team',label:'Equipe',width:25},
  {key:'kills',label:'Abates',width:12},{key:'matches',label:'Quedas',width:12},
  {key:'avg',label:'Média',width:13},{key:'edition',label:'Edição',width:18},
- {key:'year',label:'Ano',width:12},{key:'position',label:'Posição no torneio',width:22}
+ {key:'year',label:'Ano',width:12},{key:'position',label:'Posição no torneio',width:22},
+ {key:'allTeams',label:'Todas equipes',width:34,career:true},
+ {key:'careerMatches',label:'Quedas na carreira',width:20,career:true},
+ {key:'careerAvg',label:'Média da carreira',width:21,career:true},
+ {key:'careerEditions',label:'Edições jogadas',width:19,career:true},
+ {key:'careerYears',label:'Anos de atuação',width:28,career:true},
+ {key:'careerTitles',label:'Títulos',width:13,career:true}
 ]);
-const state={ready:false,bootPromise:null,rows:[],players:new Map(),editions:[],maxMatches:new Map(),evoMetric:'avg',evoMin:true,evoSearch:'',evoPage:0,evoSize:10,chosen:new Set(),filteredName:'',chosenEditions:new Set(),fields:fieldDefs.map(f=>({...f,active:true})),sort:'player-asc',layout:'single',placements:{},exportBusy:false};
+const state={ready:false,bootPromise:null,rows:[],players:new Map(),editions:[],maxMatches:new Map(),evoMetric:'avg',evoMin:true,evoSearch:'',evoPage:0,evoSize:10,chosen:new Set(),filteredName:'',chosenEditions:new Set(),fields:fieldDefs.map(f=>({...f,active:!f.career})),sort:'player-asc',layout:'single',placements:{},champions:{},career:new Map(),aliasKeys:new Map(),positionSources:{},previewPage:0,previewSize:10,exportBusy:false};
 const numFmt=value=>num(value).toLocaleString('pt-BR');
 const avgFmt=value=>num(value).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 function setNote(id,message,error=false){const el=$(id);if(el){el.textContent=message;el.classList.toggle('is-error',error);}}
@@ -37,9 +43,39 @@ function buildRows(hall){
  }
  state.rows=rows;
  state.players=players;
+ state.aliasKeys=buildAliasKeys(hall.teamAliases);
+ rebuildCareer();
  state.maxMatches=maxMatches;
  state.editions=[...new Set(rows.map(r=>r.edition))].sort((a,b)=>orderEdition(a)-orderEdition(b)||compare(a,b));
  state.chosenEditions=new Set(state.editions);
+}
+function buildAliasKeys(groups) {
+ const aliases=new Map();
+ for(const [canonical,list] of Object.entries(groups||{})){
+  const id=norm(canonical);
+  aliases.set(id,id);
+  for(const alias of Array.isArray(list)?list:[])aliases.set(norm(alias),id);
+ }
+ return aliases;
+}
+function canonicalTeam(team){const key=norm(team);return state.aliasKeys.get(key)||key;}
+function teamMatch(a,b){return Boolean(a&&b&&canonicalTeam(a)===canonicalTeam(b));}
+function rebuildCareer(){
+ const grouped=new Map();
+ for(const row of state.rows){
+  let item=grouped.get(row.key);
+  if(!item){item={teams:new Map(),kills:0,matches:0,editions:new Set(),years:new Set(),titles:0};grouped.set(row.key,item);}
+  if(row.team){const teamKey=canonicalTeam(row.team);if(!item.teams.has(teamKey))item.teams.set(teamKey,row.team);}
+  item.kills+=row.kills;item.matches+=row.matches;item.editions.add(row.edition);
+  if(row.year)item.years.add(row.year);
+  if(state.champions[row.edition]&&teamMatch(row.team,state.champions[row.edition]))item.titles++;
+ }
+ state.career=new Map([...grouped].map(([key,item])=>[key,{
+  allTeams:[...item.teams.values()].join(' · '),careerMatches:item.matches,
+  careerAvg:item.matches?item.kills/item.matches:0,careerEditions:item.editions.size,
+  careerYears:[...item.years].sort((a,b)=>a-b).join(', '),
+  careerTitles:item.titles
+ }]));
 }
 function progressionRows(metric=state.evoMetric,required=state.evoMin,search=state.evoSearch){
  const grouped=new Map();
@@ -116,12 +152,26 @@ function renderEditions(){
 function rankFor(row){
  const map=state.placements[row.edition]||{};
  let place=map[norm(row.team)];
- if(!place&&norm(row.team)==='LOUD')place=map.LOUDSNICKERS;
- if(!place&&norm(row.team)==='FLUXO')place=map.FLUXOW7M;
+ if(!place&&row.team){
+  const id=canonicalTeam(row.team);
+  for(const [name,rank] of Object.entries(map)){
+   if(canonicalTeam(name)===id){place=rank;break;}
+  }
+ }
  return Number.isInteger(place)&&place>0?place:null;
 }
 function recordValue(row,key){
- return key==='position'?rankFor(row):key==='name'?row.name:key==='team'?row.team:key==='kills'?row.kills:key==='matches'?row.matches:key==='avg'?Math.round(row.avg*10000)/10000:key==='edition'?row.edition:key==='year'?row.year||null:null;
+ if(key==='position')return rankFor(row);
+ if(key==='name')return row.name;
+ if(key==='team')return row.team;
+ if(key==='kills')return row.kills;
+ if(key==='matches')return row.matches;
+ if(key==='avg')return Math.round(row.avg*10000)/10000;
+ if(key==='edition')return row.edition;
+ if(key==='year')return row.year||null;
+ const career=state.career.get(row.key)||{};
+ if(key==='careerAvg')return career.careerAvg===undefined?null:Math.round(career.careerAvg*10000)/10000;
+ return career[key]??null;
 }
 function sortedRows(){
  const rows=state.rows.filter(row=>state.chosen.has(row.key)&&state.chosenEditions.has(row.edition));
@@ -142,13 +192,21 @@ function pickedFields(){return state.fields.filter(field=>field.active);}
 function renderPreview(){
  if(!state.ready)return;
  const cols=pickedFields(),rows=sortedRows(),head=$('hall-export-preview-head'),body=$('hall-export-preview-body');
+ const pages=Math.max(1,Math.ceil(rows.length/state.previewSize));
+ state.previewPage=Math.max(0,Math.min(state.previewPage,pages-1));
+ const start=state.previewPage*state.previewSize,shown=rows.slice(start,start+state.previewSize);
  head.innerHTML=cols.map(c=>'<th>'+esc(c.label)+'</th>').join('');
- body.innerHTML=rows.slice(0,5).map(row=>'<tr>'+cols.map(c=>{
+ body.innerHTML=shown.map(row=>'<tr>'+cols.map(c=>{
   const v=recordValue(row,c.key);
-  return '<td>'+esc(v===null?'—':c.key==='avg'?avgFmt(v):v)+'</td>';
+  const label=v===null?'—':['avg','careerAvg'].includes(c.key)?avgFmt(v):v;
+  const tip=c.key==='position'&&state.positionSources[row.edition]?' title="'+esc(state.positionSources[row.edition])+'"':'';
+  return '<td'+tip+'>'+esc(label)+'</td>';
  }).join('')+'</tr>').join('')||'<tr><td class="hall-tool-empty" colspan="'+Math.max(1,cols.length)+'">Selecione jogadores e edições para visualizar a planilha.</td></tr>';
- const note=rows.length+' linha(s) · '+cols.length+' coluna(s) · '+state.chosen.size+' jogador(es)';
- $('hall-export-preview-info').textContent=note+(cols.length?'. Prévia das primeiras cinco linhas.':'. Marque pelo menos uma coluna.');
+ $('hall-export-preview-info').textContent=rows.length+' linha(s) · '+cols.length+' coluna(s) · '+state.chosen.size+' jogador(es)';
+ $('hall-export-preview-page').textContent=rows.length?'Linhas '+(start+1)+'–'+Math.min(start+state.previewSize,rows.length)+' de '+rows.length:'Nenhuma linha';
+ $('hall-export-preview-page-size').value=String(state.previewSize);
+ $('hall-export-preview-prev').disabled=state.previewPage<=0;
+ $('hall-export-preview-next').disabled=state.previewPage>=pages-1;
  $('hall-export-download').disabled=state.exportBusy||!rows.length||!cols.length;
  $('hall-export-csv').disabled=state.exportBusy||!rows.length||!cols.length;
 }
@@ -187,7 +245,7 @@ function worksheetXml(rows,fields){
   const cells=fields.map((field,index)=>{
    const ref=colName(index)+r,value=recordValue(row,field.key);
    const numeric=value!==null&&typeof value==='number'&&Number.isFinite(value);
-   const style=field.key==='avg'?(alternate?4:3):(alternate?2:0);
+   const style=['avg','careerAvg'].includes(field.key)?(alternate?4:3):(alternate?2:0);
    if(value===null||value==='')return '<c r="'+ref+'" s="'+style+'"/>';
    return numeric?'<c r="'+ref+'" t="n" s="'+style+'"><v>'+value+'</v></c>':
     '<c r="'+ref+'" t="inlineStr" s="'+style+'"><is><t>'+xml(value)+'</t></is></c>';
@@ -257,7 +315,7 @@ function xlsxBlob(records,fields,layout){
 function csvBlob(records,fields){
  const clean=value=>{let s=String(value??'');if(/^[\s]*[=+@-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
  const lines=[fields.map(f=>clean(f.label)).join(';')];
- for(const r of records)lines.push(fields.map(f=>{const value=recordValue(r,f.key);return clean(f.key==='avg'&&typeof value==='number'?value.toFixed(2).replace('.',','):value??'');}).join(';'));
+ for(const r of records)lines.push(fields.map(f=>{const value=recordValue(r,f.key);return clean(['avg','careerAvg'].includes(f.key)&&typeof value==='number'?value.toFixed(2).replace('.',','):value??'');}).join(';'));
  return new Blob(['\uFEFF'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
 }
 function download(blob,name){
@@ -299,14 +357,17 @@ function initEvents(){
  $('hall-export-editions').addEventListener('change',e=>{const ed=e.target?.dataset?.hallEdition;if(!ed)return;if(e.target.checked)state.chosenEditions.add(ed);else state.chosenEditions.delete(ed);renderEditions();renderPreview();});
  $('hall-export-editions-all').addEventListener('click',()=>{state.chosenEditions=new Set(state.editions);renderEditions();renderPreview();});
  $('hall-export-editions-none').addEventListener('click',()=>{state.chosenEditions.clear();renderEditions();renderPreview();});
- $('hall-export-sort').addEventListener('change',e=>{state.sort=e.target.value;renderPreview();});
- $('hall-export-layout').addEventListener('change',e=>{state.layout=e.target.value;renderPreview();});
+ $('hall-export-sort').addEventListener('change',e=>{state.sort=e.target.value;state.previewPage=0;renderPreview();});
+ $('hall-export-layout').addEventListener('change',e=>{state.layout=e.target.value;state.previewPage=0;renderPreview();});
+ $('hall-export-preview-prev').addEventListener('click',()=>{state.previewPage--;renderPreview();});
+ $('hall-export-preview-next').addEventListener('click',()=>{state.previewPage++;renderPreview();});
+ $('hall-export-preview-page-size').addEventListener('change',e=>{state.previewSize=Math.max(10,Math.min(100,Number(e.target.value)||10));state.previewPage=0;renderPreview();});
  $('hall-export-download').addEventListener('click',()=>exportFile('xlsx'));
  $('hall-export-csv').addEventListener('click',()=>exportFile('csv'));
 }
 async function boot(){
  if(!document.querySelector('link[data-hall-export-style]')){
-  const link=document.createElement('link');link.rel='stylesheet';link.href='css/hall-evolution-export.css?v=20261124-v2';link.dataset.hallExportStyle='1';document.head.appendChild(link);
+  const link=document.createElement('link');link.rel='stylesheet';link.href='css/hall-evolution-export.css?v=20261124-v3';link.dataset.hallExportStyle='1';document.head.appendChild(link);
  }
  if(state.ready)return state;
  if(state.bootPromise)return state.bootPromise;
@@ -319,8 +380,8 @@ async function boot(){
   state.ready=true;
   renderEvolution();renderPeople();renderFields();renderEditions();renderPreview();
   try{
-   const response=await fetch('ranking-data/hall-edition-placements.json?v=20261124-v2',{cache:'default'});
-   if(response.ok){const data=await response.json();if(data?.schema===1&&data.positions)state.placements=data.positions;}
+   const response=await fetch('ranking-data/hall-edition-placements.json?v=20261124-v3',{cache:'default'});
+   if(response.ok){const data=await response.json();if(data?.schema>=1&&data.positions){state.placements=data.positions;state.positionSources=data.sourceByEdition||{};state.champions=data.champions||{};rebuildCareer();}}
   }catch(error){console.warn('[Hall export] Posições finais indisponíveis',error);}
   renderPreview();
   return state;
