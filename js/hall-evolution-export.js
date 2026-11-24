@@ -196,7 +196,7 @@ function sortedRows(){
 // Cada jogador recebe uma linha extra após sua última edição exibida.
 // Os totais vêm do histórico completo, mesmo quando o filtro mostra menos edições.
 function withCareerSummaries(records){
- if(!state.includeCareerSummary||!records.length)return records.slice();
+ if(!state.includeCareerSummary||!records.length||records.some(r=>!r.key))return records.slice();
  const groups=new Map();
  for(const row of records){
   const group=groups.get(row.key)||[];
