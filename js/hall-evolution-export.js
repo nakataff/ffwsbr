@@ -306,7 +306,7 @@ function initEvents(){
 }
 async function boot(){
  if(!document.querySelector('link[data-hall-export-style]')){
-  const link=document.createElement('link');link.rel='stylesheet';link.href='css/hall-evolution-export.css?v=20261124-v1';link.dataset.hallExportStyle='1';document.head.appendChild(link);
+  const link=document.createElement('link');link.rel='stylesheet';link.href='css/hall-evolution-export.css?v=20261124-v2';link.dataset.hallExportStyle='1';document.head.appendChild(link);
  }
  if(state.ready)return state;
  if(state.bootPromise)return state.bootPromise;
@@ -319,7 +319,7 @@ async function boot(){
   state.ready=true;
   renderEvolution();renderPeople();renderFields();renderEditions();renderPreview();
   try{
-   const response=await fetch('ranking-data/hall-edition-placements.json?v=20261124-v1',{cache:'default'});
+   const response=await fetch('ranking-data/hall-edition-placements.json?v=20261124-v2',{cache:'default'});
    if(response.ok){const data=await response.json();if(data?.schema===1&&data.positions)state.placements=data.positions;}
   }catch(error){console.warn('[Hall export] Posições finais indisponíveis',error);}
   renderPreview();
