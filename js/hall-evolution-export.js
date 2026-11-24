@@ -225,7 +225,8 @@ function renderPreview(){
   const v=recordValue(row,c.key);
   const label=v===null?'—':['avg','careerAvg'].includes(c.key)?avgFmt(v):v;
   const tip=!row.isCareerSummary&&c.key==='position'&&state.positionSources[row.edition]?' title="'+esc(state.positionSources[row.edition])+'"':'';
-  return '<td'+tip+'>'+esc(label)+'</td>';
+  const cellClass=row.isCareerSummary&&c.key==='team'?' class="hall-export-summary-teams"':row.isCareerSummary&&c.key==='edition'?' class="hall-export-summary-label"':'';
+  return '<td'+cellClass+tip+'>'+esc(label)+'</td>';
  }).join('')+'</tr>').join('')||'<tr><td class="hall-tool-empty" colspan="'+Math.max(1,cols.length)+'">Selecione jogadores e edições para visualizar a planilha.</td></tr>';
  $('hall-export-preview-info').textContent=rows.length+' linha(s) · '+cols.length+' coluna(s) · '+state.chosen.size+' jogador(es)';
  $('hall-export-preview-page').textContent=rows.length?'Linhas '+(start+1)+'–'+Math.min(start+state.previewSize,rows.length)+' de '+rows.length:'Nenhuma linha';
