@@ -1752,6 +1752,120 @@
             </div>
         </section>
 
+        <section class="hall-extra-section" id="hall-evolutions-section" aria-labelledby="hall-evolutions-heading">
+            <h2 class="hall-extra-title" id="hall-evolutions-heading">Maiores Evoluções</h2>
+            <p class="hall-extra-subtitle">Quem mais cresceu de um split disputado para o seguinte? Comparamos os números do mesmo jogador, mesmo que ele tenha trocado de equipe. Cada jogador aparece com sua melhor evolução.</p>
+            <div class="hall-tool-controls">
+                <label class="hall-tool-control">
+                    <span>Pesquisar jogador, equipe ou edição</span>
+                    <input id="hall-evolution-search" type="search" placeholder="Buscar evolução..." autocomplete="off">
+                </label>
+                <label class="hall-tool-control">
+                    <span>Ordenar evolução por</span>
+                    <select id="hall-evolution-metric">
+                        <option value="avg" selected>Média de abates</option>
+                        <option value="kills">Abates</option>
+                        <option value="matches">Quedas</option>
+                    </select>
+                </label>
+                <label class="hall-tool-check" for="hall-evolution-min" title="Exige pelo menos metade das quedas disponíveis nas duas edições comparadas.">
+                    <input id="hall-evolution-min" type="checkbox" checked>
+                    Quedas mínimas
+                </label>
+            </div>
+            <p class="hall-tool-note">Quedas mínimas: pelo menos 50% da maior participação registrada em cada uma das duas edições. O ranking considera apenas evoluções positivas.</p>
+            <div class="table-container">
+                <table class="hall-evo-table" aria-label="Ranking dos jogadores com as maiores evoluções entre splits">
+                    <thead><tr><th>#</th><th>Jogador</th><th>Edições comparadas</th><th>Antes</th><th>Depois</th><th>Evolução</th></tr></thead>
+                    <tbody id="hall-evolution-results"><tr><td colspan="6" class="hall-tool-empty">Carregando evoluções...</td></tr></tbody>
+                </table>
+            </div>
+            <div class="hall-evo-mobile" id="hall-evolution-mobile" aria-label="Evoluções dos jogadores no celular"></div>
+            <nav class="hall-tool-page" aria-label="Páginas das maiores evoluções">
+                <button type="button" id="hall-evolution-prev" disabled aria-label="Página anterior">‹</button>
+                <span id="hall-evolution-info" role="status">Top 1–10</span>
+                <button type="button" id="hall-evolution-next" disabled aria-label="Próxima página">›</button>
+            </nav>
+        </section>
+
+        <section class="hall-extra-section" id="hall-export-section" aria-labelledby="hall-export-heading">
+            <h2 class="hall-extra-title" id="hall-export-heading">Exportar Dados</h2>
+            <p class="hall-extra-subtitle">Monte uma planilha de jogadores com as edições e estatísticas que você escolher. Selecione vários nomes, organize as colunas e divida o Excel em abas. Tudo é preparado no navegador.</p>
+            <div class="hall-export-grid">
+                <div class="hall-export-panel">
+                    <h3>1. Jogadores</h3>
+                    <label class="hall-tool-control" for="hall-export-search">
+                        <span>Encontre e marque quantos quiser</span>
+                        <input type="search" id="hall-export-search" placeholder="Pesquisar jogador..." autocomplete="off">
+                    </label>
+                    <div id="hall-export-people" aria-label="Lista de jogadores disponíveis"><p class="hall-tool-empty">Carregando jogadores...</p></div>
+                    <small id="hall-export-people-more"></small>
+                    <div class="hall-export-actions">
+                        <button type="button" id="hall-export-add-visible">Adicionar exibidos</button>
+                        <button type="button" id="hall-export-all-players">Todos os jogadores</button>
+                        <button type="button" id="hall-export-clear">Limpar seleção</button>
+                    </div>
+                    <div class="hall-export-selection-summary"><strong id="hall-export-selected-count">0 jogadores selecionados</strong><span>Clique no × para remover</span></div>
+                    <div id="hall-export-selected" aria-live="polite"></div>
+                </div>
+                <div class="hall-export-panel">
+                    <h3>2. Dados e organização</h3>
+                    <p class="hall-export-hint">Marque as colunas desejadas. Use as setas para mudar a ordem em que aparecerão na planilha.</p>
+                    <div id="hall-export-fields" aria-label="Colunas da planilha"></div>
+                    <details class="hall-export-editions-wrap" id="hall-export-editions-wrap">
+                        <summary>Filtrar edições · <span id="hall-export-editions-count">Todas</span></summary>
+                        <div class="hall-export-edition-menu" id="hall-export-editions"></div>
+                        <div class="hall-export-subactions">
+                            <button type="button" id="hall-export-editions-all">Marcar todas</button>
+                            <button type="button" id="hall-export-editions-none">Desmarcar todas</button>
+                        </div>
+                    </details>
+                    <div class="hall-export-options">
+                        <label class="hall-tool-control">
+                            <span>Ordem das linhas</span>
+                            <select id="hall-export-sort">
+                                <option value="player-asc">Jogador: A–Z</option>
+                                <option value="player-desc">Jogador: Z–A</option>
+                                <option value="edition-asc">Edição: antiga → nova</option>
+                                <option value="edition-desc">Edição: nova → antiga</option>
+                                <option value="kills-desc">Mais abates</option>
+                                <option value="matches-desc">Mais quedas</option>
+                                <option value="avg-desc">Maior média</option>
+                            </select>
+                        </label>
+                        <label class="hall-tool-control">
+                            <span>Dividir a planilha em abas</span>
+                            <select id="hall-export-layout">
+                                <option value="single">Uma aba com tudo</option>
+                                <option value="player">Uma aba por jogador</option>
+                                <option value="edition">Uma aba por edição</option>
+                                <option value="year">Uma aba por ano</option>
+                                <option value="chunks">A cada 100 linhas</option>
+                            </select>
+                        </label>
+                    </div>
+                    <p class="hall-export-hint">A posição no torneio é a colocação final da equipe quando cadastrada. Caso não esteja confirmada na base, a célula fica vazia.</p>
+                </div>
+            </div>
+            <div class="hall-export-preview">
+                <div class="hall-export-preview-head">
+                    <strong>Prévia da planilha</strong>
+                    <span id="hall-export-preview-info">Escolha jogadores para visualizar os dados.</span>
+                </div>
+                <div class="hall-export-table-scroll">
+                    <table id="hall-export-preview-table" aria-label="Prévia das linhas da planilha">
+                        <thead><tr id="hall-export-preview-head"></tr></thead>
+                        <tbody id="hall-export-preview-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="hall-export-bottom">
+                <button type="button" id="hall-export-download" disabled>Exportar Excel (.xlsx)</button>
+                <button type="button" id="hall-export-csv" disabled>Exportar CSV</button>
+                <span id="hall-export-status" role="status" aria-live="polite"></span>
+            </div>
+        </section>
+
         <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
 
         <h2 style="color: var(--accent);">O BRABO: Comparador Histórico 👑</h2>
