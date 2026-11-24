@@ -1812,8 +1812,8 @@
                     <h3>2. Dados e organização</h3>
                     <p class="hall-export-hint">Marque as colunas desejadas. Use as setas para mudar a ordem em que aparecerão na planilha.</p>
                     <label class="hall-export-career-preset" for="hall-export-career-all">
-                        <input type="checkbox" id="hall-export-career-all">
-                        <span><strong>Incluir resumo da carreira</strong><small>Equipes, quedas totais, média geral, edições, anos e títulos. Você também pode marcar essas colunas separadamente.</small></span>
+                        <input type="checkbox" id="hall-export-career-all" checked>
+                        <span><strong>Adicionar linha de resumo da carreira</strong><small>Uma linha destacada após a última edição de cada jogador, sem criar colunas extras. Mostra todas as equipes, abates e quedas totais, média geral, número de edições, anos e títulos.</small></span>
                     </label>
                     <div id="hall-export-fields" aria-label="Colunas da planilha"></div>
                     <details class="hall-export-editions-wrap" id="hall-export-editions-wrap">
@@ -1848,7 +1848,7 @@
                             </select>
                         </label>
                     </div>
-                    <p class="hall-export-hint">Posição no torneio: usa a Final para finalistas e a classificação para equipes eliminadas. Na WB 2024, F1 usa a Classificatória (Fase 1) e F2 usa exclusivamente a Grande Final. Títulos são contados pelas edições registradas em que o jogador atuou pela equipe campeã.</p>
+                    <p class="hall-export-hint">Posição no torneio: usa a Final para finalistas e a classificação para equipes eliminadas. Na WB 2024, F1 usa a Classificatória e F2 a Grande Final. Na linha azul de resumo, o campo Posição exibe os títulos. O resumo considera toda a carreira disponível, mesmo se você filtrar edições; cada jogador aparece uma vez, após a última edição exibida.</p>
                 </div>
             </div>
             <div class="hall-export-preview">
@@ -2045,7 +2045,7 @@
 
 <script defer src="js/player-photo-resolver.min.js?v=20261029-laff-photos-v1"></script>
 <script defer src="/js/shared-navigation.js?v=20261123-dock-sidebar-v2"></script>
-<script defer src="js/site-shell-fast.min.js?v=20261124-hall-evolution-export-v3"></script>
+<script defer src="js/site-shell-fast.min.js?v=20261124-hall-evolution-export-v4"></script>
 <script defer src="js/site-back-navigation.min.js?v=20261010-clean-routes-v31"></script>
 <script defer src="js/search-fast.min.js?v=20261018-search-no-flicker-v2"></script>
 <script defer src="js/home-ffws-s2.min.js?v=20261011-season-closed-v36"></script>
