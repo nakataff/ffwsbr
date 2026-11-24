@@ -36,6 +36,17 @@
 .hall-export-panel{min-width:0;background:rgba(0,0,0,.12);border:1px solid var(--ht-border);border-radius:12px;padding:15px}
 .hall-export-panel h3{margin:0 0 11px;color:#e7f5ff;font-size:.92rem;font-weight:950}
 .hall-export-hint{margin:4px 0 12px;font-size:.7rem;color:var(--ht-muted);line-height:1.5}
+.hall-export-career-preset{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;margin:0 0 12px;border:1px solid rgba(3,197,250,.2);border-radius:10px;background:rgba(3,197,250,.045);cursor:pointer}
+.hall-export-career-preset input{margin-top:3px}
+.hall-export-career-preset span{display:grid;gap:3px;min-width:0}
+.hall-export-career-preset strong{color:#dff5ff;font-size:.76rem}
+.hall-export-career-preset small{color:#8eafc8;font-size:.67rem;line-height:1.45}
+.hall-export-preview-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:12px;padding-top:9px;border-top:1px solid var(--ht-border)}
+.hall-export-preview-pagination>label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#9bb6ca;font-size:.73rem;font-weight:800}
+.hall-export-preview-pagination select{padding:7px 10px;min-height:34px;min-width:68px;background:#131f30;color:#fff;border:1px solid var(--ht-border);border-radius:8px}
+.hall-export-preview-pagination .hall-tool-page{padding:0}
+.hall-export-table-scroll{scrollbar-width:thin}
+
 #hall-export-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;max-height:218px;overflow:auto;padding:6px;border:1px solid var(--ht-border);border-radius:9px;background:rgba(5,9,19,.38)}
 .hall-export-person{display:flex;align-items:center;gap:7px;min-width:0;padding:7px 5px;border-radius:7px;color:#d6eaf7;font-size:.75rem;cursor:pointer}
 .hall-export-person:hover{background:rgba(3,197,250,.07)}
@@ -95,5 +106,6 @@
  .hall-export-edition-menu{grid-template-columns:repeat(2,minmax(0,1fr))}
  .hall-export-panel h3{font-size:.84rem}.hall-export-preview{padding:9px}
  .hall-export-bottom{align-items:stretch}.hall-export-bottom button{flex:1 1 130px}
+ .hall-export-preview-pagination{justify-content:center}.hall-export-preview-pagination>.hall-tool-page{width:100%}
 }
 @media(max-width:365px){#hall-export-fields{grid-template-columns:1fr}.hall-export-edition-menu{grid-template-columns:1fr 1fr}#hall-export-people{grid-template-columns:1fr}}
