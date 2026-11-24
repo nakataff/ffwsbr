@@ -141,6 +141,12 @@ function renderPeople(){
  $('hall-export-csv').disabled=state.exportBusy||!state.chosen.size;
 }
 function renderFields(){
+ const careerPreset=$('hall-export-career-all');
+ if(careerPreset){
+  const career=state.fields.filter(f=>f.career);
+  careerPreset.checked=career.every(f=>f.active);
+  careerPreset.indeterminate=career.some(f=>f.active)&&!careerPreset.checked;
+ }
  $('hall-export-fields').innerHTML=state.fields.map((field,i)=>'<div class="hall-export-field-row"><label><input type="checkbox" data-hall-field="'+field.key+'" '+(field.active?'checked':'')+'><span>'+esc(field.label)+'</span></label>'+
  '<div><button type="button" title="Subir coluna" aria-label="Mover '+esc(field.label)+' para cima" data-hall-move="'+field.key+'" data-step="-1" '+(i===0?'disabled':'')+'>↑</button>'+
  '<button type="button" title="Descer coluna" aria-label="Mover '+esc(field.label)+' para baixo" data-hall-move="'+field.key+'" data-step="1" '+(i===state.fields.length-1?'disabled':'')+'>↓</button></div></div>').join('');
@@ -347,16 +353,20 @@ function initEvents(){
  $('hall-evolution-prev').addEventListener('click',()=>{state.evoPage--;renderEvolution();});
  $('hall-evolution-next').addEventListener('click',()=>{state.evoPage++;renderEvolution();});
  $('hall-export-search').addEventListener('input',e=>{state.filteredName=e.target.value;renderPeople();});
- $('hall-export-people').addEventListener('change',e=>{const key=e.target?.dataset?.hallPerson;if(!key)return;if(e.target.checked)state.chosen.add(key);else state.chosen.delete(key);renderPeople();renderPreview();});
- $('hall-export-selected').addEventListener('click',e=>{const key=e.target.closest('[data-hall-remove]')?.dataset.hallRemove;if(key){state.chosen.delete(key);renderPeople();renderPreview();}});
- $('hall-export-add-visible').addEventListener('click',()=>{for(const [key] of visiblePlayerChoices().slice(0,12))state.chosen.add(key);renderPeople();renderPreview();});
- $('hall-export-all-players').addEventListener('click',()=>{for(const key of state.players.keys())state.chosen.add(key);renderPeople();renderPreview();});
- $('hall-export-clear').addEventListener('click',()=>{state.chosen.clear();renderPeople();renderPreview();});
- $('hall-export-fields').addEventListener('change',e=>{const key=e.target?.dataset?.hallField;if(!key)return;const field=state.fields.find(f=>f.key===key);if(field){field.active=e.target.checked;renderFields();renderPreview();}});
- $('hall-export-fields').addEventListener('click',e=>{const btn=e.target.closest('[data-hall-move]');if(!btn)return;const index=state.fields.findIndex(f=>f.key===btn.dataset.hallMove),target=index+Number(btn.dataset.step);if(index<0||target<0||target>=state.fields.length)return;[state.fields[index],state.fields[target]]=[state.fields[target],state.fields[index]];renderFields();renderPreview();});
- $('hall-export-editions').addEventListener('change',e=>{const ed=e.target?.dataset?.hallEdition;if(!ed)return;if(e.target.checked)state.chosenEditions.add(ed);else state.chosenEditions.delete(ed);renderEditions();renderPreview();});
- $('hall-export-editions-all').addEventListener('click',()=>{state.chosenEditions=new Set(state.editions);renderEditions();renderPreview();});
- $('hall-export-editions-none').addEventListener('click',()=>{state.chosenEditions.clear();renderEditions();renderPreview();});
+ $('hall-export-people').addEventListener('change',e=>{const key=e.target?.dataset?.hallPerson;if(!key)return;if(e.target.checked)state.chosen.add(key);else state.chosen.delete(key);renderPeople();state.previewPage=0;renderPreview();});
+ $('hall-export-selected').addEventListener('click',e=>{const key=e.target.closest('[data-hall-remove]')?.dataset.hallRemove;if(key){state.chosen.delete(key);renderPeople();state.previewPage=0;renderPreview();}});
+ $('hall-export-add-visible').addEventListener('click',()=>{for(const [key] of visiblePlayerChoices().slice(0,12))state.chosen.add(key);renderPeople();state.previewPage=0;renderPreview();});
+ $('hall-export-all-players').addEventListener('click',()=>{for(const key of state.players.keys())state.chosen.add(key);renderPeople();state.previewPage=0;renderPreview();});
+ $('hall-export-clear').addEventListener('click',()=>{state.chosen.clear();renderPeople();state.previewPage=0;renderPreview();});
+ $('hall-export-career-all').addEventListener('change',e=>{
+  state.fields.filter(f=>f.career).forEach(f=>{f.active=e.target.checked;});
+  state.previewPage=0;renderFields();renderPreview();
+ });
+ $('hall-export-fields').addEventListener('change',e=>{const key=e.target?.dataset?.hallField;if(!key)return;const field=state.fields.find(f=>f.key===key);if(field){field.active=e.target.checked;state.previewPage=0;renderFields();renderPreview();}});
+ $('hall-export-fields').addEventListener('click',e=>{const btn=e.target.closest('[data-hall-move]');if(!btn)return;const index=state.fields.findIndex(f=>f.key===btn.dataset.hallMove),target=index+Number(btn.dataset.step);if(index<0||target<0||target>=state.fields.length)return;[state.fields[index],state.fields[target]]=[state.fields[target],state.fields[index]];state.previewPage=0;renderFields();renderPreview();});
+ $('hall-export-editions').addEventListener('change',e=>{const ed=e.target?.dataset?.hallEdition;if(!ed)return;if(e.target.checked)state.chosenEditions.add(ed);else state.chosenEditions.delete(ed);renderEditions();state.previewPage=0;renderPreview();});
+ $('hall-export-editions-all').addEventListener('click',()=>{state.chosenEditions=new Set(state.editions);renderEditions();state.previewPage=0;renderPreview();});
+ $('hall-export-editions-none').addEventListener('click',()=>{state.chosenEditions.clear();renderEditions();state.previewPage=0;renderPreview();});
  $('hall-export-sort').addEventListener('change',e=>{state.sort=e.target.value;state.previewPage=0;renderPreview();});
  $('hall-export-layout').addEventListener('change',e=>{state.layout=e.target.value;state.previewPage=0;renderPreview();});
  $('hall-export-preview-prev').addEventListener('click',()=>{state.previewPage--;renderPreview();});
