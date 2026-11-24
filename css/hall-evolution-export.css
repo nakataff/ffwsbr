@@ -86,8 +86,8 @@
 #hall-export-preview-table tbody tr:nth-child(even){background:rgba(135,180,218,.04)}
 #hall-export-preview-table tbody tr.hall-export-summary-row{background:rgba(3,197,250,.14);border-top:2px solid rgba(3,197,250,.7);border-bottom:2px solid rgba(3,197,250,.35)}
 #hall-export-preview-table tbody tr.hall-export-summary-row td{color:#aeeeff;font-weight:900;line-height:1.4}
-#hall-export-preview-table tbody tr.hall-export-summary-row td:nth-child(2){max-width:330px;white-space:normal}
-#hall-export-preview-table tbody tr.hall-export-summary-row td:nth-child(6){color:#ffffff;font-weight:1000}
+#hall-export-preview-table tbody tr.hall-export-summary-row td.hall-export-summary-teams{max-width:330px;white-space:normal}
+#hall-export-preview-table tbody tr.hall-export-summary-row td.hall-export-summary-label{color:#ffffff;font-weight:1000}
 
 #hall-export-preview-table td{color:#d5e6f3;white-space:nowrap}
 .hall-export-bottom{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:13px}
