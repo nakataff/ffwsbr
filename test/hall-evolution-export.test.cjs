@@ -53,7 +53,7 @@ test('new sections follow Líderes por Equipe and use the Hall-only lazy loader'
  const loader=fs.readFileSync('js/site-shell-fast.min.js','utf8');
  assert.match(loader,/hallTools:'js\/hall-evolution-export\.js/);
  assert.match(loader,/await seq\(\['hallExtras','hall','hallTools'\]\)/);
- assert.match(source,/js\/site-shell-fast\.min\.js\?v=20261124-hall-evolution-export-v3/);
+ assert.match(source,/js\/site-shell-fast\.min\.js\?v=20261124-hall-evolution-export-v4/);
 });
 test('maiores evoluções usa splits consecutivos por jogador, com uma melhor evolução e filtro mínimo',async()=>{
  const a=await setup();
@@ -164,36 +164,69 @@ test('WB 2024 F1 usa colocação calculada da classificatória e F2 só a Grande
   if(stillMissing)assert.equal(api.recordValue(stillMissing,'position'),null,'Não buscar tabela da classificatória para F2');
  }finally{a.close();}
 });
-test('colunas de carreira somam todos os splits uma só vez, preservando seleções de edição',async()=>{
+test('resumo da carreira é uma linha após a última edição, sem colunas extras',async()=>{
  const a=await setup();
  try{
   const {state,w}=a,api=w.CFFHallTools;
-  const bops=state.rows.find(r=>r.name.toUpperCase()==='BOPS'),records=state.rows.filter(r=>r.key===bops.key);
-  const expectedKills=records.reduce((v,r)=>v+r.kills,0),expectedDrops=records.reduce((v,r)=>v+r.matches,0);
-  const stats=state.career.get(bops.key);
-  assert.equal(stats.careerMatches,expectedDrops);
-  assert.equal(stats.careerEditions,records.length);
-  assert(Math.abs(stats.careerAvg-expectedKills/expectedDrops)<1e-10);
-  assert(stats.allTeams.includes('CORINTHIANS'));
-  assert(stats.careerYears.includes('2024'));
-  assert.equal(stats.careerTitles,3);
-  assert.equal(api.recordValue(bops,'careerMatches'),expectedDrops);
-  assert.equal(api.recordValue(bops,'careerEditions'),records.length);
-  assert.equal(api.recordValue(bops,'careerTitles'),3);
-  assert.equal(state.fields.filter(f=>f.active).length,8);
-  assert.equal(state.fields.filter(f=>f.career).length,6);
-  const options=w.document.querySelector('#hall-export-career-all');
-  options.checked=true;
-  options.dispatchEvent(new w.Event('change',{bubbles:true}));
-  assert.equal(state.fields.filter(f=>f.active).length,14);
-  const preview=w.document.querySelector('#hall-export-preview-head');
-  assert.match(preview.innerHTML,/Todas equipes/);
-  assert.match(preview.innerHTML,/Edições jogadas/);
+  const bops=state.rows.find(r=>r.name.toUpperCase()==='BOPS'),history=state.rows.filter(r=>r.key===bops.key);
+  const kills=history.reduce((v,r)=>v+r.kills,0),matches=history.reduce((v,r)=>v+r.matches,0);
   state.chosen=new Set([bops.key]);
+  const selected=api.sortedRows(),visible=api.exportedRows(),last=visible.at(-1),previous=visible.at(-2);
+  assert.equal(visible.length,selected.length+1);
+  assert.equal(new Set(visible.filter(r=>r.isCareerSummary).map(r=>r.key)).size,1);
+  assert(last.isCareerSummary);
+  assert.equal(previous.edition,last.edition);
+  assert.equal(last.order,Math.max(...history.map(r=>r.order)));
+  assert.equal(api.recordValue(last,'kills'),kills);
+  assert.equal(api.recordValue(last,'matches'),matches);
+  assert(Math.abs(api.recordValue(last,'avg')-kills/matches)<.0001);
+  assert.match(api.recordValue(last,'team'),/CORINTHIANS/);
+  assert.match(api.recordValue(last,'edition'),/RESUMO DA CARREIRA · 11 edições/);
+  assert.match(api.recordValue(last,'year'),/2024/);
+  assert.equal(api.recordValue(last,'position'),'3 título(s)');
+  assert.equal(state.fields.length,8,'Continuam só as oito colunas originais');
+  assert.equal(state.fields.filter(f=>f.active).length,8);
+  assert.equal(w.document.querySelectorAll('#hall-export-preview-head th').length,8);
+  api.renderPreview();
+  state.previewPage=1;api.renderPreview();
+  assert.match(w.document.querySelector('#hall-export-preview-body').innerHTML,/hall-export-summary-row/);
+  const option=w.document.querySelector('#hall-export-career-all');
+  assert(option.checked);
+  option.checked=false;option.dispatchEvent(new w.Event('change',{bubbles:true}));
+  assert.equal(api.exportedRows().length,selected.length);
+  option.checked=true;option.dispatchEvent(new w.Event('change',{bubbles:true}));
+  assert.equal(api.exportedRows().length,selected.length+1);
   state.chosenEditions=new Set(['LBFF 5']);
-  const filtered=api.sortedRows();
-  assert.equal(filtered.length,1);
-  assert.equal(api.recordValue(filtered[0],'careerMatches'),expectedDrops,'Filtrar edições não reduz estatísticas da carreira');
+  assert.equal(api.sortedRows().length,1);
+  const only=api.exportedRows();
+  assert.equal(only.length,2,'Um registro filtrado mais seu resumo da carreira');
+  assert.equal(api.recordValue(only[1],'matches'),matches,'Resumo usa toda a carreira mesmo com filtro');
+ }finally{a.close();}
+});
+test('a linha da carreira aparece uma vez na última edição de cada jogador em todos os formatos de abas',async()=>{
+ const a=await setup();
+ try{
+  const {state,w}=a,api=w.CFFHallTools;
+  state.chosen=new Set(['BOPS','CAUAN7','MT7']);
+  const rows=api.sortedRows(),wanted=state.chosen.size;
+  for(const layout of ['single','player','edition','year','chunks']){
+   const groups=api.workbookGroups(rows,layout);
+   const summaries=groups.flatMap(g=>g.rows.filter(r=>r.isCareerSummary));
+   assert.equal(summaries.length,wanted,'Uma linha de resumo por jogador: '+layout);
+   assert.equal(new Set(summaries.map(r=>r.key)).size,wanted);
+   for(const summary of summaries){
+    const sheet=groups.find(g=>g.rows.includes(summary)),index=sheet.rows.indexOf(summary);
+    assert(index>0,'Resumo não pode abrir a aba');
+    assert.equal(sheet.rows[index-1].key,summary.key,'Resumo imediatamente após jogador');
+    assert.equal(sheet.rows[index-1].order,summary.order,'Resumo após último split');
+   }
+   const xlsx=api.xlsxBlob(rows,state.fields.filter(f=>f.active),layout);
+   const contents=localHeaders(await xlsx.blob.arrayBuffer());
+   assert.equal(Object.entries(contents).filter(([k])=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k)).length,groups.length);
+   const summaryCells=Object.values(contents).reduce((n,v)=>n+(v.match(/RESUMO DA CARREIRA/g)||[]).length,0);
+   assert.equal(summaryCells,wanted,'Exportação deve conter um resumo por jogador');
+   assert(contents['xl/styles.xml'].includes('<cellXfs count="7">'));
+  }
  }finally{a.close();}
 });
 test('prévia mostra todas as linhas por páginas e respeita 10, 25, 50 ou 100',async()=>{
@@ -212,7 +245,7 @@ test('prévia mostra todas as linhas por páginas e respeita 10, 25, 50 ou 100',
   assert.equal(w.document.querySelectorAll('#hall-export-preview-body tr').length,25);
   assert.match(w.document.querySelector('#hall-export-preview-page').textContent,/Linhas 1–25/);
   picker.value='100';picker.dispatchEvent(new w.Event('change',{bubbles:true}));
-  assert.equal(w.document.querySelectorAll('#hall-export-preview-body tr').length,api.sortedRows().length);
+  assert.equal(w.document.querySelectorAll('#hall-export-preview-body tr').length,api.exportedRows().length);
   assert(w.document.querySelector('#hall-export-preview-next').disabled);
  }finally{a.close();}
 });
