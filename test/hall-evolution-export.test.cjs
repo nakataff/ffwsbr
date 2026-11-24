@@ -53,7 +53,7 @@ test('new sections follow Líderes por Equipe and use the Hall-only lazy loader'
  const loader=fs.readFileSync('js/site-shell-fast.min.js','utf8');
  assert.match(loader,/hallTools:'js\/hall-evolution-export\.js/);
  assert.match(loader,/await seq\(\['hallExtras','hall','hallTools'\]\)/);
- assert.match(source,/js\/site-shell-fast\.min\.js\?v=20261124-hall-evolution-export-v2/);
+ assert.match(source,/js\/site-shell-fast\.min\.js\?v=20261124-hall-evolution-export-v3/);
 });
 test('maiores evoluções usa splits consecutivos por jogador, com uma melhor evolução e filtro mínimo',async()=>{
  const a=await setup();
@@ -131,5 +131,88 @@ test('Excel gera abas próprias, números, cabeçalho estilizado, congelamento e
   const csvText=await csv.text();
   assert(csvText.startsWith('\uFEFF'));
   assert(csvText.includes('"Jogador";"Equipe";"Abates"'));
+ }finally{a.close();}
+});
+
+test('GOD E-SPORTS LBFF 5 usa 17º da classificatória quando não foi finalista',async()=>{
+ const a=await setup();
+ try{
+  const {w,state}=a,api=w.CFFHallTools;
+  const bops=state.rows.find(r=>r.name.toUpperCase()==='BOPS'&&r.edition==='LBFF 5');
+  assert(bops,'Bops precisa estar cadastrado na LBFF 5');
+  assert.equal(bops.team,'GOD E-SPORTS');
+  assert.equal(api.recordValue(bops,'position'),17);
+  const p=read('ranking-data/hall-edition-placements.json');
+  assert.equal(p.schema,2);
+  assert.equal(p.positions['LBFF 5'].GODESPORTS,17);
+  assert.match(p.sourceByEdition['LBFF 5'],/classificação para demais equipes/);
+ }finally{a.close();}
+});
+test('WB 2024 F1 usa colocação calculada da classificatória e F2 só a Grande Final',async()=>{
+ const a=await setup();
+ try{
+  const {w,state}=a,api=w.CFFHallTools,positions=read('ranking-data/hall-edition-placements.json');
+  assert.equal(Object.keys(positions.positions['WB 2024 F1']).length,18);
+  assert.equal(Object.keys(positions.positions['WB 2024 F2']).length,12);
+  assert.equal(positions.positions['WB 2024 F1'].TEAMSOLID,1);
+  assert.equal(positions.positions['WB 2024 F2'].FLUXOW7M,1);
+  assert.match(positions.sourceByEdition['WB 2024 F1'],/Classificatória/);
+  assert.match(positions.sourceByEdition['WB 2024 F2'],/Grande Final/);
+  const bops=state.rows.find(r=>r.name.toUpperCase()==='BOPS'&&r.edition==='WB 2024 F2');
+  assert(bops&&api.recordValue(bops,'position')===1);
+  const stillMissing=state.rows.find(r=>r.edition==='WB 2024 F2'&&r.team==='MAGIC SQUAD');
+  if(stillMissing)assert.equal(api.recordValue(stillMissing,'position'),null,'Não buscar tabela da classificatória para F2');
+ }finally{a.close();}
+});
+test('colunas de carreira somam todos os splits uma só vez, preservando seleções de edição',async()=>{
+ const a=await setup();
+ try{
+  const {state,w}=a,api=w.CFFHallTools;
+  const bops=state.rows.find(r=>r.name.toUpperCase()==='BOPS'),records=state.rows.filter(r=>r.key===bops.key);
+  const expectedKills=records.reduce((v,r)=>v+r.kills,0),expectedDrops=records.reduce((v,r)=>v+r.matches,0);
+  const stats=state.career.get(bops.key);
+  assert.equal(stats.careerMatches,expectedDrops);
+  assert.equal(stats.careerEditions,records.length);
+  assert(Math.abs(stats.careerAvg-expectedKills/expectedDrops)<1e-10);
+  assert(stats.allTeams.includes('CORINTHIANS'));
+  assert(stats.careerYears.includes('2024'));
+  assert.equal(stats.careerTitles,3);
+  assert.equal(api.recordValue(bops,'careerMatches'),expectedDrops);
+  assert.equal(api.recordValue(bops,'careerEditions'),records.length);
+  assert.equal(api.recordValue(bops,'careerTitles'),3);
+  assert.equal(state.fields.filter(f=>f.active).length,8);
+  assert.equal(state.fields.filter(f=>f.career).length,6);
+  const options=w.document.querySelector('#hall-export-career-all');
+  options.checked=true;
+  options.dispatchEvent(new w.Event('change',{bubbles:true}));
+  assert.equal(state.fields.filter(f=>f.active).length,14);
+  const preview=w.document.querySelector('#hall-export-preview-head');
+  assert.match(preview.innerHTML,/Todas equipes/);
+  assert.match(preview.innerHTML,/Edições jogadas/);
+  state.chosen=new Set([bops.key]);
+  state.chosenEditions=new Set(['LBFF 5']);
+  const filtered=api.sortedRows();
+  assert.equal(filtered.length,1);
+  assert.equal(api.recordValue(filtered[0],'careerMatches'),expectedDrops,'Filtrar edições não reduz estatísticas da carreira');
+ }finally{a.close();}
+});
+test('prévia mostra todas as linhas por páginas e respeita 10, 25, 50 ou 100',async()=>{
+ const a=await setup();
+ try{
+  const {state,w}=a,api=w.CFFHallTools;
+  state.chosen=new Set(['BOPS','CAUAN7','MT7']);
+  api.renderPreview();
+  const table=w.document.querySelectorAll('#hall-export-preview-body tr');
+  assert.equal(table.length,10);
+  assert.match(w.document.querySelector('#hall-export-preview-page').textContent,/Linhas 1–10/);
+  w.document.querySelector('#hall-export-preview-next').click();
+  assert.match(w.document.querySelector('#hall-export-preview-page').textContent,/Linhas 11–20/);
+  const picker=w.document.querySelector('#hall-export-preview-page-size');
+  picker.value='25';picker.dispatchEvent(new w.Event('change',{bubbles:true}));
+  assert.equal(w.document.querySelectorAll('#hall-export-preview-body tr').length,25);
+  assert.match(w.document.querySelector('#hall-export-preview-page').textContent,/Linhas 1–25/);
+  picker.value='100';picker.dispatchEvent(new w.Event('change',{bubbles:true}));
+  assert.equal(w.document.querySelectorAll('#hall-export-preview-body tr').length,api.sortedRows().length);
+  assert(w.document.querySelector('#hall-export-preview-next').disabled);
  }finally{a.close();}
 });
