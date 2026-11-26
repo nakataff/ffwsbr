@@ -34,6 +34,16 @@ class PhaseTwoLayout(unittest.TestCase):
         self.assertEqual(len(events[0]['results']), 12)
         self.assertTrue(any(e['kills'] == 0 for e in entries))
 
+    def test_reserve_alias_stays_in_xprojekt_without_creating_a_duplicate_player(self):
+        values = copy.deepcopy(fixture['values'])
+        row = next(row for row in values if len(row) > 8 and row[8] == 'XP.Z4CK')
+        row[8] = 'XP.PERUU'
+        entries, _ = parse(values)
+        reserve = next(entry for entry in entries if entry['playerId'] == 'xprojekt-peruvi')
+        self.assertEqual(reserve['team'], 'xProjekt')
+        self.assertEqual(reserve['name'], 'PERUVI')
+        self.assertEqual(len({entry['playerId'] for entry in entries}), 48)
+
     def test_a_changed_player_kill_total_is_rejected(self):
         values = copy.deepcopy(fixture['values'])
         values[2][10] += 1

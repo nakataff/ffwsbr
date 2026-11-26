@@ -58,9 +58,9 @@ test('daily selection keeps the half-drop minimum and renders missing damage wit
  }finally{w.close();}
 });
 
-test('phase-two days two and three retain real damage, reconcile every team/drop and expose both MVP filters',()=>{
+test('phase-two days two, three and four retain real damage, reconcile every team/drop and expose both MVP filters',()=>{
  const summary=read('mvp-resumo'),stage=summary.stages.indexOf('segundaFase');
- for(const [day,count] of [[2,50],[3,48]]){
+ for(const [day,count] of [[2,50],[3,48],[4,50]]){
   const rows=players.entries.filter(e=>e.stage==='segundaFase'&&e.day===day);
   assert.equal(rows.length,288);assert.equal(new Set(rows.map(e=>e.playerId)).size,count);
   assert(rows.every(e=>Number.isInteger(e.damage)&&e.damage>=0&&Number.isInteger(e.assists)&&e.assists>=0));
@@ -81,4 +81,16 @@ test('phase-two days two and three retain real damage, reconcile every team/drop
  assert.deepEqual([yago.kills,yago.assists,yago.damage],[1,4,2268]);
  const mink=players.entries.find(e=>e.stage==='segundaFase'&&e.day===3&&e.roundDrop===1&&e.playerId==='team-flash-minkcuog');
  assert.deepEqual([mink.kills,mink.assists,mink.damage],[3,2,590]);
+});
+
+
+test('day four keeps substitutions as one drop and reconciles complete daily totals and profiles',()=>{
+ const rows=players.entries.filter(e=>e.stage==='segundaFase'&&e.day===4);
+ assert.deepEqual([rows.reduce((s,e)=>s+e.kills,0),rows.reduce((s,e)=>s+e.damage,0),rows.reduce((s,e)=>s+e.assists,0)],[576,408102,698]);
+ const reserve=rows.filter(e=>e.playerId==='xprojekt-peruvi');assert.equal(reserve.length,1);assert.deepEqual([reserve[0].roundDrop,reserve[0].kills,reserve[0].damage],[6,0,6]);
+ const matrix=rows.filter(e=>e.playerId==='team-inf-matrix');assert.equal(matrix.length,1);
+ for(const id of ['xprojekt-peruvi','team-inf-matrix']){
+  const profile=read('player-details/'+id);assert(profile.entries.some(e=>e.stage==='segundaFase'&&e.date==='2026-11-22'));
+ }
+ const imported=players.individualImports.find(item=>item.stage==='segundaFase'&&item.day===4);assert.equal(imported.rows,288);assert.deepEqual(imported.missingMetrics,[]);
 });

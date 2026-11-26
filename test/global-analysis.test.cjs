@@ -33,7 +33,7 @@ async function openPage(t,search=''){
  window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
  window.loadProjectionModule=()=>import(base+'projecao.mjs');
  window.loadBetweenModule=()=>import(base+'entre-fases.mjs');
- window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=3')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=3')",'window.loadBetweenModule()'));
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=4')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=3')",'window.loadBetweenModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
@@ -362,7 +362,7 @@ test('Last Chance simulates exactly four slots across ten drops and waits for th
  assert(lc.forecast.every(row=>row.probability>=0&&row.probability<=100&&row.low<row.points&&row.points<row.high));
  assert(lc.cutoff>0);assert.equal(lc.form.los.phaseTwoWeight,75);assert.equal(lc.form.los.matches,24);
  assert.equal(lc.form['horaa-esports'].phaseTwoWeight,0);assert.equal(lc.form['stellar-esport'].matches,0);
- assert.deepEqual(lc.coverage,{collectiveThrough:'2026-11-22',individualThrough:'2026-11-21'});
+ assert.deepEqual(lc.coverage,{collectiveThrough:'2026-11-22',individualThrough:'2026-11-22'});
  const partial=structuredClone(summary);partial.phases.segundaFase.rounds.at(-1).teams.rrq.pop();
  assert.equal(build({data,overview,analysis:partial,previous:published}).lastChance.forecast.length,0);
 });
@@ -407,7 +407,7 @@ test('Projections opens Last Chance, shares its URL and preserves old Phase 2 li
  assert.equal(document.querySelectorAll('tr.is-favorite').length,4);
  assert.equal(document.querySelectorAll('.rx-projection-finalists li').length,4);
  assert.match(document.querySelector('.rx-projection-cutoff').textContent,/4ª vaga/);
- assert.match(document.querySelector('.rx-projection-coverage').textContent,/22\/11.*21\/11/);
+ assert.match(document.querySelector('.rx-projection-coverage').textContent,/22\/11.*22\/11/);
  assert.equal(document.querySelector('#rx-projection-team'),null);
  assert.equal(document.querySelectorAll('.rx-projection-days').length,0);
  assert.equal(document.querySelector('.rx-projection-method').open,false);

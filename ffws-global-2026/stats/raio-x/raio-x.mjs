@@ -129,7 +129,7 @@ function boot(data){
   }
   story.innerHTML='<div class="rx-empty" data-rx-projection-loading><h1 id="rx-headline">Projeções</h1><p role="status">Carregando as chances de classificação…</p></div>';
   projectionLoad??=Promise.all([
-   import('./projecao.mjs?v=3'),
+   import('./projecao.mjs?v=4'),
    fetch(new URL('./projecao.json',import.meta.url),{cache:'no-cache'}).then(response=>{
     if(!response.ok)throw Error('Projeções indisponíveis');
     return response.json();

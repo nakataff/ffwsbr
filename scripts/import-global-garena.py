@@ -36,6 +36,7 @@ TAG.SHOTO17 tag-shoto
 TSG.ARJUN tsg-pros-arjunn
 TSG.SOMI17 tsg-pros-somi
 XP.LBEHJAAA xprojekt-lbehja
+XP.PERUU xprojekt-peruvi
 XP.POOKIX xprojekt-pokiix
 XP.SKYITOO xprojekt-skyito
 """.strip().splitlines())

@@ -15,7 +15,7 @@ test('phase two closes with day four only, eight finalists and twelve confirmed 
  assert.deepEqual(ids,['horaa-esports','stellar-esport','rrq','los','onic','resurrection-esports','gow','xprojekt','blue-cheese','team-inf','tag','btr']);
  assert.equal(backup.config.date,'2026-11-27');assert.equal(backup.config.daySettings[0].time,'07:00');
  assert(backup.drops.every(d=>Object.values(d.points).every(v=>v===null)));
- assert(!read('players').entries.some(e=>e.stage==='segundaFase'&&e.day===4));
+ assert.equal(read('players').entries.filter(e=>e.stage==='segundaFase'&&e.day===4).length,288);
 });
 
 test('between-phase averages handle unequal samples, canonical maps, official opponent ranks and zero baselines',async()=>{
