@@ -32,7 +32,7 @@
     divider.setAttribute('aria-valuetext',value+'% lançamento, '+(100-value)+'% classificação');
     try{localStorage.setItem(key,String(value))}catch(_){}
   }
-  let saved=48;
+  let saved=55;
   try{const raw=Number(localStorage.getItem(key));if(Number.isFinite(raw)&&raw>=34&&raw<=66)saved=raw}catch(_){}
   setSplit(saved);
   toolbar.querySelector('[data-cff-live-equal]').addEventListener('click',()=>setSplit(50));
@@ -66,8 +66,15 @@
   const tableDetails=[...table.querySelectorAll('.sub-summary-section')].find(el=>el.querySelector('#table-print-area'));
   if(tableDetails)tableDetails.open=true;
 
+  function syncSplitMode(){
+    const allowed=window.innerWidth>=1080 &&
+      !document.body.classList.contains('cff-camp-focus') &&
+      !document.body.classList.contains('cff-camp-launch-focus');
+    if(!allowed && document.body.classList.contains('cff-live-maximized'))toggleMax(false);
+    document.body.classList.toggle('cff-live-split-active',allowed);
+  }
   function toggleMax(force){
-    const active=typeof force==='boolean'?force:!document.body.classList.contains('cff-live-maximized');
+    const active=(typeof force==='boolean'?force:!document.body.classList.contains('cff-live-maximized')) && window.innerWidth>=1080;
     document.body.classList.toggle('cff-live-maximized',active);
     expand.textContent=active?'↙ Sair da tela inteira':'⛶ Ocupar tela inteira';
     expand.setAttribute('aria-pressed',String(active));
@@ -77,14 +84,22 @@
   document.addEventListener('keydown',event=>{
     if(event.key==='Escape'&&document.body.classList.contains('cff-live-maximized')&&document.getElementById('cff-global-review')?.hidden!==false)toggleMax(false);
   });
-  window.matchMedia('(max-width: 1079px)').addEventListener('change',event=>{if(event.matches)toggleMax(false)});
+  const responsive=window.matchMedia('(max-width: 1079px)');
+  responsive.addEventListener('change',()=>syncSplitMode());
+  new MutationObserver(syncSplitMode).observe(document.body,{attributes:true,attributeFilter:['class']});
+  syncSplitMode();
 
   const nav=document.getElementById('cff-camp-nav');
   if(nav&&!document.getElementById('cff-camp-live-open')){
     const button=document.createElement('button');
     button.type='button';button.id='cff-camp-live-open';button.className='cff-camp-btn';
     button.textContent='Tabela + quedas';button.title='Abrir os dois painéis lado a lado';
-    button.addEventListener('click',()=>{toggleMax(false);launch.open=true;table.open=true;layout.scrollIntoView({behavior:'smooth',block:'start'})});
+    button.addEventListener('click',()=>{
+      if(document.body.classList.contains('cff-camp-focus'))document.getElementById('cff-camp-focus')?.click();
+      if(document.body.classList.contains('cff-camp-launch-focus'))document.getElementById('cff-camp-launch-focus')?.click();
+      toggleMax(false);syncSplitMode();launch.open=true;table.open=true;
+      layout.scrollIntoView({behavior:'smooth',block:'start'});
+    });
     nav.append(button);
   }
 
