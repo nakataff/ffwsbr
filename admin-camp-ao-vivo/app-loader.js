@@ -106,7 +106,7 @@
       document.head.appendChild(style);
       // A folha de estilo operacional precisa vir após o CSS legado descompactado.
       const liveStyle=document.createElement('link');
-      liveStyle.rel='stylesheet';liveStyle.href='admin-camp-ao-vivo/live-viewport.css?v=20261128-dual-pane-v1';
+      liveStyle.rel='stylesheet';liveStyle.href='admin-camp-ao-vivo/live-viewport.css?v=20261128-dual-pane-v2';
       document.head.appendChild(liveStyle);
 
       if(shouldSeed&&presetResponse?.ok){
