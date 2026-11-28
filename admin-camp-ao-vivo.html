@@ -29,7 +29,7 @@
       body.cff-auth-pending>.container,body.cff-auth-pending>.cff-camp-topbar,
       body.cff-assets-pending>.container,body.cff-assets-pending>.cff-camp-topbar{visibility:hidden}
       .cff-camp-auth{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;padding:20px;background:#070c13}
-      .cff-camp-auth[hidden]{display:none!important}
+      .cff-camp-auth[hidden],#cff-new-drop[hidden]{display:none!important}
       .cff-camp-auth-card{width:min(420px,100%);box-sizing:border-box;padding:26px;border:1px solid #2b4057;border-radius:18px;background:#0d1622;box-shadow:0 24px 70px rgba(0,0,0,.5);text-align:center}
       .cff-camp-auth-card strong{display:block;font-size:1rem}.cff-camp-auth-card span{display:block;margin-top:7px;color:#88a3bd;font-size:.76rem}
       .cff-camp-load-error{margin:20px;padding:14px;border:1px solid #a3384b;border-radius:10px;background:#2b1016;color:#ffd7dd;font-weight:800}
@@ -331,6 +331,8 @@ G7X, g7x, G7X</textarea>
                     <div style="flex:1">
                         <label for="drop-num">Queda atual</label>
                         <select id="drop-num" onchange="loadDropData()"></select>
+                        <button type="button" class="btn-mini" id="cff-new-drop" hidden style="width:100%;margin-top:7px">+ Nova Queda</button>
+                        <span id="cff-new-drop-status" role="status" aria-live="polite" style="font-size:12px;display:block;margin-top:4px"></span>
                     </div>
                     <div style="flex:1.4" id="input-mode-box">
                         <label for="input-mode">Modo de entrada</label>
@@ -544,7 +546,7 @@ G7X, g7x, G7X</textarea>
 
     <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script type="module" src="admin-camp-ao-vivo/auth.js?v=20261001-camp-v4"></script>
-    <script src="admin-camp-ao-vivo/app-loader.js?v=20261127-final-pronta-v1"></script>
+    <script src="admin-camp-ao-vivo/app-loader.js?v=20261128-nova-queda-v1"></script>
     <script type="module" src="admin-camp-ao-vivo/notifications.js?v=20261010-results-v1"></script>
 <script defer src="admin-camp-ao-vivo/elimination-focus.js?v=20261106-mobile-v1"></script>
 <script defer src="admin-camp-ao-vivo/placement-live.js?v=20261025-native-placement-v4"></script>

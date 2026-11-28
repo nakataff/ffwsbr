@@ -874,3 +874,9 @@ Cada card é um único link acessível; o Instagram abre a consulta de valores n
 `stages.json.lastChance.rows` guarda os totais oficiais das 12 equipes em dez quedas, enviados pelo administrador. RRQ, Blue Cheese, Resurrection e Bigetron avançaram. `coverage.collective: "totals"` distingue esses totais de resultados por queda; `rounds` permanece vazio e não há entradas individuais fictícias. A tabela, os resumos e a avaliação da projeção aceitam esses totais completos. Quando chegarem as planilhas, conferir os placares antes de substituir a cobertura por dados detalhados.
 
 `stages.json.final.qualifiedTeams` identifica os 12 finalistas e a origem da vaga. O preparo replica essa lista para o resumo da home, o Início e `camp-model.json.finalists`; o Camp pode preparar a final sem inventar as dez quedas anteriores. A home mostra os finalistas na lateral, sem tratar a ordem da lista como classificação, e volta aos pontos reais quando a final começar.
+
+### Criar quedas na final sem limite
+
+`admin-camp-ao-vivo/drop-controls.js`, carregado pelo loader após o núcleo, disponibiliza **Nova Queda** abaixo do seletor quando Champion Rush sem limite está ativo. O seletor lista somente as quedas já criadas; a extensão automática do núcleo aguarda resultados em todas as anteriores. O botão permite acrescentar a 10ª e seguintes manualmente, captura a edição atual, preserva o histórico e salva no navegador usando os mecanismos existentes. Não publica resultados, não altera o Champion Point e não acrescenta quedas depois de um campeão definido. Testes integrados em `test/camp-infinite-drops.test.cjs`.
+
+Antes de iniciar o núcleo, o loader restaura `ffws_v68_champion_rush.unlimited` a partir de `config.v68ChampionRushUnlimited` do backup protegido. Isso evita reabrir uma final infinita como se tivesse um total fixo de quedas; as demais preferências visuais são mantidas. Backups antigos sem esse campo não mudam a preferência existente.

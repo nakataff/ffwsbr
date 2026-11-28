@@ -25,6 +25,15 @@
     ));
   }
   function read(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(_){return null}}
+  function restoreChampionPreferences(data){
+    if(typeof data?.config?.v68ChampionRushUnlimited!=='boolean')return;
+    try{
+      const key='ffws_v68_champion_rush',saved=JSON.parse(localStorage.getItem(key)||'null');
+      const prefs=saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{};
+      prefs.unlimited=data.config.v68ChampionRushUnlimited;
+      localStorage.setItem(key,JSON.stringify(prefs));
+    }catch(error){console.warn('[Camp] Preferência de quedas indisponível',error)}
+  }
   function restoreCloudHandoff(){
     const key='cff_camp_cloud_restore_v1';
     const raw=sessionStorage.getItem(key);
@@ -78,6 +87,9 @@
       const viewport=document.createElement('script');
       viewport.src='admin-camp-ao-vivo/live-viewport.js?v=20261128-split-fix-v2';
       document.body.appendChild(viewport);
+      const drops=document.createElement('script');
+      drops.src='admin-camp-ao-vivo/drop-controls.js?v=20261128-nova-queda-v1';
+      document.body.appendChild(drops);
     };
     workspace.onload=()=>{const core=document.createElement('script');core.src='js/global-camp-core.js?v=20261127-final-pronta-v1';core.onload=()=>{const model=document.createElement('script');model.src='admin-camp-ao-vivo/global-series.js?v=20261127-final-pronta-v1';model.onload=done;model.onerror=done;document.body.appendChild(model)};core.onerror=done;document.body.appendChild(core)};workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
   }
@@ -126,6 +138,7 @@
       const protectedAutosave=localStorage.getItem('ffws_autosave');
       const protectedData=read('ffws_autosave');
       window.__CFF_CAMP_INITIAL_BACKUP__=protectedData;
+      restoreChampionPreferences(protectedData);
       if(hasTournament(protectedData)){
         // Preserve the state present before any bundle or enhancement can write.
         try{localStorage.setItem('cff_camp_startup_backup_v1',JSON.stringify({

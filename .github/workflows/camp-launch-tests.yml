@@ -10,6 +10,7 @@ on:
       - 'admin-camp-ao-vivo/final-wiki.js'
       - 'admin-camp-ao-vivo/enhancements.js'
       - 'admin-camp-ao-vivo/launch-extras.js'
+      - 'admin-camp-ao-vivo/drop-controls.js'
       - 'admin-camp-ao-vivo/placement-live.js'
       - 'admin-camp-ao-vivo/app.js.gz'
       - 'admin-camp-ao-vivo/elimination-focus.js'
@@ -30,4 +31,4 @@ jobs:
       - run: node --test --test-concurrency=1 test/camp-*.test.cjs
         env:
           NODE_PATH: /tmp/cff-camp-tests/node_modules
-      - run: node --check admin-camp-ao-vivo/launch-extras.js && node --check admin-camp-ao-vivo/placement-live.js && node --check admin-camp-ao-vivo/tournament-setup.js && node --check admin-camp-ao-vivo/workspace.js && node --check admin-camp-ao-vivo/app-loader.js
+      - run: node --check admin-camp-ao-vivo/drop-controls.js && node --check admin-camp-ao-vivo/launch-extras.js && node --check admin-camp-ao-vivo/placement-live.js && node --check admin-camp-ao-vivo/tournament-setup.js && node --check admin-camp-ao-vivo/workspace.js && node --check admin-camp-ao-vivo/app-loader.js
