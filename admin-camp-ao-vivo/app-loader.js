@@ -69,7 +69,16 @@
 
   function loadWorkspace(){
     const workspace=document.createElement('script');workspace.src='admin-camp-ao-vivo/workspace.js?v=20261106-mobile-v1';
-    const done=()=>{document.body.classList.remove('cff-assets-pending');setStatus('Pronto • fases + auto-save ativos');const viewport=document.createElement('script');viewport.src='admin-camp-ao-vivo/live-viewport.js?v=20261128-dual-pane-v1';document.body.appendChild(viewport)};
+    const done=()=>{
+      document.body.classList.remove('cff-assets-pending');
+      setStatus('Pronto • fases + auto-save ativos');
+      // Os extras injetam estilos depois do bundle legado: manter o split por último.
+      const live=document.getElementById('cff-camp-live-viewport-css');
+      if(live)document.head.appendChild(live);
+      const viewport=document.createElement('script');
+      viewport.src='admin-camp-ao-vivo/live-viewport.js?v=20261128-split-fix-v2';
+      document.body.appendChild(viewport);
+    };
     workspace.onload=()=>{const core=document.createElement('script');core.src='js/global-camp-core.js?v=20261127-final-pronta-v1';core.onload=()=>{const model=document.createElement('script');model.src='admin-camp-ao-vivo/global-series.js?v=20261127-final-pronta-v1';model.onload=done;model.onerror=done;document.body.appendChild(model)};core.onerror=done;document.body.appendChild(core)};workspace.onerror=()=>{done();setStatus('Pronto • atalhos de navegação indisponíveis')};document.body.appendChild(workspace);
   }
   function loadTournamentSetup(){
@@ -106,7 +115,7 @@
       document.head.appendChild(style);
       // A folha de estilo operacional precisa vir após o CSS legado descompactado.
       const liveStyle=document.createElement('link');
-      liveStyle.rel='stylesheet';liveStyle.href='admin-camp-ao-vivo/live-viewport.css?v=20261128-dual-pane-v2';
+      liveStyle.id='cff-camp-live-viewport-css';liveStyle.rel='stylesheet';liveStyle.href='admin-camp-ao-vivo/live-viewport.css?v=20261128-split-fix-v2';
       document.head.appendChild(liveStyle);
 
       if(shouldSeed&&presetResponse?.ok){
