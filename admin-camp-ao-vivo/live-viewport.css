@@ -41,12 +41,12 @@
     min-width:0!important;margin:0!important;padding:12px!important;
     overflow:visible!important;
   }
-  body .main-layout .table-print-area,
   body .main-layout .table-container,
   body .main-layout .summary-toolbar,
   body .main-layout .sub-summary-content{max-width:100%!important;min-width:0!important;box-sizing:border-box}
+  body .main-layout>.summary-section{overflow-x:auto!important}
   body .main-layout .table-container{overflow-x:auto!important}
-  body .main-layout .table-print-area{overflow:visible!important}
+  /* Não limitar o tamanho manual da área de captura: exportação e print continuam intactos. */
   body .main-layout .sub-summary-section{min-width:0}
   body .main-layout>.summary-section .sub-summary-section>summary{cursor:pointer}
   body .main-layout>.drop-section #teams-inputs-container{max-width:100%!important;min-width:0!important}
