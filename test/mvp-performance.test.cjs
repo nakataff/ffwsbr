@@ -19,8 +19,10 @@ test('home waits for its route and uses two static summaries without Firebase',a
   assert.deepEqual(calls.sort(),['ffws-global-2026/home-resumo.json','ffws-global-2026/selecoes-resumo.json']);
   const summary=read('ffws-global-2026/home-resumo.json');
   const leader=d.getElementById('home-tbody-teams').querySelector('tr');
-  assert.equal(leader.querySelector('.home-rank-identity b').textContent,summary.teams[0].name);
-  assert.equal(Number(leader.querySelector('.home-rank-points').textContent),summary.teams[0].points);
+  const finalists=summary.stage!=='final'&&summary.finalists?.length===12;
+  assert.equal(leader.querySelector('.home-rank-identity b').textContent,(finalists?summary.finalists:summary.teams)[0].name);
+  if(finalists){assert.equal(d.querySelectorAll('#home-tbody-teams tr').length,12);assert.equal(leader.querySelector('.home-rank-points'),null);}
+  else assert.equal(Number(leader.querySelector('.home-rank-points').textContent),summary.teams[0].points);
   assert.match(d.getElementById('home-tbody-players').textContent,/BuTziN/);
   assert.equal(d.querySelectorAll('.cff-gsel-home-row').length,5);
   const dailySelection=d.getElementById('global-selection-home-widget');

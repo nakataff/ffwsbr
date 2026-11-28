@@ -210,13 +210,14 @@ test('edition profiles choose individual or comparison on open while preserving 
 
 test('world player cards expose real damage and peak stats without inventing rank and render in all formats',async()=>{
  const m=await modelPromise,{renderRankingCard}=await rendererPromise,p=read('ffws-global-2026/player-data/fx-butzin.json');
- const base={id:'fx-butzin',kind:'players',mode:'player',event:'FFWS Global Finals 2026',stage:'Geral',title:'BuTziN · Desempenho',metric:'kills',url:'https://centralfreefire.com.br/ffws-global-2026/jogador/?id=fx-butzin'};
- const original={name:p.name,team:p.team.name,photo:p.photoLarge,logo:p.team.logo,rank:p.ranks.geral,ranking:p.ranks.geral,bestDrop:p.highlights.geral.drop.kills,bestRound:p.highlights.geral.round.kills,...p.stats.geral};
+ const base={id:'fx-butzin',kind:'players',mode:'player',event:'FFWS Global Finals 2026',stage:'Fase 1',title:'BuTziN · Desempenho',metric:'kills',url:'https://centralfreefire.com.br/ffws-global-2026/jogador/?id=fx-butzin'};
+ const original={name:p.name,team:p.team.name,photo:p.photoLarge,logo:p.team.logo,rank:p.ranks.classificatoria,ranking:p.ranks.classificatoria,bestDrop:p.highlights.classificatoria.drop.kills,bestRound:p.highlights.classificatoria.round.kills,...p.stats.classificatoria};
  const data=m.normalizePayload({...base,rows:[original]});
- const stats=p.stats.geral;
+ const stats=p.stats.classificatoria;
  const avgDamage=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(stats.damage/stats.matches);
- assert.equal(data.mode,'player');assert.equal(data.rows[0].ranking,p.ranks.geral);assert.equal(m.statText(data.rows[0],'avgDamage'),avgDamage);
- assert.equal(m.statText(data.rows[0],'bestRound'),String(p.highlights.geral.round.kills));
+ assert.equal(m.statText(m.normalizePayload({...base,rows:[{...original,damage:null}]}).rows[0],'avgDamage'),'—','missing damage remains unavailable');
+ assert.equal(data.mode,'player');assert.equal(data.rows[0].ranking,p.ranks.classificatoria);assert.equal(m.statText(data.rows[0],'avgDamage'),avgDamage);
+ assert.equal(m.statText(data.rows[0],'bestRound'),String(p.highlights.classificatoria.round.kills));
  const noRank=m.normalizePayload({...base,rows:[{...original,rank:null,ranking:null,bestDrop:null,bestRound:null}]});
  assert.equal(noRank.rows[0].rank,null);assert.equal(noRank.rows[0].ranking,null);
  assert.equal(m.statValue(noRank.rows[0],'bestDrop'),null);
@@ -241,8 +242,8 @@ test('world player cards expose real damage and peak stats without inventing ran
 test('world player editor supports statistics, photo scaling and the full-ficha template',async()=>{
  const u=await editor();try{
   const p=read('ffws-global-2026/player-data/fx-butzin.json');
-  const profile={id:'profile-fx-butzin',kind:'players',mode:'player',title:'BuTziN',event:'FFWS Global Finals 2026',stage:'Geral',url:'https://centralfreefire.com.br/ffws-global-2026/jogador/?id=fx-butzin',
-   rows:[{name:p.name,team:p.team.name,logo:p.team.logo,photo:p.photoLarge,rank:1,ranking:1,bestDrop:10,bestRound:28,...p.stats.geral}],
+  const profile={id:'profile-fx-butzin',kind:'players',mode:'player',title:'BuTziN',event:'FFWS Global Finals 2026',stage:'Fase 1',url:'https://centralfreefire.com.br/ffws-global-2026/jogador/?id=fx-butzin',
+   rows:[{name:p.name,team:p.team.name,logo:p.team.logo,photo:p.photoLarge,rank:1,ranking:1,bestDrop:10,bestRound:28,...p.stats.classificatoria}],
    initialOptions:{template:'player'}};
   await u.open(profile);assert.equal(u.$('[name="template"]').value,'player');
   assert(!u.$('[data-card-stats]').hidden);assert(!u.$('[data-card-featured]').hidden);
