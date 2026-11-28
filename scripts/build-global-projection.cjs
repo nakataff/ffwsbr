@@ -213,11 +213,12 @@ function build({data,overview,analysis,previous}){
   const ids=[...new Set([...newcomers,...(days.at(-1)?.result.slice(2).map(row=>row.id)||[])])];
   if(ready&&days.length===4&&days.every(day=>day.result.length===LOBBY)&&ids.length===LOBBY&&ids.every(id=>ranks.has(id))){
    const round=analysis.phases.lastChance?.rounds[0],drops=completeDrops(round);
-   const actual=overview.tables.lastChance?.days?.[0]?.rows||overview.tables.lastChance?.rows||[];
+   const daily=overview.tables.lastChance?.days?.[0]?.rows;
+   const actual=daily?.length?daily:overview.tables.lastChance?.rows||[];
    const actualIds=actual.map(row=>idOf(row.team));
-   const complete=drops.length===fixture.matches&&actual.length===LOBBY&&new Set(actualIds).size===LOBBY&&
+   const complete=(drops.length===fixture.matches||overview.tables.lastChance?.finished===true)&&actual.length===LOBBY&&new Set(actualIds).size===LOBBY&&
     actualIds.every(id=>ids.includes(id))&&actual.every((row,i)=>row.position===i+1&&row.matches===fixture.matches);
-   const started=Boolean(round?.teams&&Object.keys(round.teams).length);
+   const started=actual.some(row=>row.matches>0)||Boolean(round?.teams&&Object.keys(round.teams).length);
    const archive=previous?.lastChance;
    const preserve=started&&archive?.forecast.length===LOBBY&&new Set(archive.forecast.map(row=>row.id)).size===LOBBY&&archive.forecast.every(row=>ids.includes(row.id))&&archive.matches===fixture.matches&&archive.slots===4;
    if(preserve){

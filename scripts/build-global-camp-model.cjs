@@ -8,6 +8,7 @@ function build({dates,groups,teams,players,stages,playerSummary}){
  const model={version:1,name:dates.tournament,timeZone:dates.timeZone,championPoint:dates.event.championRushPoint,groups:groups.groups,rounds:dates.rounds,
   penalties:(stages?.classificatoria?.penalties||[]).map(p=>({roundKey:'classificatoria-'+p.round,teamId:p.teamId,points:p.points,afterDrop:p.afterDrop})),
   teams:teams.teams.map(t=>pick(t,['id','name','abbreviation','wikiName','logo'])),
+  finalists:stages.lastChance?.finished?(stages.final?.qualifiedTeams||[]).map(t=>t.id):[],
   players:players.players.filter(p=>p.type==='player').map(p=>({...pick(p,['id','name','team','role','type','photo','aliases']),...(photos.get(p.id)?{photo:photos.get(p.id)}:{})})),officialRounds:{}};
  // Phase-one pools already contain its final standings. Only later rounds are
  // needed to reopen scores and prepare the next lobby without a database read.

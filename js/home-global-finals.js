@@ -82,8 +82,10 @@
     const [hour,minute]=round.time24.split(':');
     const iso=round.date+'T'+round.time24+':00-03:00';
     countdown.dataset.start=iso;
+    countdown.setAttribute('aria-label',round.stage==='final'?'Contagem para a Grande Final':'Contagem para a próxima rodada');
+    countdown.querySelector('[role=timer]')?.setAttribute('aria-label','Tempo restante para '+(round.stage==='final'?'a Grande Final':'a próxima rodada'));
     if(time){time.setAttribute('datetime',iso);time.innerHTML=esc(day)+' NOV · '+esc(hour)+'H'+(minute==='00'?'':esc(minute))+' <small>BRASÍLIA</small>';}
-    if(label)label.textContent=index===0?'CONTAGEM PARA A ESTREIA':'CONTAGEM PARA A PRÓXIMA RODADA';
+    if(label)label.textContent=round.stage==='final'?'CONTAGEM PARA A GRANDE FINAL':index===0?'CONTAGEM PARA A ESTREIA':'CONTAGEM PARA A PRÓXIMA RODADA';
     countdown.classList.remove('has-started');
   }
 
@@ -177,12 +179,12 @@
       return;
     }
     const pair=Array.isArray(next.groups)&&next.groups.length===2?next.groups:null;
-    const headline=pair?'<div class="home-global-matchup">'+roster(pair[0])+'<div class="home-global-versus" aria-label="contra">×</div>'+roster(pair[1])+'</div>':
+    const headline=next.stage==='final'?qualificationPanel():pair?'<div class="home-global-matchup">'+roster(pair[0])+'<div class="home-global-versus" aria-label="contra">×</div>'+roster(pair[1])+'</div>':
       seededRoster(next);
     const after=rounds.slice(idx+1,idx+4);
     output.innerHTML='<div class="home-global-match-head'+(started?' is-live':'')+'"><div><span class="home-global-match-eyebrow">'+(started?'RODADA EM ANDAMENTO':'PRÓXIMO CONFRONTO')+'</span><h3>'+esc(pair?'GRUPO '+pair[0]+' × GRUPO '+pair[1]:next.stage==='segundaFase'?'KNOCKOUT · FASE 2':next.stage==='lastChance'?'REPESCAGEM · LAST CHANCE':'GRANDE FINAL')+'</h3><p>'+esc(next.label)+' · '+esc(displayDate(next))+' (Brasília)</p></div><span class="home-global-round-tag">'+esc(next.matches?next.matches+' QUEDAS':next.stage==='final'?'CHAMPION RUSH':'12 EQUIPES')+'</span></div>'+(started?liveLink():'')+headline+
-      (next.stage==='segundaFase'?nextEntrants(after[0]):'')+(next.stage!=='classificatoria'?qualificationPanel():'')+
-      '<div class="home-global-next-list"><div class="home-global-next-list-title"><h3>PRÓXIMAS RODADAS</h3><small>HORÁRIO DE BRASÍLIA</small></div>'+(after.map(round=>renderRoundRow(round)).join('')||'<p class="home-global-no-more">Nenhuma outra rodada prevista no calendário.</p>')+'</div><a class="home-global-calendar-link" href="/ffws-global-2026/datas">VER CALENDÁRIO COMPLETO <span aria-hidden="true">→</span></a>';
+      (next.stage==='final'?'<div class="home-global-final-actions"><a class="home-global-final-cta" href="/ffws-global-2026/final">ACOMPANHAR A GRANDE FINAL</a><a href="/ffws-global-2026/last-chance">Resultado da repescagem</a></div><p class="home-global-final-rule"><strong>110 pontos para ativar.</strong> A partir da queda seguinte, um Booyah vale o título. Todos começam do zero.</p>':'')+(next.stage==='segundaFase'?nextEntrants(after[0]):'')+(!['classificatoria','final'].includes(next.stage)?qualificationPanel():'')+
+      (next.stage==='final'?'':'<div class="home-global-next-list"><div class="home-global-next-list-title"><h3>PRÓXIMAS RODADAS</h3><small>HORÁRIO DE BRASÍLIA</small></div>'+(after.map(round=>renderRoundRow(round)).join('')||'<p class="home-global-no-more">Nenhuma outra rodada prevista no calendário.</p>')+'</div>')+'<a class="home-global-calendar-link" href="/ffws-global-2026/datas">VER CALENDÁRIO COMPLETO <span aria-hidden="true">→</span></a>';
   }
 
   function updateClock(){
@@ -250,6 +252,15 @@
         if(ordered.every((row,index)=>row.position===index+1&&row.matches===round.matches))completed.set(round.key,ids);
       }
       groups=groupList;teams=teamList;rounds=upcoming;loaded=true;
+      if(finalQualifiers().size===12&&!calendar.tables.final.finished){
+        board.classList.add('is-grand-final');
+        const heading=board.querySelector('.home-global-heading');
+        heading.querySelector('span').textContent='FFWS GLOBAL FINALS 2026';
+        heading.querySelector('h2').innerHTML='GRANDE <b>FINAL</b>';
+        heading.querySelector('p').textContent='28 DE NOVEMBRO · 07H (BRASÍLIA) · BANGKOK';
+        const tabsLabel=board.querySelector('#home-global-tab-slots');if(tabsLabel)tabsLabel.textContent='TODOS OS PARTICIPANTES';
+        const slotsFooter=board.querySelector('.home-global-footer');if(slotsFooter)slotsFooter.hidden=true;
+      }
       acceptPublication(window.CFF_GLOBAL_HOME_PUBLICATION);
       renderUpcoming();resume();
     }catch(error){

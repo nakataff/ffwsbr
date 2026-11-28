@@ -77,7 +77,11 @@ function entrants(key,records,meta){
  if(round.stage==='segundaFase')return second(round.day);
  if(!records['segundaFase-4']?.complete)throw Error('Confirme os quatro dias da Fase 2.');
  if(round.stage==='lastChance')return [...seeds.slice(18,20),...rank([records['segundaFase-4']],meta).slice(2).map(t=>t.id)];
- if(!records['lastChance-1']?.complete)throw Error('Confirme as dez quedas da repescagem.');
+ if(!records['lastChance-1']?.complete){
+  const ids=meta.finalists||[];
+  if(ids.length===12&&new Set(ids).size===12&&ids.every(id=>meta.teams.some(t=>t.id===id)))return [...ids];
+  throw Error('Confirme as dez quedas da repescagem.');
+ }
  return [...[1,2,3,4].flatMap(day=>rank([records['segundaFase-'+day]],meta).slice(0,2).map(t=>t.id)),...rank([records['lastChance-1']],meta).slice(0,4).map(t=>t.id)];
 }
 function backup(template,meta,key,archive={},official=false){

@@ -1,6 +1,6 @@
 {
   "tournament": "FFWS Global Finals 2026",
-  "updatedAt": "2026-11-22",
+  "updatedAt": "2026-11-27",
   "finished": false,
   "formatConfirmed": true,
   "format": {
@@ -11184,7 +11184,57 @@
   "final": {
     "finished": false,
     "days": [],
-    "rows": []
+    "rows": [],
+    "qualifiedTeams": [
+      {
+        "id": "p-esports",
+        "source": "Fase 2 · Dia 1 · 1º"
+      },
+      {
+        "id": "ag-al",
+        "source": "Fase 2 · Dia 1 · 2º"
+      },
+      {
+        "id": "fx",
+        "source": "Fase 2 · Dia 2 · 1º"
+      },
+      {
+        "id": "loud",
+        "source": "Fase 2 · Dia 2 · 2º"
+      },
+      {
+        "id": "lyon",
+        "source": "Fase 2 · Dia 3 · 1º"
+      },
+      {
+        "id": "team-flash",
+        "source": "Fase 2 · Dia 3 · 2º"
+      },
+      {
+        "id": "gundynasty",
+        "source": "Fase 2 · Dia 4 · 1º"
+      },
+      {
+        "id": "bru",
+        "source": "Fase 2 · Dia 4 · 2º"
+      },
+      {
+        "id": "rrq",
+        "source": "Repescagem · 1º"
+      },
+      {
+        "id": "blue-cheese",
+        "source": "Repescagem · 2º"
+      },
+      {
+        "id": "resurrection-esports",
+        "source": "Repescagem · 3º"
+      },
+      {
+        "id": "btr",
+        "source": "Repescagem · 4º"
+      }
+    ]
   },
   "event": {
     "name": "FFWS Global Finals 2026",
@@ -11221,8 +11271,140 @@
     "timeZone": "America/Sao_Paulo"
   },
   "lastChance": {
-    "finished": false,
+    "finished": true,
     "rounds": [],
-    "rows": []
+    "rows": [
+      {
+        "team": "RRQ",
+        "position": 1,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 3,
+        "placementPoints": 76,
+        "kills": 85,
+        "points": 161
+      },
+      {
+        "team": "Blue Cheese",
+        "position": 2,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 1,
+        "placementPoints": 69,
+        "kills": 86,
+        "points": 155
+      },
+      {
+        "team": "Resurrection Esports",
+        "position": 3,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 1,
+        "placementPoints": 45,
+        "kills": 104,
+        "points": 149
+      },
+      {
+        "team": "Bigetron by Vitality",
+        "position": 4,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 0,
+        "placementPoints": 63,
+        "kills": 76,
+        "points": 139
+      },
+      {
+        "team": "LOS",
+        "position": 5,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 2,
+        "placementPoints": 54,
+        "kills": 84,
+        "points": 138
+      },
+      {
+        "team": "ONIC",
+        "position": 6,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 1,
+        "placementPoints": 59,
+        "kills": 71,
+        "points": 130
+      },
+      {
+        "team": "xProjekt",
+        "position": 7,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 1,
+        "placementPoints": 36,
+        "kills": 88,
+        "points": 124
+      },
+      {
+        "team": "GOW",
+        "position": 8,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 0,
+        "placementPoints": 28,
+        "kills": 73,
+        "points": 101
+      },
+      {
+        "team": "Stellar Esport",
+        "position": 9,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 0,
+        "placementPoints": 43,
+        "kills": 58,
+        "points": 101
+      },
+      {
+        "team": "Horaa Esports",
+        "position": 10,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 1,
+        "placementPoints": 31,
+        "kills": 50,
+        "points": 81
+      },
+      {
+        "team": "Team INF",
+        "position": 11,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 0,
+        "placementPoints": 36,
+        "kills": 44,
+        "points": 80
+      },
+      {
+        "team": "Team Apex Gaming",
+        "position": 12,
+        "day": 1,
+        "matches": 10,
+        "booyahs": 0,
+        "placementPoints": 30,
+        "kills": 44,
+        "points": 74
+      }
+    ],
+    "date": "2026-11-27",
+    "day": 1,
+    "coverage": {
+      "collective": "totals",
+      "drops": false,
+      "individual": false
+    },
+    "source": {
+      "type": "official-standings",
+      "description": "Classificação oficial da repescagem enviada pelo administrador em 27/11/2026. Totais por equipe em dez quedas; resultados por queda e individuais ainda não disponíveis."
+    }
   }
 }

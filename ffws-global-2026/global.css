@@ -1021,3 +1021,7 @@ body.cff-stats-route #ffws-global-2026-stats.page,body.cff-stats-route #registro
   font-size:.64rem!important;
  }
 }
+
+.global-finalist-source{display:block;font-size:13px;line-height:1.5;color:#aebed2;margin-top:4px}.global-finalists-panel .global-phase-fixture-teams{list-style:none;padding:0}.ffws-global-coverage-note{font-size:14px;line-height:1.6;color:#b8c9df}
+.global-finalists-panel .global-phase-fixture-teams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}.global-finalists-panel .global-knockout-team{min-height:78px;font-size:15px;line-height:1.4}.global-finalists-panel .global-knockout-team>span{min-width:0;overflow-wrap:anywhere}.global-finalists-panel .global-knockout-team img{flex:none}
+@media(max-width:720px){.global-finalists-panel .global-phase-fixture-teams{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.global-finalists-panel .global-knockout-team{flex-direction:column;align-items:flex-start;font-size:14px;padding:10px}.global-finalists-panel .global-finalist-source{font-size:12px}}

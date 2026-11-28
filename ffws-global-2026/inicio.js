@@ -3,7 +3,7 @@
   if (window.CFFGlobalInicio) return;
   const root=document.getElementById('ffws-global-2026-inicio-content');
   if (!root) return;
-  const VERSION = '20261126-fase2-dia4-v1', BASE='/ffws-global-2026/';
+  const VERSION = '20261127-final-pronta-v1', BASE='/ffws-global-2026/';
   const stages=[['classificatoria','Fase 1'],['segundaFase','Fase 2'],['lastChance','Repescagem'],['final','Grande Final']];
   const tabs=[['tabela','Tabela'],['mvp','Ranking MVP'],['equipes','Equipes']];
   const paths={classificatoria:'classificatoria',segundaFase:'segunda-fase',lastChance:'last-chance',final:'final'};
@@ -70,6 +70,9 @@
     }).join('')}</div></article>`;
   }
   function seededMatchup(round) {
+    if(round.stage==='final'&&summary.tables.final?.participants?.length){
+      return `<article class="global-start-group"><h3>Os 12 finalistas · Pontuação zerada</h3><div>${summary.tables.final.participants.map(p=>{const t=meta(p.id);return `<a class="global-start-fixture-team" href="${BASE}equipe?time=${esc(t.id)}">${teamName(t)}<small>${esc(p.source)}</small></a>`;}).join('')}</div></article>`;
+    }
     if (!round.seededTeams?.length) return '<p class="global-start-muted">Os participantes serão definidos pelos resultados das etapas anteriores.</p>';
     const teams=round.seededTeams.map(id=>summary.teams.find(team=>team.id===id)).filter(Boolean);
     const card=(heading,items)=>`<article class="global-start-group"><h3>${esc(heading)}</h3><div>${items.map(t=>
@@ -79,7 +82,7 @@
   }
   function tick() {
     if (!summary || document.hidden || !document.getElementById('ffws-global-2026-inicio')?.classList.contains('active')) return;
-    const now=Date.now(),i=summary.rounds.findIndex((r,index)=>now<endOf(r,index)),r=summary.rounds[i],started=r&&now>=startOf(r);
+    const now=Date.now(),i=summary.rounds.findIndex((r,index)=>now<endOf(r,index)&&!(now>=startOf(r)&&summary.tables[r.stage]?.finished)),r=summary.rounds[i],started=r&&now>=startOf(r);
     const key=(r?.key||'ended')+(started?'-started':'');
     if (key!==fixtureKey) {
       fixtureKey=key;

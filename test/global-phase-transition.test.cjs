@@ -48,9 +48,9 @@ test('between-phase view changes team locally, preserves focus and exposes count
 
 for(const [at,expectedLive] of [['2026-11-22T08:59:00-03:00',0],['2026-11-22T15:00:00-03:00',1],['2026-11-23T12:00:00-03:00',0]]){
  test('home checks bounded live summary only for an unconsolidated session: '+at,async()=>{
-  const sources=Object.fromEntries(['stages','dates','teams','groups','players'].map(k=>[k,read(k)]));sources.stages.segundaFase.finished=false;sources.stages.segundaFase.rounds=sources.stages.segundaFase.rounds.filter(d=>d.day<4);
+  const sources=Object.fromEntries(['stages','dates','teams','groups','players'].map(k=>[k,read(k)]));sources.stages.lastChance={finished:false,rounds:[],rows:[]};sources.stages.final.qualifiedTeams=[];sources.stages.segundaFase.finished=false;sources.stages.segundaFase.rounds=sources.stages.segundaFase.rounds.filter(d=>d.day<4);
   const archived=require('../scripts/build-global-overview.cjs').build(sources)['home-resumo.json'];
-  const current=read('home-resumo'),calendar=read('inicio-resumo'),ids=new Map(calendar.teams.map(t=>[t.name,t.id]));
+  const current={...read('home-resumo'),stage:'segundaFase',date:'2026-11-22',teams:read('inicio-resumo').tables.segundaFase.days[3].rows.slice(0,6).map(r=>({...r,id:read('teams').teams.find(t=>t.name===r.team).id,name:r.team}))},calendar=read('inicio-resumo'),ids=new Map(calendar.teams.map(t=>[t.name,t.id]));
   const live={...current,roundKey:'segundaFase-4',dailyTeams:[{stage:'segundaFase',date:'2026-11-22',teams:calendar.tables.segundaFase.days[3].rows.map(r=>[ids.get(r.team),r.points,r.kills,r.booyahs,r.matches,r.lastPlace])}]};
   const w=new JSDOM('<div id="home" class="active"><div id="home-ranking-teams"><h3></h3></div><table><tbody id="home-tbody-teams"></tbody><tbody id="home-tbody-players"></tbody></table></div>',{url:'https://centralfreefire.com.br/',runScripts:'outside-only'}).window;
   let calls=0,publications=0;

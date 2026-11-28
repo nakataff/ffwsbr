@@ -91,7 +91,7 @@
       await addon('camp-ao-vivo/persistence.js');
       await addon('camp-ao-vivo/live.js');
       await addon('camp-ao-vivo/public-ui.js');
-      try{await addon('camp-ao-vivo/global-official.js')}catch(e){console.warn('[Mundial oficial]',e)}
+      try{await addon('camp-ao-vivo/global-official.js?v=20261127-final-pronta-v1')}catch(e){console.warn('[Mundial oficial]',e)}
       document.body.classList.remove('cff-assets-pending');setStatus('Pronto • seu campeonato salvo neste navegador');
     }catch(error){
       if(protectedRaw&&!window.__CFF_CAMP_READY__)native.setItem(PREFIX+'ffws_autosave',protectedRaw);

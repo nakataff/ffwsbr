@@ -3,7 +3,7 @@
 if(window.CFF_GLOBAL_CAMP)return;
 const C=window.CFF_GLOBAL_CAMP_CORE,$=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x));
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const storage=window.localStorage,version='20261122-fase2-fechada-v1';
+const storage=window.localStorage,version='20261127-final-pronta-v1';
 const labels={classificatoria:'Classificatória · Fase 1',segundaFase:'Segunda fase · Pools',lastChance:'Repescagem',final:'Grande Final'};
 let publishedForReview=null;
 let meta,template,state=null,busy=false,preview=null,review=null,selectedStage='classificatoria',previousFocus=null,previousOverflow='',navDefaults=null;

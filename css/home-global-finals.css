@@ -168,3 +168,26 @@
 .home-global-board .home-global-watch-live small{display:block;color:#49370b}
 .home-global-board .home-global-watch-live:hover{background:#ffe286;border-color:#ffe286}
 .home-global-countdown.has-started .home-global-debut time{display:none}
+
+/* Grand Final: one clear focal point and one grid of twelve confirmed teams. */
+.home-global-board.is-grand-final{border-color:#d5ad43;background:radial-gradient(ellipse at 50% 0,#74522545,transparent 64%),linear-gradient(145deg,#171425,#080e19);box-shadow:0 0 32px #b48d1914}
+.is-grand-final .home-global-heading{margin-bottom:20px}
+.is-grand-final .home-global-heading>span{font-size:14px;letter-spacing:2px;color:#e7cf8c}
+.is-grand-final .home-global-heading h2{font-size:clamp(38px,5vw,64px);letter-spacing:2px;margin:12px 0;line-height:1.08}
+.is-grand-final .home-global-heading p{font-size:14px;color:#e6d6b3;font-weight:700}
+.is-grand-final .home-global-finalists{background:#111a2c;border-color:#7b6332}
+.is-grand-final .home-global-match-team{min-height:100px;background:#0b1424;border-color:#3c4660}
+.is-grand-final .home-global-match-team img{width:45px;height:45px;object-fit:contain}
+.is-grand-final .home-global-match-team strong{font-size:14px}
+.is-grand-final .home-global-match-team small{font-size:12px;line-height:1.4;color:#bdc9db}
+.home-global-final-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin:18px 0}
+.home-global-final-actions a{padding:13px 16px;color:#e4d8ad;font-size:14px;font-weight:750;text-align:center;text-decoration:none}
+.home-global-final-actions .home-global-final-cta{color:#1c1720;background:linear-gradient(120deg,#e6bf57,#ffe6a0);border:1px solid #ffe6a0;border-radius:9px;font-weight:900}
+.home-global-final-actions a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.home-global-final-rule{font-size:14px;line-height:1.6;color:#c7d3e3;text-align:center;max-width:620px;margin:0 auto 14px}
+.home-global-final-rule strong{color:#ffe6a0}
+.home-finalist-confirmed{color:#87e0bb;font-weight:800;text-align:center}
+.global-finalist-source{display:block;font-size:13px;color:#aebed2;margin-top:4px}
+.global-finalists-panel .global-phase-fixture-teams{list-style:none;padding:0}
+.ffws-global-coverage-note{font-size:14px;line-height:1.6;color:#b8c9df}
+@media(max-width:700px){.is-grand-final .home-global-heading h2{font-size:40px}.is-grand-final .home-global-heading p{font-size:13px}.is-grand-final .home-global-match-team{padding:10px 4px;min-height:105px}.is-grand-final .home-global-match-team small{font-size:12px}.home-global-final-actions{gap:4px}.home-global-final-actions .home-global-final-cta{width:100%}}

@@ -26,7 +26,7 @@ test('compact summaries derive from existing sources and retain all 24 teams and
   assert.equal(home.date,latest.date);
   assert.deepEqual(home.teams.map(({name,points})=>[name,points]),(home.stage==='segundaFase'?latest.rows:summary.tables[home.stage].rows).slice(0,6).map(({team,points})=>[team,points]));
   assert(Object.values(home.rankings).every(rows=>rows.length===6));
-  assert(Buffer.byteLength(JSON.stringify(home))<5000);
+  assert(Buffer.byteLength(JSON.stringify(home))<7500);
 });
 test('offline results keep independent phase-two days and official Champion Rush final order',()=>{
   const input=sources();
@@ -75,7 +75,8 @@ test('fetch failures retry and a delayed MVP response cannot overwrite another t
   try{assert(retry.$('[data-global-start-boot]'));await retry.click('[data-global-start-boot]');assert(retry.$('.global-start-format'));}finally{retry.close();}
 });
 test('countdown advances locally at Brasília session boundaries without new fetches or an invented live claim',async()=>{
-  const u=await ui({now:'2026-11-06T03:59:59-03:00'});try{
+  const historic=read(BASE+'inicio-resumo.json');Object.values(historic.tables).forEach(phase=>phase.finished=false);
+  const u=await ui({now:'2026-11-06T03:59:59-03:00',overrides:{[BASE+'inicio-resumo.json']:()=>({ok:true,json:async()=>historic})}});try{
     assert(u.$('[role=timer]').textContent.includes('01s'));u.tick('2026-11-06T04:00:00-03:00');assert(!u.$('[role=timer]'));assert(u.$('#global-start-next').textContent.includes('No horário programado'));
     u.tick('2026-11-06T08:30:00-03:00');assert(u.$('#global-start-next-title').textContent.includes('Grupo C × Grupo D'));assert(!u.$('#global-start-next').textContent.includes('AO VIVO'));
     u.w.document.getElementById('ffws-global-2026-inicio').classList.remove('active');const text=u.$('#global-start-next').textContent;u.tick('2026-11-28T07:00:00-03:00');assert.equal(u.$('#global-start-next').textContent,text);

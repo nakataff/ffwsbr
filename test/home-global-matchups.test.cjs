@@ -3,6 +3,7 @@ const {JSDOM}=require('jsdom');
 const read=file=>fs.readFileSync(file,'utf8');
 const calendar=JSON.parse(read('ffws-global-2026/dates.json')),teamData=JSON.parse(read('ffws-global-2026/teams.json')),groupData=JSON.parse(read('ffws-global-2026/groups.json'));
 const summary=JSON.parse(read('ffws-global-2026/inicio-resumo.json'));
+summary.tables.lastChance.rows=[];summary.tables.lastChance.days.forEach(day=>day.rows=[]);summary.tables.lastChance.finished=false;
 const beforePhaseTwo=structuredClone(summary);beforePhaseTwo.tables.segundaFase.days.forEach(day=>{day.rows=[];});
 const sleep=()=>new Promise(resolve=>setImmediate(resolve));
 async function mount(at,{mobile=false,offline=false,data=beforePhaseTwo}={}){
@@ -189,7 +190,8 @@ test('Only completed days qualify finalists and fill the next lobby; Last Chance
   assert.match(d.querySelector('.home-global-match-head').textContent,/GRANDE FINAL/);
   assert.equal(new Set(qualified).size,12);
   assert.deepEqual(qualified.slice(-4),lastIds.slice(0,4));
-  assert.deepEqual(teamIds(d,'.home-global-upcoming-content > .home-global-single-roster a'),qualified);
+  assert.equal(d.querySelectorAll('.home-global-single-roster').length,0,'do not duplicate the final roster');
+  assert.equal(d.querySelectorAll('.home-global-finalists a').length,12);
  }finally{final.close();}
 });
 test('Last Chance shows its two known entrants; after final it shows results shortcut',async()=>{

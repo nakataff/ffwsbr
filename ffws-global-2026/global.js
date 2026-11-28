@@ -3,8 +3,8 @@
 
   const CONFIG = window.FFWS_GLOBAL_2026_CONFIG || {
     teamsUrl: 'ffws-global-2026/teams.json',
-    stagesUrl: 'ffws-global-2026/stages.json?v=20261126-fase2-dia4-v1',
-    playersUrl: 'ffws-global-2026/players.json?v=20261126-fase2-dia4-v1',
+    stagesUrl: 'ffws-global-2026/stages.json?v=20261127-final-pronta-v1',
+    playersUrl: 'ffws-global-2026/players.json?v=20261127-final-pronta-v1',
     datesUrl: 'ffws-global-2026/dates.json?v=20261118-fase2-09h-v1'
   };
   const PAGE_PREFIX = 'ffws-global-2026-';
@@ -327,6 +327,7 @@
   function stageEvents(stageKey) {
     const live=state.liveEvents[stageKey]||[];
     const payload = state.stages?.[stageKey] || {};
+    if(payload.finished&&payload.coverage?.collective==='totals'&&!payload.rounds?.length)return [];
     if (stageKey === 'final') {
       if(live.length)return live;
       const direct = Array.isArray(payload.days) ? payload.days : [];
@@ -575,11 +576,12 @@
     const rows = filterStageRows(stageKey);
     const pageId = rootId.replace(/-content$/, '');
     const live = LIVE_PAGES.has(pageId);
+    const totalsOnly=state.stages[stageKey]?.coverage?.collective==='totals'&&!stageEvents(stageKey).length;
     root.innerHTML = `<div class="ffws-global-shell">${hero(title, subtitle)}${stageNavigation(stageKey)}${stageParticipants(stageKey)}${formatPanel(stageKey)}
       <section class="ffws-global-panel"><div class="ffws-global-panel-inner">
-        <div class="ffws-global-panel-head"><div><h2>Classificação</h2><p>Resultados atualizados por rodada, mapa e queda.</p></div>${live?`<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('${pageId.slice(PAGE_PREFIX.length)}')">↻ Atualizar</button>`:`<span class="ffws-global-badge">${rows.length} equipes</span>`}</div>
+        <div class="ffws-global-panel-head"><div><h2>Classificação${state.stages[stageKey]?.finished?' final':''}</h2><p>${totalsOnly?'Resultado oficial · 10 quedas · Top 4 classificado para a final':'Resultados atualizados por rodada, mapa e queda.'}</p></div>${live?`<button type="button" class="ffws-global-badge" onclick="refreshFFWSGlobalResults('${pageId.slice(PAGE_PREFIX.length)}')">↻ Atualizar</button>`:`<span class="ffws-global-badge">${rows.length} equipes</span>`}</div>
         ${live?liveStatus():''}
-        ${stageFilters(stageKey)}${stageTable(stageKey)}
+        ${totalsOnly?'<p class="ffws-global-coverage-note">Totais oficiais por equipe. Os dados por queda e individuais da repescagem serão adicionados quando estiverem disponíveis.</p>':stageFilters(stageKey)}${stageTable(stageKey)}
       </div></section></div>`;
   }
 
@@ -2778,6 +2780,11 @@
   }
 
   function stageParticipants(stageKey) {
+    if(stageKey==='final'){
+      const qualified=state.stages.final?.qualifiedTeams||[];
+      if(!qualified.length)return '';
+      return `<section class="ffws-global-panel global-finalists-panel"><div class="ffws-global-panel-inner"><div class="ffws-global-panel-head"><div><h2>Os 12 finalistas</h2><p>28 de novembro · 07h (Brasília) · BITEC LIVE, Bangkok</p></div><span class="ffws-global-badge">Champion Rush · 110 pontos</span></div><p>Todos começam com zero pontos. Alcance 110 para ficar elegível; um Booyah a partir da queda seguinte garante o título.</p><ul class="global-phase-fixture-teams">${qualified.map(item=>{const team=state.teams.find(t=>t.id===item.id);return team?`<li><a class="global-knockout-team" href="/ffws-global-2026/equipe?time=${encodeURIComponent(team.id)}"><img src="${escapeHtml(logo(team.name))}" alt="" width="40" height="40" loading="lazy"><span><strong>${escapeHtml(team.name)}</strong><small class="global-finalist-source">${escapeHtml(item.source)}</small></span></a></li>`:'';}).join('')}</ul></div></section>`;
+    }
     if (stageKey!=='segundaFase'&&stageKey!=='lastChance') return '';
     const calendar=state.dates.rounds||[];
     const rounds=calendar.filter(round=>round.stage===stageKey&&round.seededTeams?.length);
@@ -2829,7 +2836,7 @@
   function renderPage(pageId) {
     if (!state.loaded) return;
     const suffix=pageId.slice(PAGE_PREFIX.length),stageKey=suffix==='segunda-fase'?'segundaFase':suffix==='last-chance'?'lastChance':suffix;
-    if(['classificatoria','segundaFase','lastChance','final'].includes(stageKey)&&!stageEvents(stageKey).some(e=>eventResults(e).length)){globalEmptyStage(pageId);return;}
+    if(['classificatoria','segundaFase','lastChance','final'].includes(stageKey)&&!stageEvents(stageKey).some(e=>eventResults(e).length)&&!(state.stages[stageKey]?.coverage?.collective==='totals'&&state.stages[stageKey]?.rows?.length)){globalEmptyStage(pageId);return;}
     if(suffix==='selecoes'&&!allPlayerEntries().length){const root=document.getElementById(pageId+'-content');root.innerHTML=`<div class="ffws-global-shell">${hero('Seleções da season','FFWS Global Finals 2026')}<section class="ffws-global-panel"><div class="ffws-global-panel-inner"><div class="global-awaiting"><strong>Aguardando desempenho dos jogadores</strong><p>As seleções serão exibidas após o cadastro dos resultados de cada fase.</p></div></div></section></div>`;return;}
     switch (pageId) {
       case 'ffws-global-2026-classificatoria': renderStage('classificatoria', 'ffws-global-2026-classificatoria-content', 'Knockout • Fase 1', 'Resultados do Knockout • Fase 1'); break;

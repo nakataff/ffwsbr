@@ -48,6 +48,7 @@ function homeSummary(tables, teams, roster, entries, stages, calendar) {
     .sort((a, b) => a.date.localeCompare(b.date)).at(-1);
   if (!latest) return null;
   const {stage, date} = latest;
+  const finalists=(stages.final?.qualifiedTeams||[]).map(({id,source})=>({...teams.find(t=>t.id===id),source}));
   const table = stage === 'segundaFase' ? latest.rows : tables[stage].rows;
   const teamsByName = new Map(teams.map(t => [norm(t.name), t]));
   const people = new Map(roster.map(p => [p.id, p]));
@@ -77,7 +78,7 @@ function homeSummary(tables, teams, roster, entries, stages, calendar) {
     const drops=stages[round.stage]?.rounds?.filter(drop=>drop.round===round.round&&drop.date===round.date)||[];
     return !round.matches||drops.length<round.matches;
   }).map(round=>({stage:round.stage,date:round.date,startAt:round.date+'T'+round.time24+':00-03:00'}));
-  return {updatedAt:date, source:'Resultados oficiais do Mundial', stage, date, day:latest.day, partial:false,pendingSessions,
+  return {updatedAt:date, source:'Resultados oficiais do Mundial', stage, date, day:latest.day, partial:false,pendingSessions,finalists,
     teams:table.slice(0, 6).map(({team, points, kills, booyahs, matches}) => {
       const {id, name, logo} = teamsByName.get(norm(team));
       return {id, name, logo, points, kills, booyahs, matches};
@@ -134,7 +135,7 @@ function build({stages, dates, teams, groups, players, standingsDay1, includeMvp
     }));
     // Phase 2 resets every day; never sum its four independent standings.
     const rows = key==='segundaFase' ? [] : compactRows(phase.rows?.length ? phase.rows : aggregate(events,phase.penalties));
-    tables[key] = {finished:!!phase.finished,rows,days:days.map(day=>({day,date:schedule.find(r=>num(r.day)===day)?.date,rows:byDay[day]})),...((phase.penalties||[]).length?{penalties:phase.penalties}:{})};
+    tables[key] = {finished:!!phase.finished,rows,...(key==='final'?{participants:phase.qualifiedTeams||[]}:{}),days:days.map(day=>({day,date:schedule.find(r=>num(r.day)===day)?.date,rows:byDay[day]})),...((phase.penalties||[]).length?{penalties:phase.penalties}:{})};
   }
   const roster=(players.players||[]).filter(p=>!p.left && norm(p.rosterStatus)!=='SAIU');
   const sameTeam=(value,t)=>[t.name,t.abbreviation,t.id,t.wikiName].some(alias=>norm(alias)===norm(value));

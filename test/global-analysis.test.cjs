@@ -33,7 +33,7 @@ async function openPage(t,search=''){
  window.fetch=async url=>({ok:true,json:async()=>String(url).endsWith('/projecao.json')?require(base+'projecao.json'):summary});
  window.loadProjectionModule=()=>import(base+'projecao.mjs');
  window.loadBetweenModule=()=>import(base+'entre-fases.mjs');
- window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=4')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=3')",'window.loadBetweenModule()'));
+ window.eval(script.replace('export function comparison','function comparison').replaceAll('import.meta.url','location.href').replace("import('./projecao.mjs?v=5')",'window.loadProjectionModule()').replace("import('./entre-fases.mjs?v=3')",'window.loadBetweenModule()'));
  await new Promise(resolve=>setImmediate(resolve));
  return {window,document};
 }
@@ -354,7 +354,7 @@ test('Last Chance simulates exactly four slots across ten drops and waits for th
  assert.deepEqual(current,published);
  assert.deepEqual(current.days,published.days); // Historic top-two forecasts stay unchanged.
  const lc=current.lastChance;
- assert.equal(lc.matches,10);assert.equal(lc.slots,4);assert.equal(lc.started,false);
+ assert.equal(lc.matches,10);assert.equal(lc.slots,4);assert.equal(lc.started,true);
  const core=require('../js/global-camp-core.js'),meta=require('../ffws-global-2026/camp-model.json');
  assert.deepEqual(lc.forecast.map(row=>row.id).sort(),core.entrants('lastChance-1',{},meta).sort());
  assert(lc.forecast.every(row=>!current.finalists.some(finalist=>finalist.id===row.id)));
@@ -374,6 +374,7 @@ test('Last Chance freezes its pre-start forecast, waits for ten drops and review
  const data={teams:require('../ffws-global-2026/teams.json'),dates:require('../ffws-global-2026/dates.json')};
  const ids=published.lastChance.forecast.map(row=>row.id).reverse();
  const round={day:1,date:'2026-11-27',expected:10,players:{},teams:Object.fromEntries(ids.map((id,index)=>[id,Array.from({length:10},(_,i)=>[i+1,12-index/2,6,index===0?1:0])]))};
+ overview.tables.lastChance.finished=false;
  analysis.phases.lastChance.rounds=[round];
  overview.tables.lastChance.days[0].rows=ids.map((id,index)=>({team:summary.teams[id].name,position:index+1,points:120-index*5,matches:10}));
  round.teams[ids[0]].pop();
@@ -404,9 +405,10 @@ test('Projections opens Last Chance, shares its URL and preserves old Phase 2 li
  assert.equal(document.querySelector('h1').textContent,'Projeção da repescagem');
  assert.equal(params().get('etapa'),'lastChance');assert.equal(params().get('dia'),null);
  assert.equal(document.querySelectorAll('.rx-projection-table tbody tr').length,12);
- assert.equal(document.querySelectorAll('tr.is-favorite').length,4);
+ assert.equal(document.querySelectorAll('tr.is-favorite').length,3);
+ assert.equal(document.querySelectorAll('tr.is-finalist').length,4);
  assert.equal(document.querySelectorAll('.rx-projection-finalists li').length,4);
- assert.match(document.querySelector('.rx-projection-cutoff').textContent,/4ª vaga/);
+ assert.match(document.querySelector('.rx-projection-review').textContent,/1 de 4 favoritos se classificaram/);
  assert.match(document.querySelector('.rx-projection-coverage').textContent,/22\/11.*22\/11/);
  assert.equal(document.querySelector('#rx-projection-team'),null);
  assert.equal(document.querySelectorAll('.rx-projection-days').length,0);
